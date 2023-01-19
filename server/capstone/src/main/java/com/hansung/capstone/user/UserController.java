@@ -26,6 +26,9 @@ public class UserController {
     @PostMapping("/check")
     private ResponseEntity loginCheck(@RequestBody Optional<AppUser> req) {
         AppUser user = req.get();
+        System.out.println(user.getUsername());
+        System.out.println(user.getEmail());
+        System.out.println(user.getPassword());
         if (userService.check(user)){
             return new ResponseEntity(HttpStatus.OK);
         } else{
@@ -34,9 +37,9 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    private ResponseEntity register(@RequestBody Optional<AppUser> req){
-        AppUser user = req.get();
-        userService.create(user.getUsername(), user.getPassword(), user.getEmail());
+    private ResponseEntity register(@RequestBody Optional<UserCreateForm> req){
+        UserCreateForm user = req.get();
+        userService.create(user.getUsername(), user.getPassword1(), user.getEmail());
         return new ResponseEntity(HttpStatus.OK);
     }
 

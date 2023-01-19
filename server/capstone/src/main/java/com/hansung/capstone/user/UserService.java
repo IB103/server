@@ -1,8 +1,11 @@
 package com.hansung.capstone.user;
 
+import com.hansung.capstone.DataNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -20,9 +23,13 @@ public class UserService {
         return user;
     }
 
+
     public Boolean check(AppUser req){
-        AppUser db = userRepository.findByusername(req.getUsername()).get();
-        if (req.getUsername().equals(db.getUsername()) && req.getPassword().equals(db.getPassword())){
+        Optional<AppUser> appuser = this.userRepository.findByusername(req.getUsername());
+        if (!appuser.isPresent()){
+            throw new DataNotFoundException("AppUser Not Found");
+        }
+        if (req.getUsername().equals(appuser.get().getUsername()) && passwordEncoder.matches(req.getPassword(), appuser.get().getPassword())){
             return Boolean.TRUE;
         } else{
             return Boolean.FALSE;

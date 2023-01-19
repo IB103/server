@@ -1,26 +1,31 @@
 package com.hansung.capstone.user;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureWebMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(UserControllerTest.class)
+@ContextConfiguration
 class UserControllerTest {
 
 
     @Autowired
     private MockMvc mockMvc;
+
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Test
     void testAdd() {
@@ -28,29 +33,35 @@ class UserControllerTest {
     }
 
     @Test
-    @DisplayName("Get login check - /login/check")
+    @DisplayName("Post login check - /login/check")
     void loginCheckTest() throws Exception {
-        String id = "1234";
-        String pwd = "5678";
+        AppUser user = AppUser.builder()
+                .password("1234")
+                .username("hoon")
+                .build();
 
-        mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:8080/login/check")
-                        .param("id", id)
-                        .param("pwd", pwd))
+        mockMvc.perform(MockMvcRequestBuilders.post("http://localhost:8080/login/check")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(user)))
+                .andDo(print())
                 .andExpect(status().isOk());
+
     }
 
     @Test
     @DisplayName("Post register test - /login/register")
     void registerTest() throws Exception{
-        String id = "ch";
-        String pwd = "1234";
-        String email = "test11@test.com";
+        UserCreateForm user = UserCreateForm.builder()
+                .email("test")
+                .password1("1234")
+                .password2("1234")
+                .username("ho3on")
+                .build();
 
-        mockMvc.perform(post("http://localhost:8080/login/register")
-                        .param("username", id)
-                        .param("password1", pwd)
-                        .param("password2", pwd)
-                        .param("email", email))
+        mockMvc.perform(post("/login/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(user)))
+                .andDo(print())
                 .andExpect(status().isOk());
     }
 }
