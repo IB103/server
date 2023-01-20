@@ -1,16 +1,25 @@
 package com.hansung.capstone.user;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hansung.capstone.SecurityConfig;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -19,6 +28,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ContextConfiguration
 class UserControllerTest {
 
+    @Autowired
+    private WebApplicationContext context;
 
     @Autowired
     private MockMvc mockMvc;
@@ -27,6 +38,14 @@ class UserControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Test
+    @DisplayName("Get check")
+    void getCheck() throws Exception {
+
+        mockMvc.perform(get("/login/hi"))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
     @Test
     void testAdd() {
         assertEquals(42, Integer.sum(19, 23));
@@ -58,7 +77,25 @@ class UserControllerTest {
                 .username("ho3on")
                 .build();
 
-        mockMvc.perform(post("/login/register")
+        mockMvc.perform(post("http://localhost:8080/login/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(user))
+                        .with(csrf()))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("real test")
+    void testTest() throws Exception {
+        UserCreateForm user = UserCreateForm.builder()
+                .email("hi@hi")
+                .password1("123")
+                .password2("123")
+                .username("hi")
+                .build();
+
+        mockMvc.perform(post("/login/hi")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(user)))
                 .andDo(print())

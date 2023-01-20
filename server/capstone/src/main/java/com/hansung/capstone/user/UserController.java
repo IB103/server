@@ -1,15 +1,18 @@
 package com.hansung.capstone.user;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import java.util.HashMap;
 import java.util.Optional;
 
 @RestController
 @RequestMapping("/login")
+@EnableWebMvc
 public class UserController {
 
     private final UserService userService;
@@ -24,13 +27,13 @@ public class UserController {
 
 
     @PostMapping("/check")
-    private ResponseEntity loginCheck(@RequestBody Optional<AppUser> req) {
+    private ResponseEntity<String> loginCheck(@RequestBody Optional<AppUser> req) {
         AppUser user = req.get();
         System.out.println(user.getUsername());
         System.out.println(user.getEmail());
         System.out.println(user.getPassword());
         if (userService.check(user)){
-            return new ResponseEntity(HttpStatus.OK);
+            return new ResponseEntity<>("good", HttpStatus.OK);
         } else{
             return new ResponseEntity(HttpStatus.BAD_REQUEST);
         }
@@ -62,4 +65,8 @@ public class UserController {
         return "hello";
     }
 
+    @PostMapping("/tt")
+    public ResponseEntity<String> t(@RequestBody UserCreateForm user){
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }

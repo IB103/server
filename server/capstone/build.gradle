@@ -29,6 +29,7 @@ dependencies {
     testRuntimeOnly('org.junit.jupiter:junit-jupiter-engine:5.9.2')
     compileOnly('org.springframework.boot:spring-boot-devtools')
     implementation('org.springframework.boot:spring-boot-starter-security')
+    testImplementation('org.springframework.security:spring-security-test')
 
 }
 
