@@ -31,16 +31,15 @@ class UserControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
     @MockBean
     private UserService userService;
 
     @MockBean
     private UserRepository userRepository;
 
-
-
-    @Autowired
-    private ObjectMapper objectMapper;
 
     @Test
     @DisplayName("Get check")
@@ -64,6 +63,7 @@ class UserControllerTest {
                 .build();
 
         mockMvc.perform(post("http://localhost:8080/login/check")
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(user)))
                 .andDo(exportTestSecurityContext())
