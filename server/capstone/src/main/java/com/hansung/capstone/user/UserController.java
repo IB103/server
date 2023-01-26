@@ -1,4 +1,4 @@
-package com.hansung.capstone;
+package com.hansung.capstone.user;
 
 import com.hansung.capstone.user.AppUser;
 import com.hansung.capstone.user.UserCreateForm;

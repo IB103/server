@@ -1,4 +1,4 @@
-package com.hansung.capstone;
+package com.hansung.capstone.user;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hansung.capstone.SecurityConfig;
