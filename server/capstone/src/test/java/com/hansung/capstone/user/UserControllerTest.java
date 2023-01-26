@@ -1,38 +1,42 @@
-package com.hansung.capstone.user;
+package com.hansung.capstone;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hansung.capstone.SecurityConfig;
+import com.hansung.capstone.user.AppUser;
+import com.hansung.capstone.user.UserCreateForm;
+import com.hansung.capstone.user.UserRepository;
+import com.hansung.capstone.user.UserService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.web.context.WebApplicationContext;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultHandlers.exportTestSecurityContext;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(UserControllerTest.class)
-@ContextConfiguration
+@WebMvcTest(includeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = SecurityConfig.class))
 class UserControllerTest {
 
     @Autowired
-    private WebApplicationContext context;
-
-    @Autowired
     private MockMvc mockMvc;
+
+    @MockBean
+    private UserService userService;
+
+    @MockBean
+    private UserRepository userRepository;
+
 
 
     @Autowired
@@ -59,10 +63,10 @@ class UserControllerTest {
                 .username("hoon")
                 .build();
 
-        mockMvc.perform(MockMvcRequestBuilders.post("http://localhost:8080/login/check")
+        mockMvc.perform(post("http://localhost:8080/login/check")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(user)))
-                .andDo(print())
+                .andDo(exportTestSecurityContext())
                 .andExpect(status().isOk());
 
     }

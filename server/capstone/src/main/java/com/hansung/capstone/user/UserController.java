@@ -1,8 +1,13 @@
-package com.hansung.capstone.user;
+package com.hansung.capstone;
 
+import com.hansung.capstone.user.AppUser;
+import com.hansung.capstone.user.UserCreateForm;
+import com.hansung.capstone.user.UserRepository;
+import com.hansung.capstone.user.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -12,7 +17,6 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/login")
-@EnableWebMvc
 public class UserController {
 
     private final UserService userService;
@@ -61,12 +65,18 @@ public class UserController {
     }
 
     @GetMapping("/hi")
-    public String hi(){
-        return "hello";
+    public ResponseEntity<String> hi(){
+        return new ResponseEntity<>("hi", HttpStatus.OK);
+
     }
 
     @PostMapping("/tt")
     public ResponseEntity<String> t(@RequestBody UserCreateForm user){
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping("/ho")
+    public ResponseEntity<String> ho(Authentication d) {
+        return new ResponseEntity<>("hi " + d.getName(), HttpStatus.OK);
     }
 }
