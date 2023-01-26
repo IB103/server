@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter;
 
 @Configuration
 @EnableWebSecurity
@@ -23,6 +24,11 @@ public class SecurityConfig {
                                         .requestMatchers("/login/ho").fullyAuthenticated()
                                         .anyRequest().permitAll()
                 )
+                .csrf().disable()
+                .headers()
+                .addHeaderWriter(new XFrameOptionsHeaderWriter(
+                        XFrameOptionsHeaderWriter.XFrameOptionsMode.SAMEORIGIN))
+                .and()
                 .formLogin(withDefaults());
         ;
         return http.build();

@@ -6,6 +6,7 @@ import com.hansung.capstone.user.UserRepository;
 import com.hansung.capstone.user.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
@@ -31,15 +32,14 @@ public class UserController {
 
 
     @PostMapping("/check")
-    private ResponseEntity<String> loginCheck(@RequestBody Optional<AppUser> req) {
-        AppUser user = req.get();
-        System.out.println(user.getUsername());
-        System.out.println(user.getEmail());
-        System.out.println(user.getPassword());
-        if (userService.check(user)){
+    private ResponseEntity<String> loginCheck(@RequestBody AppUser req) {
+        System.out.println(req.getUsername());
+        System.out.println(req.getEmail());
+        System.out.println(req.getPassword());
+        if (userService.check(req)){
             return new ResponseEntity<>("good", HttpStatus.OK);
         } else{
-            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("bad",HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -50,12 +50,6 @@ public class UserController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    @PostMapping("/test")
-    public String mapRequest(@RequestBody HashMap<String, String> param){
-        System.out.println("param : " + param);
-        System.out.println(param.get("username"));
-        return param.toString();
-    }
 
     @GetMapping("/hello")
     public Optional<AppUser> hello(){
@@ -78,5 +72,10 @@ public class UserController {
     @GetMapping("/ho")
     public ResponseEntity<String> ho(Authentication d) {
         return new ResponseEntity<>("hi " + d.getName(), HttpStatus.OK);
+    }
+
+    @PostMapping("/blog")
+    public String blogPost(@RequestBody AppUser req){
+        return req.getUsername() + "의 블로그입니다.";
     }
 }
