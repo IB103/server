@@ -140,4 +140,18 @@ class UserControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().string("hoon"));
     }
+
+    @Test
+    @DisplayName("Get FindId error - /login/findID")
+    void findIDErrorTest() throws Exception {
+        Map<String, String> emailMap = new HashMap<>();
+        emailMap.put("email", "error@error.com");
+        String cnt = objectMapper.writeValueAsString(emailMap);
+        mockMvc.perform(get("/login/findID")
+                        .content(cnt)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andDo(print())
+                .andExpect(status().isNotFound())
+                .andExpect(status().reason("AppUser Not Found"));
+    }
 }
