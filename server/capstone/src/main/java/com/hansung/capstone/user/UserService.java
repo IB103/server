@@ -1,5 +1,6 @@
 package com.hansung.capstone.user;
 
+import com.hansung.capstone.DataExistException;
 import com.hansung.capstone.DataNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -15,19 +16,25 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     public AppUser create(String username, String password, String email) {
-        AppUser user = new AppUser();
-        user.setUsername(username);
-        user.setEmail(email);
-        user.setPassword(passwordEncoder.encode(password));
-        this.userRepository.save(user);
-        return user;
+        Optional<AppUser> appuser = this.userRepository.findByusername(username);
+        if(!appuser.isPresent()) {
+            AppUser user = new AppUser();
+            user.setUsername(username);
+            user.setEmail(email);
+            user.setPassword(passwordEncoder.encode(password));
+            this.userRepository.save(user);
+            return user;
+        }
+        else{
+            throw new DataExistException("Already exist");
+        }
     }
 
 
     public Boolean check(AppUser req){
         Optional<AppUser> appuser = this.userRepository.findByusername(req.getUsername());
         if (!appuser.isPresent()){
-            throw new DataNotFoundException("AppUser Not Found");
+            throw new DataNotFoundException("");
         }
         if (req.getUsername().equals(appuser.get().getUsername()) && passwordEncoder.matches(req.getPassword(), appuser.get().getPassword())){
             return Boolean.TRUE;

@@ -63,6 +63,24 @@ class UserControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk());
     }
+
+    @Test
+    @DisplayName("Post register dup test - /login/register")
+    void registerDupTest() throws Exception{
+        UserCreateForm user = UserCreateForm.builder()
+                .email("hoon@hoon.com")
+                .password1("1234")
+                .password2("1234")
+                .username("hoon")
+                .build();
+
+        mockMvc.perform(post("http://localhost:8080/login/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(user)))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(status().reason("Already Exists"));
+    }
     @Test
     @DisplayName("Post login check - /login/check")
     void loginCheckTest() throws Exception {
@@ -78,6 +96,34 @@ class UserControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().string("good"));
+    }
+
+    @Test
+    @DisplayName("Post login error - /login/check")
+    void loginErrorTest() throws Exception{
+        AppUser user1 = AppUser.builder()
+                .username("104")
+                .password("1234").build();
+
+        String cnt = objectMapper.writeValueAsString(user1);
+        mockMvc.perform(post("/login/check")
+                        .content(cnt)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andDo(print())
+                .andExpect(status().isNotFound())
+                .andExpect(status().reason("AppUser Not Found"));
+
+        AppUser user2 = AppUser.builder()
+                .username("hoon")
+                .password("123").build();
+
+        cnt = objectMapper.writeValueAsString(user2);
+        mockMvc.perform(post("/login/check")
+                        .content(cnt)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("bad"));
     }
 
     @Test

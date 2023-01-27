@@ -54,4 +54,5 @@ public class UserController {
         String id = userService.findID(emailMap.get("email"));
         return new ResponseEntity<>(id, HttpStatus.OK);
     }
+
 }
