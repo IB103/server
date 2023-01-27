@@ -1,32 +1,21 @@
 package com.hansung.capstone.user;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hansung.capstone.SecurityConfig;
-import com.hansung.capstone.user.AppUser;
-import com.hansung.capstone.user.UserCreateForm;
-import com.hansung.capstone.user.UserRepository;
-import com.hansung.capstone.user.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.FilterType;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import java.util.HashMap;
+import java.util.Map;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -75,15 +64,6 @@ class UserControllerTest {
                 .andExpect(status().isOk());
     }
     @Test
-    @DisplayName("Get check")
-    void getCheck() throws Exception {
-
-        mockMvc.perform(get("/login/hi"))
-                .andDo(print())
-                .andExpect(status().isOk());
-    }
-
-    @Test
     @DisplayName("Post login check - /login/check")
     void loginCheckTest() throws Exception {
         AppUser user1 = AppUser.builder()
@@ -98,6 +78,20 @@ class UserControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().string("good"));
+    }
 
+    @Test
+    @DisplayName("Get FindID - /login/findID")
+    void findIDTest() throws Exception {
+        Map<String, String> emailMap = new HashMap<>();
+        emailMap.put("email", "hoon@hoon.com");
+        String cnt = objectMapper.writeValueAsString(emailMap);
+
+        mockMvc.perform(get("/login/findID")
+                        .content(cnt)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().string("hoon"));
     }
 }

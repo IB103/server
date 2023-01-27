@@ -36,12 +36,15 @@ public class UserService {
         }
     }
 
-//    public User getUser(String username){
-//        Optional<User> user = this.userRepository.findByUsername(username);
-//        if(user.isPresent()){
-//            return user.get();
-//        }else{
-//            throw new DataNotFoundException("");
-//        }
+    public String findID(String email){
+        Optional<AppUser> appuser = this.userRepository.findByEmail(email);
+        if (!appuser.isPresent()){
+            throw new DataNotFoundException("AppUser Not Found");
+        }
+        else {
+            return appuser.get().getUsername();
+        }
+    }
+
 
 }
