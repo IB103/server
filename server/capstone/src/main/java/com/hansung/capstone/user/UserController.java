@@ -17,6 +17,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Random;
 
 @RestController
 @RequestMapping("/login")
@@ -54,5 +55,4 @@ public class UserController {
         String id = userService.findID(emailMap.get("email"));
         return new ResponseEntity<>(id, HttpStatus.OK);
     }
-
 }
