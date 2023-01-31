@@ -4,8 +4,6 @@ import com.hansung.capstone.user.AppUser;
 import com.hansung.capstone.user.UserCreateForm;
 import com.hansung.capstone.user.UserRepository;
 import com.hansung.capstone.user.UserService;
-import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -23,12 +21,18 @@ import java.util.Random;
 
 @RestController
 @RequestMapping("/login")
-@RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
 
     private final UserRepository userRepository;
+
+
+    public UserController(UserService userService, UserRepository userRepository) {
+        this.userService = userService;
+        this.userRepository = userRepository;
+    }
+
 
     @PostMapping("/check")
     private ResponseEntity<String> loginCheck(@RequestBody AppUser req) {
@@ -50,13 +54,5 @@ public class UserController {
     private ResponseEntity<String> findID(@RequestBody Map<String, String> emailMap){
         String id = userService.findID(emailMap.get("email"));
         return new ResponseEntity<>(id, HttpStatus.OK);
-    }
-
-    @PostMapping("/updatePW")
-    private ResponseEntity<String> updatePW(@RequestBody Optional<UserCreateForm> req){
-        UserCreateForm user = req.get();
-        userService.updatePW(user.getUsername(), user.getPassword1());
-        return new ResponseEntity<>("good", HttpStatus.OK);
-
     }
 }
