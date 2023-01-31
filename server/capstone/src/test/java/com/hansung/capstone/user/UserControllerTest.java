@@ -1,9 +1,8 @@
 package com.hansung.capstone.user;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,6 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @SpringBootTest
 @AutoConfigureMockMvc
 class UserControllerTest {
@@ -48,6 +48,7 @@ class UserControllerTest {
     }
 
     @Test
+    @Order(1)
     @DisplayName("Post register test - /login/register")
     void registerTest() throws Exception{
         UserCreateForm user = UserCreateForm.builder()
@@ -65,6 +66,7 @@ class UserControllerTest {
     }
 
     @Test
+    @Order(2)
     @DisplayName("Post register dup test - /login/register")
     void registerDupTest() throws Exception{
         UserCreateForm user = UserCreateForm.builder()
@@ -82,6 +84,7 @@ class UserControllerTest {
                 .andExpect(status().reason("Already Exists"));
     }
     @Test
+    @Order(3)
     @DisplayName("Post login check - /login/check")
     void loginCheckTest() throws Exception {
         AppUser user1 = AppUser.builder()
@@ -99,6 +102,7 @@ class UserControllerTest {
     }
 
     @Test
+    @Order(4)
     @DisplayName("Post login error - /login/check")
     void loginErrorTest() throws Exception{
         AppUser user1 = AppUser.builder()
@@ -127,6 +131,7 @@ class UserControllerTest {
     }
 
     @Test
+    @Order(5)
     @DisplayName("Get FindID - /login/findID")
     void findIDTest() throws Exception {
         Map<String, String> emailMap = new HashMap<>();
@@ -142,6 +147,7 @@ class UserControllerTest {
     }
 
     @Test
+    @Order(6)
     @DisplayName("Get FindId error - /login/findID")
     void findIDErrorTest() throws Exception {
         Map<String, String> emailMap = new HashMap<>();
@@ -153,5 +159,34 @@ class UserControllerTest {
                 .andDo(print())
                 .andExpect(status().isNotFound())
                 .andExpect(status().reason("AppUser Not Found"));
+    }
+
+    @Test
+    @Order(7)
+    @DisplayName("Post updatePW - /login/updatePW")
+    void updatePWTest() throws Exception {
+        UserCreateForm user = UserCreateForm.builder()
+                .username("hoon")
+                .password1("1414")
+                .password2("1414").build();
+
+        String cnt = objectMapper.writeValueAsString(user);
+        mockMvc.perform(post("/login/updatePW")
+                        .content(cnt)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().string("good"));
+
+        // new login
+        AppUser newuser = AppUser.builder()
+                .username("hoon")
+                .password("1414").build();
+        mockMvc.perform(post("/login/check")
+                .content(objectMapper.writeValueAsString(newuser))
+                .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().string("good"));
     }
 }

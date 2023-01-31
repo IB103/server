@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.Option;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -51,6 +52,12 @@ public class UserService {
         else {
             return appuser.get().getUsername();
         }
+    }
+
+    public void updatePW(String username, String newpw){
+        AppUser req = this.userRepository.findByusername(username).get();
+        req.setPassword(passwordEncoder.encode(newpw));
+        userRepository.save(req);
     }
 
 
