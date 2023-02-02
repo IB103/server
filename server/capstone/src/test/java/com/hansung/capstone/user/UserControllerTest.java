@@ -1,9 +1,7 @@
 package com.hansung.capstone.user;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,16 +11,13 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.springframework.data.domain.ExampleMatcher.GenericPropertyMatchers.startsWith;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @AutoConfigureMockMvc
 class UserControllerTest {
 
@@ -48,8 +43,9 @@ class UserControllerTest {
     }
 
     @Test
+    @Order(100)
     @DisplayName("Post signup test - /api/users/singup")
-    void registerTest() throws Exception {
+    void signupTest() throws Exception {
         UserDTO.SignUpRequestDTO req = UserDTO.SignUpRequestDTO.builder()
                 .email("hoon@test.com")
                 .password("1234")
@@ -66,40 +62,25 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.nickname").value("hoon"));
     }
 
-//    @Test
-//    @DisplayName("Post register test - /login/register")
-//    void registerTest() throws Exception{
-//        UserCreateForm user = UserCreateForm.builder()
-//                .email("hoon@hoon.com")
-//                .password1("1234")
-//                .password2("1234")
-//                .username("hoon")
-//                .build();
-//
-//        mockMvc.perform(post("http://localhost:8080/login/register")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(objectMapper.writeValueAsString(user)))
-//                .andDo(print())
-//                .andExpect(status().isOk());
-//    }
+    @Test
+    @Order(200)
+    @DisplayName("Post signup dup test - /api/users/signup")
+    void signupDupTest() throws Exception{
+        UserDTO.SignUpRequestDTO req = UserDTO.SignUpRequestDTO.builder()
+                .email("hoon@test.com")
+                .password("1234")
+                .nickname("hoon")
+                .username("훈")
+                .birthday("12345678").build();
 
-//    @Test
-//    @DisplayName("Post register dup test - /login/register")
-//    void registerDupTest() throws Exception{
-//        UserCreateForm user = UserCreateForm.builder()
-//                .email("hoon@hoon.com")
-//                .password1("1234")
-//                .password2("1234")
-//                .username("hoon")
-//                .build();
-//
-//        mockMvc.perform(post("http://localhost:8080/login/register")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(objectMapper.writeValueAsString(user)))
-//                .andDo(print())
-//                .andExpect(status().isBadRequest())
-//                .andExpect(status().reason("Already Exists"));
-//    }
+        mockMvc.perform(post("/api/users/signup")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(req)))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(status().reason("Already Exists"));
+    }
+
 //    @Test
 //    @DisplayName("Post login check - /login/check")
 //    void loginCheckTest() throws Exception {
