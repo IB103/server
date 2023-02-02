@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.html.Option;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -16,15 +15,22 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public AppUser create(String username, String password, String email) {
-        Optional<AppUser> appuser = this.userRepository.findByusername(username);
+    public UserDTO.SignUpResponseDTO create(UserDTO.SignUpRequestDTO req) {
+        Optional<User> appuser = this.userRepository.findByusername(req.getUsername());
         if(!appuser.isPresent()) {
-            AppUser user = new AppUser();
-            user.setUsername(username);
-            user.setEmail(email);
-            user.setPassword(passwordEncoder.encode(password));
-            this.userRepository.save(user);
-            return user;
+            User newuser = User.builder()
+                    .email(req.getEmail())
+                    .password(passwordEncoder.encode(req.getPassword()))
+                    .nickname(req.getNickname())
+                    .username(req.getUsername())
+                    .birthday(req.getBirthday())
+                    .build();
+            this.userRepository.save(newuser);
+            Optional<User> nUser = this.userRepository.findByusername(req.getUsername());
+            UserDTO.SignUpResponseDTO res = UserDTO.SignUpResponseDTO.builder()
+                    .id(nUser.get().getId())
+                    .nickname(req.getNickname()).build();
+            return res;
         }
         else{
             throw new DataExistException("Already exist");
@@ -32,8 +38,8 @@ public class UserService {
     }
 
 
-    public Boolean check(AppUser req){
-        Optional<AppUser> appuser = this.userRepository.findByusername(req.getUsername());
+    public Boolean check(User req){
+        Optional<User> appuser = this.userRepository.findByusername(req.getUsername());
         if (!appuser.isPresent()){
             throw new DataNotFoundException("");
         }
@@ -45,7 +51,7 @@ public class UserService {
     }
 
     public String findID(String email){
-        Optional<AppUser> appuser = this.userRepository.findByEmail(email);
+        Optional<User> appuser = this.userRepository.findByEmail(email);
         if (!appuser.isPresent()){
             throw new DataNotFoundException("AppUser Not Found");
         }
@@ -54,11 +60,11 @@ public class UserService {
         }
     }
 
-    public void updatePW(String username, String newpw){
-        AppUser req = this.userRepository.findByusername(username).get();
-        req.setPassword(passwordEncoder.encode(newpw));
-        userRepository.save(req);
-    }
+//    public void updatePW(String username, String newpw){
+//        User req = this.userRepository.findByusername(username).get();
+//        req.setPassword(passwordEncoder.encode(newpw));
+//        userRepository.save(req);
+//    }
 
 
 }

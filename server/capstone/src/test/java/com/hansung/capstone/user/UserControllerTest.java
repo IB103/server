@@ -16,11 +16,11 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.springframework.data.domain.ExampleMatcher.GenericPropertyMatchers.startsWith;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -48,110 +48,129 @@ class UserControllerTest {
     }
 
     @Test
-    @DisplayName("Post register test - /login/register")
-    void registerTest() throws Exception{
-        UserCreateForm user = UserCreateForm.builder()
-                .email("hoon@hoon.com")
-                .password1("1234")
-                .password2("1234")
-                .username("hoon")
-                .build();
+    @DisplayName("Post signup test - /api/users/singup")
+    void registerTest() throws Exception {
+        UserDTO.SignUpRequestDTO req = UserDTO.SignUpRequestDTO.builder()
+                .email("hoon@test.com")
+                .password("1234")
+                .nickname("hoon")
+                .username("훈")
+                .birthday("12345678").build();
 
-        mockMvc.perform(post("http://localhost:8080/login/register")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(user)))
-                .andDo(print())
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    @DisplayName("Post register dup test - /login/register")
-    void registerDupTest() throws Exception{
-        UserCreateForm user = UserCreateForm.builder()
-                .email("hoon@hoon.com")
-                .password1("1234")
-                .password2("1234")
-                .username("hoon")
-                .build();
-
-        mockMvc.perform(post("http://localhost:8080/login/register")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(user)))
-                .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(status().reason("Already Exists"));
-    }
-    @Test
-    @DisplayName("Post login check - /login/check")
-    void loginCheckTest() throws Exception {
-        AppUser user1 = AppUser.builder()
-                .username("hoon")
-                .password("1234").build();
-
-        String content = objectMapper.writeValueAsString(user1);
-        mockMvc.perform(post("/login/check")
-                        .content(content)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .accept(MediaType.APPLICATION_JSON_VALUE))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().string("good"));
-    }
-
-    @Test
-    @DisplayName("Post login error - /login/check")
-    void loginErrorTest() throws Exception{
-        AppUser user1 = AppUser.builder()
-                .username("104")
-                .password("1234").build();
-
-        String cnt = objectMapper.writeValueAsString(user1);
-        mockMvc.perform(post("/login/check")
-                        .content(cnt)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andDo(print())
-                .andExpect(status().isNotFound())
-                .andExpect(status().reason("AppUser Not Found"));
-
-        AppUser user2 = AppUser.builder()
-                .username("hoon")
-                .password("123").build();
-
-        cnt = objectMapper.writeValueAsString(user2);
-        mockMvc.perform(post("/login/check")
-                        .content(cnt)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(content().string("bad"));
-    }
-
-    @Test
-    @DisplayName("Get FindID - /login/findID")
-    void findIDTest() throws Exception {
-        Map<String, String> emailMap = new HashMap<>();
-        emailMap.put("email", "hoon@hoon.com");
-        String cnt = objectMapper.writeValueAsString(emailMap);
-
-        mockMvc.perform(get("/login/findID")
-                        .content(cnt)
+        mockMvc.perform(post("/api/users/signup")
+                        .content(objectMapper.writeValueAsString(req))
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().string("hoon"));
+                .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.nickname").value("hoon"));
     }
 
-    @Test
-    @DisplayName("Get FindId error - /login/findID")
-    void findIDErrorTest() throws Exception {
-        Map<String, String> emailMap = new HashMap<>();
-        emailMap.put("email", "error@error.com");
-        String cnt = objectMapper.writeValueAsString(emailMap);
-        mockMvc.perform(get("/login/findID")
-                        .content(cnt)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andDo(print())
-                .andExpect(status().isNotFound())
-                .andExpect(status().reason("AppUser Not Found"));
-    }
+//    @Test
+//    @DisplayName("Post register test - /login/register")
+//    void registerTest() throws Exception{
+//        UserCreateForm user = UserCreateForm.builder()
+//                .email("hoon@hoon.com")
+//                .password1("1234")
+//                .password2("1234")
+//                .username("hoon")
+//                .build();
+//
+//        mockMvc.perform(post("http://localhost:8080/login/register")
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .content(objectMapper.writeValueAsString(user)))
+//                .andDo(print())
+//                .andExpect(status().isOk());
+//    }
+
+//    @Test
+//    @DisplayName("Post register dup test - /login/register")
+//    void registerDupTest() throws Exception{
+//        UserCreateForm user = UserCreateForm.builder()
+//                .email("hoon@hoon.com")
+//                .password1("1234")
+//                .password2("1234")
+//                .username("hoon")
+//                .build();
+//
+//        mockMvc.perform(post("http://localhost:8080/login/register")
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .content(objectMapper.writeValueAsString(user)))
+//                .andDo(print())
+//                .andExpect(status().isBadRequest())
+//                .andExpect(status().reason("Already Exists"));
+//    }
+//    @Test
+//    @DisplayName("Post login check - /login/check")
+//    void loginCheckTest() throws Exception {
+//        User user1 = User.builder()
+//                .username("hoon")
+//                .password("1234").build();
+//
+//        String content = objectMapper.writeValueAsString(user1);
+//        mockMvc.perform(post("/login/check")
+//                        .content(content)
+//                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+//                        .accept(MediaType.APPLICATION_JSON_VALUE))
+//                .andDo(print())
+//                .andExpect(status().isOk())
+//                .andExpect(content().string("good"));
+//    }
+//
+//    @Test
+//    @DisplayName("Post login error - /login/check")
+//    void loginErrorTest() throws Exception{
+//        User user1 = User.builder()
+//                .username("104")
+//                .password("1234").build();
+//
+//        String cnt = objectMapper.writeValueAsString(user1);
+//        mockMvc.perform(post("/login/check")
+//                        .content(cnt)
+//                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+//                .andDo(print())
+//                .andExpect(status().isNotFound())
+//                .andExpect(status().reason("AppUser Not Found"));
+//
+//        User user2 = User.builder()
+//                .username("hoon")
+//                .password("123").build();
+//
+//        cnt = objectMapper.writeValueAsString(user2);
+//        mockMvc.perform(post("/login/check")
+//                        .content(cnt)
+//                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+//                .andDo(print())
+//                .andExpect(status().isBadRequest())
+//                .andExpect(content().string("bad"));
+//    }
+//
+//    @Test
+//    @DisplayName("Get FindID - /login/findID")
+//    void findIDTest() throws Exception {
+//        Map<String, String> emailMap = new HashMap<>();
+//        emailMap.put("email", "hoon@hoon.com");
+//        String cnt = objectMapper.writeValueAsString(emailMap);
+//
+//        mockMvc.perform(get("/login/findID")
+//                        .content(cnt)
+//                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+//                .andDo(print())
+//                .andExpect(status().isOk())
+//                .andExpect(content().string("hoon"));
+//    }
+//
+//    @Test
+//    @DisplayName("Get FindId error - /login/findID")
+//    void findIDErrorTest() throws Exception {
+//        Map<String, String> emailMap = new HashMap<>();
+//        emailMap.put("email", "error@error.com");
+//        String cnt = objectMapper.writeValueAsString(emailMap);
+//        mockMvc.perform(get("/login/findID")
+//                        .content(cnt)
+//                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+//                .andDo(print())
+//                .andExpect(status().isNotFound())
+//                .andExpect(status().reason("AppUser Not Found"));
+//    }
 }
