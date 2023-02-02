@@ -13,8 +13,7 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -49,7 +48,7 @@ class UserControllerTest {
         UserDTO.SignUpRequestDTO req = UserDTO.SignUpRequestDTO.builder()
                 .email("hoon@test.com")
                 .password("1234")
-                .nickname("hoon")
+                .nickname("훈")
                 .username("훈")
                 .birthday("12345678").build();
 
@@ -59,7 +58,7 @@ class UserControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1L))
-                .andExpect(jsonPath("$.nickname").value("hoon"));
+                .andExpect(jsonPath("$.nickname").value("훈"));
     }
 
     @Test
@@ -69,7 +68,7 @@ class UserControllerTest {
         UserDTO.SignUpRequestDTO req = UserDTO.SignUpRequestDTO.builder()
                 .email("hoon@test.com")
                 .password("1234")
-                .nickname("hoon")
+                .nickname("훈")
                 .username("훈")
                 .birthday("12345678").build();
 
@@ -81,50 +80,50 @@ class UserControllerTest {
                 .andExpect(status().reason("Already Exists"));
     }
 
-//    @Test
-//    @DisplayName("Post login check - /login/check")
-//    void loginCheckTest() throws Exception {
-//        User user1 = User.builder()
-//                .username("hoon")
-//                .password("1234").build();
-//
-//        String content = objectMapper.writeValueAsString(user1);
-//        mockMvc.perform(post("/login/check")
-//                        .content(content)
-//                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-//                        .accept(MediaType.APPLICATION_JSON_VALUE))
-//                .andDo(print())
-//                .andExpect(status().isOk())
-//                .andExpect(content().string("good"));
-//    }
-//
-//    @Test
-//    @DisplayName("Post login error - /login/check")
-//    void loginErrorTest() throws Exception{
-//        User user1 = User.builder()
-//                .username("104")
-//                .password("1234").build();
-//
-//        String cnt = objectMapper.writeValueAsString(user1);
-//        mockMvc.perform(post("/login/check")
-//                        .content(cnt)
-//                        .contentType(MediaType.APPLICATION_JSON_VALUE))
-//                .andDo(print())
-//                .andExpect(status().isNotFound())
-//                .andExpect(status().reason("AppUser Not Found"));
-//
-//        User user2 = User.builder()
-//                .username("hoon")
-//                .password("123").build();
-//
-//        cnt = objectMapper.writeValueAsString(user2);
-//        mockMvc.perform(post("/login/check")
-//                        .content(cnt)
-//                        .contentType(MediaType.APPLICATION_JSON_VALUE))
-//                .andDo(print())
-//                .andExpect(status().isBadRequest())
-//                .andExpect(content().string("bad"));
-//    }
+    @Test
+    @Order(300)
+    @DisplayName("Post signin test - /api/users/signin")
+    void signInTest() throws Exception {
+        UserDTO.SignInRequestDTO req = UserDTO.SignInRequestDTO.builder()
+                .email("hoon@test.com")
+                .password("1234").build();
+
+        String content = objectMapper.writeValueAsString(req);
+        mockMvc.perform(post("/api/users/signin")
+                        .content(content)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().string("훈"));
+    }
+    @Test
+    @Order(400)
+    @DisplayName("Post signin error test - /api/users/signin")
+    void signinErrorTest() throws Exception{
+        UserDTO.SignInRequestDTO req = UserDTO.SignInRequestDTO.builder()
+                .email("test@test.com")
+                .password("1234").build();
+
+        String cnt = objectMapper.writeValueAsString(req);
+        mockMvc.perform(post("/api/users/signin")
+                        .content(cnt)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andDo(print())
+                .andExpect(status().isNotFound())
+                .andExpect(status().reason("AppUser Not Found"));
+
+        UserDTO.SignInRequestDTO user2 = UserDTO.SignInRequestDTO.builder()
+                .email("hoon@test.com")
+                .password("12345").build();
+
+        cnt = objectMapper.writeValueAsString(user2);
+        mockMvc.perform(post("/api/users/signin")
+                        .content(cnt)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("BAD"));
+    }
 //
 //    @Test
 //    @DisplayName("Get FindID - /login/findID")

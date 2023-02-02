@@ -19,16 +19,17 @@ public class UserController {
 
     @PostMapping("/signup")
     private ResponseEntity<UserDTO.SignUpResponseDTO> register(@RequestBody UserDTO.SignUpRequestDTO req){
-        UserDTO.SignUpResponseDTO res = userService.create(req);
+        UserDTO.SignUpResponseDTO res = userService.signUp(req);
         return new ResponseEntity<>(res,HttpStatus.OK);
     }
 
-    @PostMapping("/singin")
-    private ResponseEntity<String> loginCheck(@RequestBody User req) {
-        if (userService.check(req)){
-            return new ResponseEntity<>("good", HttpStatus.OK);
+    @PostMapping("/signin")
+    private ResponseEntity<String> loginCheck(@RequestBody UserDTO.SignInRequestDTO req) {
+        UserDTO.SignInResponseDTO res = userService.signIn(req);
+        if (res.isCheck()){
+            return new ResponseEntity<>(res.getNickname(), HttpStatus.OK);
         } else{
-            return new ResponseEntity<>("bad",HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("BAD",HttpStatus.BAD_REQUEST);
         }
     }
 

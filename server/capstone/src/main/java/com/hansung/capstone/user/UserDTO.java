@@ -37,6 +37,7 @@ public class UserDTO {
     @Builder
     @AllArgsConstructor
     public static class SignInResponseDTO {
+        private boolean check;
         private String nickname;
     }
 
