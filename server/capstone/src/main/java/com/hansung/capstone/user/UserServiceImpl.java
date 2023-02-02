@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -56,13 +58,19 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public String findID(String email){
-        Optional<User> appuser = this.userRepository.findByEmail(email);
-        if (!appuser.isPresent()){
+    public List<String> findEmail(String username, String birthday){
+        List<UserEmailInterface> appuser = this.userRepository.findByUsernameAndBirthday(username, birthday);
+        List<String> res = new ArrayList<>();
+        if (appuser.isEmpty()){
             throw new DataNotFoundException("AppUser Not Found");
         }
         else {
-            return appuser.get().getUsername();
+            for(UserEmailInterface s : appuser){
+            String email = s.getEmail();
+            int atIndex = email.indexOf("@");
+            res.add(email.substring(0,2) + "*".repeat(atIndex-1) + email.substring(atIndex));
+        }
+            return res;
         }
     }
 

@@ -1,5 +1,6 @@
 package com.hansung.capstone.user;
 
+import jakarta.annotation.security.RolesAllowed;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -39,6 +40,14 @@ public class UserDTO {
     public static class SignInResponseDTO {
         private boolean check;
         private String nickname;
+    }
+
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    public static class findIdRequestDTO {
+        private String username;
+        private String birthday;
     }
 
 }

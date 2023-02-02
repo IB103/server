@@ -4,8 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
-import java.util.Optional;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
@@ -36,8 +35,8 @@ public class UserController {
 
 
     @GetMapping("/findID")
-    private ResponseEntity<String> findID(@RequestBody Map<String, String> emailMap){
-        String id = userService.findID(emailMap.get("email"));
-        return new ResponseEntity<>(id, HttpStatus.OK);
+    private ResponseEntity<List> findID(@RequestParam String username, @RequestParam String birthday){
+        List<String> email = this.userService.findEmail(username, birthday);
+        return new ResponseEntity<>(email, HttpStatus.OK);
     }
 }
