@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/email")
 public class EmailController {
 
     private final EmailServiceImpl emailService;
@@ -15,10 +15,20 @@ public class EmailController {
         this.emailService = emailService;
     }
 
-    @PostMapping("/emailConfirm")
-    public String emailConfirm(@RequestParam String email) throws Exception {
-        String ePw = emailService.createKey();
-        emailService.sendSimpleMessage(email,ePw);
-        return ePw;
+
+    @PostMapping("/send")
+    public String emailSend(@RequestParam String email) throws Exception {
+        String code = emailService.createKey();
+        emailService.sendSimpleMessage(email,code);
+        return code;
+    }
+
+    @PostMapping("/confirm")
+    public String emailConfirm(@RequestParam String email, @RequestParam String code) throws Exception {
+        if(emailService.checkCode(email,code)){
+            return "good";
+        } else{
+            return "bad";
+        }
     }
 }

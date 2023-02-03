@@ -7,6 +7,8 @@ import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 @Service
@@ -16,15 +18,14 @@ public class EmailServiceImpl implements EmailService{
     private final JavaMailSender javaMailSender;
 
 
-
     public EmailServiceImpl(JavaMailSender javaMailSender) {
         this.javaMailSender = javaMailSender;
     }
 
-
-    private MimeMessage createMessage(String to, String ePw) throws Exception{
+    Map<String, String> codeMap = new HashMap<>();
+    private MimeMessage createMessage(String to, String code) throws Exception{
         System.out.println("보내는 대상 : " + to);
-        System.out.println("인증 번호 : "+ePw);
+        System.out.println("인증 번호 : "+code);
         System.out.println(System.currentTimeMillis());
         MimeMessage message = javaMailSender.createMimeMessage();
 
@@ -43,7 +44,7 @@ public class EmailServiceImpl implements EmailService{
         msgg+= "<h3 style='color:blue;'>회원가입 인증 코드입니다.</h3>";
         msgg+= "<div style='font-size:130%'>";
         msgg+= "CODE : <strong>";
-        msgg+= ePw+"</strong><div><br/> ";
+        msgg+= code+"</strong><div><br/> ";
         msgg+= "</div>";
         message.setText(msgg, "utf-8", "html");//내용
         message.setFrom(new InternetAddress("ib103Friends@gmail.com","103Friends"));//보내는 사람
@@ -56,20 +57,17 @@ public class EmailServiceImpl implements EmailService{
         Random rnd = new Random(System.currentTimeMillis());
 
         for (int i = 0; i < 8; i++) { // 인증코드 8자리
-            int index = rnd.nextInt(3); // 0~2 까지 랜덤
+            int index = rnd.nextInt(3);
 
             switch (index) {
                 case 0:
                     key.append((char) ((int) (rnd.nextInt(26)) + 97));
-                    //  a~z  (ex. 1+97=98 => (char)98 = 'b')
                     break;
                 case 1:
                     key.append((char) ((int) (rnd.nextInt(26)) + 65));
-                    //  A~Z
                     break;
                 case 2:
                     key.append((rnd.nextInt(10)));
-                    // 0~9
                     break;
             }
         }
@@ -77,14 +75,25 @@ public class EmailServiceImpl implements EmailService{
     }
 
     @Override
-    public String sendSimpleMessage(String to, String ePw) throws Exception {
-        MimeMessage message = createMessage(to,ePw);
+    public String sendSimpleMessage(String to, String code) throws Exception {
+        MimeMessage message = createMessage(to,code);
+        codeMap.put(to,code);
         try{
             javaMailSender.send(message);
         }catch (MailException e){
             e.printStackTrace();
             throw new IllegalArgumentException();
         }
-        return ePw;
+        return code;
+    }
+
+    @Override
+    public Boolean checkCode(String email, String code) throws Exception {
+        if (codeMap.get(email).equals(code)){
+            codeMap.remove(email);
+            return true;
+        } else{
+            return false;
+        }
     }
 }
