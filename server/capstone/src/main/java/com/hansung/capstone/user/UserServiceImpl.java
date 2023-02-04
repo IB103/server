@@ -85,11 +85,16 @@ public class UserServiceImpl implements UserService{
         }
     }
 
-//    public void updatePW(String username, String newpw){
-//        User req = this.userRepository.findByusername(username).get();
-//        req.setPassword(passwordEncoder.encode(newpw));
-//        userRepository.save(req);
-//    }
+    @Override
+    public Optional<User> updatePassword(UserDTO.UpdatePWRequestDTO req) {
+        Optional<User> user = this.userRepository.findByEmail(req.getEmail());
+        user.ifPresent(selectUser -> {
+            selectUser.setPassword(passwordEncoder.encode(req.getPassword()));
+            this.userRepository.save(selectUser);
+        });
+        user = this.userRepository.findByEmail(req.getEmail());
+        return user;
+    }
 
 
 }

@@ -11,8 +11,9 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import javax.print.attribute.standard.Media;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -35,6 +36,7 @@ class UserControllerTest {
 
     @Autowired
     private WebApplicationContext context;
+
     @BeforeEach
     public void setup() {
         mockMvc = MockMvcBuilders.webAppContextSetup(context)
@@ -65,7 +67,7 @@ class UserControllerTest {
     @Test
     @Order(200)
     @DisplayName("Post signup dup test - /api/users/signup")
-    void signupDupTest() throws Exception{
+    void signupDupTest() throws Exception {
         UserDTO.SignUpRequestDTO req = UserDTO.SignUpRequestDTO.builder()
                 .email("hoon@test.com")
                 .password("1234")
@@ -97,10 +99,11 @@ class UserControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().string("훈"));
     }
+
     @Test
     @Order(400)
     @DisplayName("Post signin error test - /api/users/signin")
-    void signinErrorTest() throws Exception{
+    void signinErrorTest() throws Exception {
         UserDTO.SignInRequestDTO req = UserDTO.SignInRequestDTO.builder()
                 .email("test@test.com")
                 .password("1234").build();
@@ -134,16 +137,30 @@ class UserControllerTest {
         String dupNick = "훈";
 
         mockMvc.perform(get("/api/users/duplicate-check")
-                        .param("mailOrNick",dupEmail))
+                        .param("mailOrNick", dupEmail))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string("BAD"));
 
         mockMvc.perform(get("/api/users/duplicate-check")
-                        .param("mailOrNick",dupNick))
+                        .param("mailOrNick", dupNick))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string("BAD"));
+    }
+
+    @Test
+    @Order(600)
+    @DisplayName("Put modify password test - /api/users/updatePW")
+    void ModifyPWTest() throws Exception{
+        UserDTO.UpdatePWRequestDTO req = UserDTO.UpdatePWRequestDTO.builder()
+                .email("hoon@test.com")
+                .password("131313").build();
+        mockMvc.perform(put("/api/users/updatePW")
+                        .content(objectMapper.writeValueAsString(req))
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andDo(print())
+                .andExpect(status().isOk());
     }
 //
 //    @Test

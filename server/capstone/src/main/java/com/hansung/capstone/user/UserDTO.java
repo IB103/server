@@ -4,6 +4,7 @@ import jakarta.annotation.security.RolesAllowed;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 public class UserDTO {
     @Getter
@@ -45,9 +46,19 @@ public class UserDTO {
     @Getter
     @Builder
     @AllArgsConstructor
-    public static class findIdRequestDTO {
+    public static class FindIdRequestDTO {
         private String username;
         private String birthday;
     }
+
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    public static class UpdatePWRequestDTO {
+        private String email;
+        private String password;
+    }
+
+
 
 }

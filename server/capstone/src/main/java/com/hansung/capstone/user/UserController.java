@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/users")
@@ -42,11 +43,15 @@ public class UserController {
         }
     }
 
-
-
     @GetMapping("/findID")
     private ResponseEntity<List> findID(@RequestParam String username, @RequestParam String birthday){
         List<String> email = this.userService.findEmail(username, birthday);
         return new ResponseEntity<>(email, HttpStatus.OK);
+    }
+
+    @PutMapping("/updatePW")
+    public ResponseEntity<Optional<User>> updatePW(@RequestBody UserDTO.UpdatePWRequestDTO req){
+        Optional<User> user = this.userService.updatePassword(req);
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 }
