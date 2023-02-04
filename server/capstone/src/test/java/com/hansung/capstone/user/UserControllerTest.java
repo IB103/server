@@ -11,6 +11,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -120,6 +121,26 @@ class UserControllerTest {
         mockMvc.perform(post("/api/users/signin")
                         .content(cnt)
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("BAD"));
+    }
+
+    @Test
+    @Order(500)
+    @DisplayName("Get email&nick dup test - /api/users/duplicate-check")
+    void emailAndNickTest() throws Exception {
+        String dupEmail = "hoon@test.com";
+        String dupNick = "훈";
+
+        mockMvc.perform(get("/api/users/duplicate-check")
+                        .param("mailOrNick",dupEmail))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("BAD"));
+
+        mockMvc.perform(get("/api/users/duplicate-check")
+                        .param("mailOrNick",dupNick))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string("BAD"));

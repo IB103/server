@@ -9,6 +9,7 @@ public interface UserService {
 
     List<String> findEmail(String username, String birthday);
 
+    Boolean dupCheck(String mailOrNick);
 
 }
 

@@ -74,6 +74,17 @@ public class UserServiceImpl implements UserService{
         }
     }
 
+    @Override
+    public Boolean dupCheck(String req){
+        Optional<User> user1 = this.userRepository.findByEmail(req);
+        Optional<User> user2 = this.userRepository.findByNickname(req);
+        if(user1.isPresent() || user2.isPresent()){
+            return false;
+        } else{
+            return true;
+        }
+    }
+
 //    public void updatePW(String username, String newpw){
 //        User req = this.userRepository.findByusername(username).get();
 //        req.setPassword(passwordEncoder.encode(newpw));

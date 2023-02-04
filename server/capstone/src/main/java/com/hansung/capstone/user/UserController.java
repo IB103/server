@@ -32,6 +32,16 @@ public class UserController {
         }
     }
 
+    @GetMapping("/duplicate-check")
+    private ResponseEntity<String> emailNickcheck(@RequestParam String mailOrNick) {
+        Boolean check = userService.dupCheck(mailOrNick);
+        if (check) {
+            return new ResponseEntity<>("GOOD", HttpStatus.OK);
+        } else{
+            return new ResponseEntity<>("BAD", HttpStatus.BAD_REQUEST);
+        }
+    }
+
 
 
     @GetMapping("/findID")
