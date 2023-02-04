@@ -54,11 +54,17 @@ public class UserDTO {
     @Getter
     @Builder
     @AllArgsConstructor
-    public static class UpdatePWRequestDTO {
+    public static class ModifyPWRequestDTO {
         private String email;
         private String password;
     }
 
-
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    public static class ModifyNickRequestDTO {
+        private String email;
+        private String nickname;
+    }
 
 }

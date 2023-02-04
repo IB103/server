@@ -1,18 +1,23 @@
 package com.hansung.capstone.user;
 
+import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Optional;
 
 public interface UserService {
-    UserDTO.SignUpResponseDTO signUp(UserDTO.SignUpRequestDTO req);
+    UserDTO.SignUpResponseDTO SignUp(UserDTO.SignUpRequestDTO req);
 
-    UserDTO.SignInResponseDTO signIn(UserDTO.SignInRequestDTO req);
+    UserDTO.SignInResponseDTO SignIn(UserDTO.SignInRequestDTO req);
 
     List<String> findEmail(String username, String birthday);
 
-    Boolean dupCheck(String mailOrNick);
+    Boolean EmailDupCheck(String email);
 
-    Optional<User> updatePassword(UserDTO.UpdatePWRequestDTO req);
+    Boolean NicknameDupCheck(String nickname);
+
+    Optional<User> modifyPassword(UserDTO.ModifyPWRequestDTO req);
+
+    Optional<User> modifyNickname(UserDTO.ModifyNickRequestDTO req);
 
 }
 

@@ -18,7 +18,7 @@ public class UserServiceImpl implements UserService{
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public UserDTO.SignUpResponseDTO signUp(UserDTO.SignUpRequestDTO req) {
+    public UserDTO.SignUpResponseDTO SignUp(UserDTO.SignUpRequestDTO req) {
         Optional<User> appuser = this.userRepository.findByEmail(req.getEmail());
         if(!appuser.isPresent()) {
             User newuser = User.builder()
@@ -42,7 +42,7 @@ public class UserServiceImpl implements UserService{
 
 
     @Override
-    public UserDTO.SignInResponseDTO signIn(UserDTO.SignInRequestDTO req){
+    public UserDTO.SignInResponseDTO SignIn(UserDTO.SignInRequestDTO req){
         Optional<User> appuser = this.userRepository.findByEmail(req.getEmail());
         if (!appuser.isPresent()){
             throw new DataNotFoundException("");
@@ -68,17 +68,16 @@ public class UserServiceImpl implements UserService{
             for(UserEmailInterface s : appuser){
             String email = s.getEmail();
             int atIndex = email.indexOf("@");
-            res.add(email.substring(0,2) + "*".repeat(atIndex-1) + email.substring(atIndex));
+            res.add(email.substring(0,2) + "*".repeat(atIndex-2) + email.substring(atIndex));
         }
             return res;
         }
     }
 
     @Override
-    public Boolean dupCheck(String req){
-        Optional<User> user1 = this.userRepository.findByEmail(req);
-        Optional<User> user2 = this.userRepository.findByNickname(req);
-        if(user1.isPresent() || user2.isPresent()){
+    public Boolean EmailDupCheck(String email){
+        Optional<User> user = this.userRepository.findByEmail(email);
+        if(user.isPresent()){
             return false;
         } else{
             return true;
@@ -86,7 +85,17 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public Optional<User> updatePassword(UserDTO.UpdatePWRequestDTO req) {
+    public Boolean NicknameDupCheck(String nickname){
+        Optional<User> user = this.userRepository.findByNickname(nickname);
+        if(user.isPresent()){
+            return false;
+        } else{
+            return true;
+        }
+    }
+
+    @Override
+    public Optional<User> modifyPassword(UserDTO.ModifyPWRequestDTO req) {
         Optional<User> user = this.userRepository.findByEmail(req.getEmail());
         user.ifPresent(selectUser -> {
             selectUser.setPassword(passwordEncoder.encode(req.getPassword()));
@@ -96,5 +105,14 @@ public class UserServiceImpl implements UserService{
         return user;
     }
 
-
+    @Override
+    public Optional<User> modifyNickname(UserDTO.ModifyNickRequestDTO req){
+        Optional<User> user = this.userRepository.findByEmail(req.getEmail());
+        user.ifPresent(selectUser -> {
+            selectUser.setNickname(req.getNickname());
+            this.userRepository.save(selectUser);
+        });
+        user = this.userRepository.findByEmail(req.getEmail());
+        return user;
+    }
 }
