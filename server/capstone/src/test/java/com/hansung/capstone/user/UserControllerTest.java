@@ -156,7 +156,22 @@ class UserControllerTest {
         UserDTO.UpdatePWRequestDTO req = UserDTO.UpdatePWRequestDTO.builder()
                 .email("hoon@test.com")
                 .password("131313").build();
-        mockMvc.perform(put("/api/users/updatePW")
+        // 잘못된 로그인
+        mockMvc.perform(post("/api/users/signin")
+                        .content(objectMapper.writeValueAsString(req))
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+
+        // 비밀번호 변경
+        mockMvc.perform(put("/api/users/modifyPW")
+                        .content(objectMapper.writeValueAsString(req))
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        // 변경된 비밀번호로 로그인
+        mockMvc.perform(post("/api/users/signin")
                         .content(objectMapper.writeValueAsString(req))
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andDo(print())

@@ -49,7 +49,7 @@ public class UserController {
         return new ResponseEntity<>(email, HttpStatus.OK);
     }
 
-    @PutMapping("/updatePW")
+    @PutMapping("/modifyPW")
     public ResponseEntity<Optional<User>> updatePW(@RequestBody UserDTO.UpdatePWRequestDTO req){
         Optional<User> user = this.userService.updatePassword(req);
         return new ResponseEntity<>(user, HttpStatus.OK);
