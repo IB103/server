@@ -14,8 +14,7 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -33,6 +32,9 @@ class PostControllerTest {
 
     @Autowired
     private WebApplicationContext context;
+
+    @Autowired
+    private PostService postService;
 
     @BeforeEach
     public void setup() {
@@ -64,7 +66,7 @@ class PostControllerTest {
 
     @Test
     @Order(200)
-    @DisplayName("Put modify post teset - /api/community/post/modify")
+    @DisplayName("Put modify post test - /api/community/post/modify")
     void modifyPostTest() throws Exception {
         PostDTO.ModifyRequestDTO req = PostDTO.ModifyRequestDTO.builder()
                 .id(1L)
@@ -82,5 +84,22 @@ class PostControllerTest {
 
         String exp = "\"id\":1,\"title\":\"제목 변경 테스트\"";
         assertTrue(result.getResponse().getContentAsString().contains(exp));
+    }
+
+    @Test
+    @Order(300)
+    @DisplayName("Get all post test - /api/community/post/list")
+    void getAllPostTest() throws Exception {
+        for (int i = 1; i <= 300; i++ ) {
+            PostDTO.CreateRequestDTO req = PostDTO.CreateRequestDTO.builder()
+                    .title("test-title - [%03d]".formatted(i))
+                    .content("테스트 콘텐트 입니다").build();
+            this.postService.createPost(req);
+        }
+        MvcResult result = mockMvc.perform(get("/api/community/post/list"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+
     }
 }

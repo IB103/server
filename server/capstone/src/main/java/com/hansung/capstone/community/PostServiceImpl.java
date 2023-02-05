@@ -2,6 +2,9 @@ package com.hansung.capstone.community;
 
 import com.hansung.capstone.user.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -35,5 +38,11 @@ public class PostServiceImpl implements PostService {
         );
         Optional<Post> modifiedPost = this.postRepository.findById(req.getId());
         return modifiedPost;
+    }
+
+    @Override
+    public Page<Post> getAllPost(int page) {
+        Pageable pageable = PageRequest.of(page,10);
+        return this.postRepository.findAll(pageable);
     }
 }

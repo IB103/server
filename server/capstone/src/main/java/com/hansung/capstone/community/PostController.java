@@ -1,7 +1,11 @@
 package com.hansung.capstone.community;
 
+import lombok.Getter;
+import org.springframework.data.domain.Page;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -22,5 +26,11 @@ public class PostController {
     @PutMapping("/modify")
     public Optional<Post> modifyPost(@RequestBody PostDTO.ModifyRequestDTO req){
         return this.postService.modifyPost(req);
+    }
+
+    @GetMapping("/list")
+    public List<Post> getAllPost(Model model, @RequestParam(value = "page",defaultValue = "0") int page) {
+        Page<Post> paging = this.postService.getAllPost(page);
+        return paging.getContent();
     }
 }
