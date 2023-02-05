@@ -29,7 +29,7 @@ public class PostController {
     }
 
     @GetMapping("/list")
-    public List<Post> getAllPost(Model model, @RequestParam(value = "page",defaultValue = "0") int page) {
+    public List<Post> getAllPost(@RequestParam(defaultValue = "0") int page) {
         Page<Post> paging = this.postService.getAllPost(page);
         return paging.getContent();
     }
