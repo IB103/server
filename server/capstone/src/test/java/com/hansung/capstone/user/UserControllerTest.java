@@ -33,11 +33,11 @@ class UserControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private UserRepository userRepository;
+//    @Autowired
+//    private UserService userService;
+//
+//    @Autowired
+//    private UserRepository userRepository;
 
     @Autowired
     private WebApplicationContext context;

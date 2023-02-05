@@ -6,10 +6,7 @@ import lombok.*;
 @Entity
 @Table(name = "AppUser")
 @Getter
-@Setter
-@Builder
 @NoArgsConstructor
-@AllArgsConstructor
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,12 +15,23 @@ public class User {
     @Column(unique = true)
     private String email;
 
+    @Setter
     private String password;
 
     @Column(unique = true)
+    @Setter
     private String nickname;
 
     private String username;
 
     private String birthday;
+
+    @Builder
+    public User(String email, String password, String nickname, String username, String birthday){
+        this.email = email;
+        this.password = password;
+        this.username = username;
+        this.nickname = nickname;
+        this.birthday = birthday;
+    }
 }
