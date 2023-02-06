@@ -28,11 +28,10 @@ public class Post {
     private List<Comment> commentList;
 
     @Builder
-    public Post(Post post ,String title, String content, LocalDateTime createdDate, LocalDateTime modifiedDate){
+    public Post(Post post ,String title, String content, LocalDateTime createdDate){
         this.title = title;
         this.content = content;
         this.createdDate = createdDate;
-        this.modifiedDate = modifiedDate;
     }
 
     public void modify(String title, String content, LocalDateTime modifiedDate){
