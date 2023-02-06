@@ -1,11 +1,14 @@
 package com.hansung.capstone.community;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
-@Data
+@Getter
 @Entity
 public class Comment {
     @Id
@@ -20,5 +23,8 @@ public class Comment {
     @ManyToOne
     private Post post;
 
+//    @Builder
+//    public Comment(String content, LocalDateTime createDate)
+//    }
 
 }

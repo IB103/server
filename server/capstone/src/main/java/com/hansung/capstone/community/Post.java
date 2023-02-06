@@ -15,26 +15,29 @@ public class Post {
     private Long id;
 
     @Column(length = 40)
-    @Setter
     private String title;
 
     @Column(columnDefinition = "TEXT")
-    @Setter
     private String content;
 
     private LocalDateTime createdDate;
 
-    @Setter
     private LocalDateTime modifiedDate;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
     private List<Comment> commentList;
 
     @Builder
-    public Post(String title, String content, LocalDateTime createdDate, LocalDateTime modifiedDate){
+    public Post(Post post ,String title, String content, LocalDateTime createdDate, LocalDateTime modifiedDate){
         this.title = title;
         this.content = content;
         this.createdDate = createdDate;
+        this.modifiedDate = modifiedDate;
+    }
+
+    public void modify(String title, String content, LocalDateTime modifiedDate){
+        this.title = title;
+        this.content = content;
         this.modifiedDate = modifiedDate;
     }
 

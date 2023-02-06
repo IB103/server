@@ -2,6 +2,7 @@ package com.hansung.capstone.user;
 
 import com.hansung.capstone.DataExistException;
 import com.hansung.capstone.DataNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -94,25 +95,25 @@ public class UserServiceImpl implements UserService{
         }
     }
 
+    @Transactional
     @Override
     public Optional<User> modifyPassword(UserDTO.ModifyPWRequestDTO req) {
         Optional<User> user = this.userRepository.findByEmail(req.getEmail());
-        user.ifPresent(selectUser -> {
-            selectUser.setPassword(passwordEncoder.encode(req.getPassword()));
-            this.userRepository.save(selectUser);
+        user.ifPresent(s -> {
+            user.get().modifyPW(passwordEncoder.encode(req.getPassword()));
         });
-        user = this.userRepository.findByEmail(req.getEmail());
-        return user;
+        Optional<User> modifiedUser = this.userRepository.findByEmail(req.getEmail());
+        return modifiedUser;
     }
 
+    @Transactional
     @Override
     public Optional<User> modifyNickname(UserDTO.ModifyNickRequestDTO req){
         Optional<User> user = this.userRepository.findByEmail(req.getEmail());
-        user.ifPresent(selectUser -> {
-            selectUser.setNickname(req.getNickname());
-            this.userRepository.save(selectUser);
+        user.ifPresent(s-> {
+            user.get().modifyNick(req.getNickname());
         });
-        user = this.userRepository.findByEmail(req.getEmail());
-        return user;
+        Optional<User> modifiedUser = this.userRepository.findByEmail(req.getEmail());
+        return modifiedUser;
     }
 }

@@ -15,11 +15,9 @@ public class User {
     @Column(unique = true)
     private String email;
 
-    @Setter
     private String password;
 
     @Column(unique = true)
-    @Setter
     private String nickname;
 
     private String username;
@@ -34,4 +32,13 @@ public class User {
         this.nickname = nickname;
         this.birthday = birthday;
     }
+
+    public void modifyPW(String password){
+        this.password = password;
+    }
+
+    public void modifyNick(String nickname){
+        this.nickname = nickname;
+    }
+
 }
