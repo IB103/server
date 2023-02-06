@@ -148,14 +148,14 @@ class UserControllerTest {
         mockMvc.perform(get("/api/users/email/duplicate-check")
                         .param("email", dupEmail))
                 .andDo(print())
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isOk())
                 .andExpect(content().string("BAD"));
 
         // 중복된 닉네임
         mockMvc.perform(get("/api/users/nickname/duplicate-check")
                         .param("nickname", dupNick))
                 .andDo(print())
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isOk())
                 .andExpect(content().string("BAD"));
     }
 

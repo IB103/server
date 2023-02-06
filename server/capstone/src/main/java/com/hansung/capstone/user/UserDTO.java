@@ -46,6 +46,12 @@ public class UserDTO {
     @Getter
     @Builder
     @AllArgsConstructor
+    public static class DuplicateEmailCheckResponseDTO{
+        private String email;
+    }
+    @Getter
+    @Builder
+    @AllArgsConstructor
     public static class FindIdRequestDTO {
         private String username;
         private String birthday;

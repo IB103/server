@@ -45,16 +45,18 @@ public class UserServiceImpl implements UserService{
     @Override
     public UserDTO.SignInResponseDTO SignIn(UserDTO.SignInRequestDTO req){
         Optional<User> appuser = this.userRepository.findByEmail(req.getEmail());
-        if (!appuser.isPresent()){
+        if (appuser.isPresent()){
+            if (req.getEmail().equals(appuser.get().getEmail()) && passwordEncoder.matches(req.getPassword(), appuser.get().getPassword())){
+                return UserDTO.SignInResponseDTO.builder()
+                        .nickname(appuser.get().getNickname())
+                        .check(Boolean.TRUE)
+                        .build();
+            } else{
+                return UserDTO.SignInResponseDTO.builder()
+                        .check(Boolean.FALSE).build();
+            }
+        }else {
             throw new DataNotFoundException("");
-        }
-        if (req.getEmail().equals(appuser.get().getEmail()) && passwordEncoder.matches(req.getPassword(), appuser.get().getPassword())){
-            return UserDTO.SignInResponseDTO.builder()
-                    .nickname(appuser.get().getNickname())
-                    .check(Boolean.TRUE).build();
-        } else{
-            return UserDTO.SignInResponseDTO.builder()
-                    .check(Boolean.FALSE).build();
         }
     }
 
