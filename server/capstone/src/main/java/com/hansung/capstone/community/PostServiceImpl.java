@@ -50,4 +50,9 @@ public class PostServiceImpl implements PostService {
         Pageable pageable = PageRequest.of(page,10, Sort.by(sorts));
         return this.postRepository.findAll(pageable);
     }
+
+    @Override
+    public Optional<Post> getDetailPost(Long id) {
+        return this.postRepository.findById(id);
+    }
 }

@@ -102,4 +102,19 @@ class PostControllerTest {
                 .andReturn();
 
     }
+
+    @Test
+    @Order(400)
+    @DisplayName("Get detail post test - /api/community/post/detail")
+    void getDetailPostTest() throws Exception {
+        MvcResult result = mockMvc.perform(get("/api/community/post/detail")
+                        .param("id", "1"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String exp = "\"id\":1,\"title\":\"제목 변경 테스트\"";
+        assertTrue(result.getResponse().getContentAsString().contains(exp));
+
+    }
 }

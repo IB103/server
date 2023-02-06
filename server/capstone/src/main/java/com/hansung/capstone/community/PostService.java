@@ -10,4 +10,6 @@ public interface PostService {
     Optional<Post> modifyPost(PostDTO.ModifyRequestDTO req);
 
     Page<Post> getAllPost(int page);
+
+    Optional<Post> getDetailPost(Long id);
 }

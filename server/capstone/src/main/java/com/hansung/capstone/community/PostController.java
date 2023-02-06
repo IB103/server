@@ -33,4 +33,9 @@ public class PostController {
         Page<Post> paging = this.postService.getAllPost(page);
         return paging.getContent();
     }
+
+    @GetMapping("/detail")
+    public Optional<Post> getDetailPost(@RequestParam Long id){
+        return this.postService.getDetailPost(id);
+    }
 }

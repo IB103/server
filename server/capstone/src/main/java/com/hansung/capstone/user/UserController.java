@@ -19,12 +19,19 @@ public class UserController {
     @PostMapping("/signup")
     private ResponseEntity<UserDTO.SignUpResponseDTO> SignUp(@RequestBody UserDTO.SignUpRequestDTO req){
         UserDTO.SignUpResponseDTO res = userService.SignUp(req);
+        System.out.println(req.getEmail());
+        System.out.println(req.getUsername());
+        System.out.println(req.getPassword());
+        System.out.println(req.getNickname());
+        System.out.println(req.getBirthday());
         return new ResponseEntity<>(res,HttpStatus.OK);
     }
 
     @PostMapping("/signin")
     private ResponseEntity<String> SignIn(@RequestBody UserDTO.SignInRequestDTO req) {
         UserDTO.SignInResponseDTO res = userService.SignIn(req);
+        System.out.println(req.getEmail());
+        System.out.println(req.getPassword());
         if (res.isCheck()){
             return new ResponseEntity<>(res.getNickname(), HttpStatus.OK);
         } else{
