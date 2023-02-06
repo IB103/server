@@ -1,15 +1,14 @@
 package com.hansung.capstone.community;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Getter
 @Entity
+@NoArgsConstructor
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,11 +19,17 @@ public class Comment {
 
     private LocalDateTime createDate;
 
+    private LocalDateTime modifiedDate;
+
     @ManyToOne
+    @JsonIgnore
     private Post post;
 
-//    @Builder
-//    public Comment(String content, LocalDateTime createDate)
-//    }
+    @Builder
+    public Comment(String content, LocalDateTime createDate, Post post){
+        this.content = content;
+        this.createDate = createDate;
+        this.post = post;
+    }
 
 }
