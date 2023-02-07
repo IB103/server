@@ -38,20 +38,24 @@ public class UserController {
     }
 
     @GetMapping("/email/duplicate-check")
-    public ResponseEntity<SingleResponse> EmailDuplicateCheck(@RequestParam String email) {
+    public ResponseEntity<SingleResponse<UserDTO.DuplicateEmailCheckResponseDTO>> EmailDuplicateCheck(@RequestParam String email) {
         Boolean isCheck = userService.EmailDupCheck(email);
         if (isCheck) {
-            return new ResponseEntity<>(this.responseService.getSuccessSingleResponse(email), HttpStatus.OK);
+            UserDTO.DuplicateEmailCheckResponseDTO res = UserDTO.DuplicateEmailCheckResponseDTO.builder()
+                    .email(email).build();
+            return new ResponseEntity<>(this.responseService.getSuccessSingleResponse(res), HttpStatus.OK);
         } else{
             return new ResponseEntity<>(this.responseService.getFailureSingleResponse(), HttpStatus.OK);
         }
     }
 
     @GetMapping("/nickname/duplicate-check")
-    public ResponseEntity<SingleResponse<String>> NicknameDuplicateCheck(@RequestParam String nickname){
+    public ResponseEntity<SingleResponse<UserDTO.DuplicateNicknameCheckResponseDTO>> NicknameDuplicateCheck(@RequestParam String nickname){
         Boolean isCheck = this.userService.NicknameDupCheck(nickname);
         if (isCheck){
-            return new ResponseEntity<>(this.responseService.getSuccessSingleResponse(nickname), HttpStatus.OK);
+            UserDTO.DuplicateNicknameCheckResponseDTO res = UserDTO.DuplicateNicknameCheckResponseDTO.builder()
+                    .nickname(nickname).build();
+            return new ResponseEntity<>(this.responseService.getSuccessSingleResponse(res), HttpStatus.OK);
         } else
             return new ResponseEntity<>(this.responseService.getFailureSingleResponse(), HttpStatus.OK);
     }

@@ -49,6 +49,13 @@ public class UserDTO {
     public static class DuplicateEmailCheckResponseDTO{
         private String email;
     }
+
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    public static class DuplicateNicknameCheckResponseDTO{
+        private String nickname;
+    }
     @Getter
     @Builder
     @AllArgsConstructor
