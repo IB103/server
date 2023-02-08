@@ -6,6 +6,8 @@ import com.hansung.capstone.response.SingleResponse;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,23 +25,23 @@ public class PostController {
 
 
     @PostMapping("/create")
-    public SingleResponse<Post> createPost(@RequestBody PostDTO.CreateRequestDTO req){
-        return this.responseService.getSuccessSingleResponse(this.postService.createPost(req));
+    public ResponseEntity<SingleResponse<Post>> createPost(@RequestBody PostDTO.CreateRequestDTO req){
+        return new ResponseEntity<>(this.responseService.getSuccessSingleResponse(this.postService.createPost(req)), HttpStatus.CREATED);
     }
 
     @PutMapping("/modify")
-    public SingleResponse<Optional<Post>> modifyPost(@RequestBody PostDTO.ModifyRequestDTO req){
-        return this.responseService.getSuccessSingleResponse(this.postService.modifyPost(req));
+    public ResponseEntity<SingleResponse<Optional<Post>>> modifyPost(@RequestBody PostDTO.ModifyRequestDTO req){
+        return new ResponseEntity<>(this.responseService.getSuccessSingleResponse(this.postService.modifyPost(req)), HttpStatus.OK);
     }
 
     @GetMapping("/list")
-    public ListResponse<Post> getAllPost(@RequestParam(defaultValue = "0") int page) {
+    public ResponseEntity<ListResponse<Post>> getAllPost(@RequestParam(defaultValue = "0") int page) {
         Page<Post> paging = this.postService.getAllPost(page);
-        return this.responseService.getListResponse(paging.getContent());
+        return new ResponseEntity<>(this.responseService.getListResponse(paging.getContent()), HttpStatus.OK);
     }
 
     @GetMapping("/detail")
-    public SingleResponse<Optional<Post>> getDetailPost(@RequestParam Long id){
-        return this.responseService.getSuccessSingleResponse(this.postService.getDetailPost(id));
+    public ResponseEntity<SingleResponse<Optional<Post>>> getDetailPost(@RequestParam Long id){
+        return new ResponseEntity<>(this.responseService.getSuccessSingleResponse(this.postService.getDetailPost(id)),HttpStatus.OK);
     }
 }

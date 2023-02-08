@@ -24,7 +24,7 @@ public class UserController {
     @PostMapping("/signup")
     private ResponseEntity<SingleResponse<UserDTO.SignUpResponseDTO>> SignUp(@RequestBody UserDTO.SignUpRequestDTO req){
         SingleResponse<UserDTO.SignUpResponseDTO> res = this.responseService.getSuccessSingleResponse(this.userService.SignUp(req));
-        return new ResponseEntity<>(res,HttpStatus.OK);
+        return new ResponseEntity<>(res,HttpStatus.CREATED);
     }
 
     @PostMapping("/signin")
