@@ -16,6 +16,7 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -52,16 +53,17 @@ class PostControllerTest {
                 .content("테스트 콘텐트 입니다").build();
 
         String cnt = objectMapper.writeValueAsString(req);
-
-        MvcResult result = mockMvc.perform(post("/api/community/post/create")
-                .content(cnt)
-                .contentType(MediaType.APPLICATION_JSON_VALUE))
+        mockMvc.perform(post("/api/community/post/create")
+                        .content(cnt)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andReturn();
-
-        String exp = "\"id\":1,\"title\":\"test-title\"";
-        assertTrue(result.getResponse().getContentAsString().contains(exp));
+                .andExpect(jsonPath("$.code").value(100))
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.message").value("SUCCESS"))
+                .andExpect(jsonPath("$.data.id").value(1))
+                .andExpect(jsonPath("$.data.title").value("test-title"))
+                .andExpect(jsonPath("$.data.content").value("테스트 콘텐트 입니다"));
     }
 
     @Test
@@ -75,15 +77,18 @@ class PostControllerTest {
 
         String cnt = objectMapper.writeValueAsString(req);
 
-        MvcResult result = mockMvc.perform(put("/api/community/post/modify")
+        mockMvc.perform(put("/api/community/post/modify")
                 .content(cnt)
                 .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andReturn();
+                .andExpect(jsonPath("$.code").value(100))
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.message").value("SUCCESS"))
+                .andExpect(jsonPath("$.data.id").value(1))
+                .andExpect(jsonPath("$.data.title").value("제목 변경 테스트"))
+                .andExpect(jsonPath("$.data.content").value("내용 변경 테스트"));
 
-        String exp = "\"id\":1,\"title\":\"제목 변경 테스트\"";
-        assertTrue(result.getResponse().getContentAsString().contains(exp));
     }
 
     @Test
@@ -96,10 +101,10 @@ class PostControllerTest {
                     .content("테스트 콘텐트 입니다").build();
             this.postService.createPost(req);
         }
-        MvcResult result = mockMvc.perform(get("/api/community/post/list"))
+        mockMvc.perform(get("/api/community/post/list"))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andReturn();
+                .andExpect(jsonPath("$.data.[0].id").value(301));
 
     }
 
@@ -107,14 +112,17 @@ class PostControllerTest {
     @Order(400)
     @DisplayName("Get detail post test - /api/community/post/detail")
     void getDetailPostTest() throws Exception {
-        MvcResult result = mockMvc.perform(get("/api/community/post/detail")
+        mockMvc.perform(get("/api/community/post/detail")
                         .param("id", "1"))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andReturn();
+                .andExpect(jsonPath("$.code").value(100))
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.message").value("SUCCESS"))
+                .andExpect(jsonPath("$.data.id").value(1))
+                .andExpect(jsonPath("$.data.title").value("제목 변경 테스트"))
+                .andExpect(jsonPath("$.data.content").value("내용 변경 테스트"));
 
-        String exp = "\"id\":1,\"title\":\"제목 변경 테스트\"";
-        assertTrue(result.getResponse().getContentAsString().contains(exp));
 
     }
 }
