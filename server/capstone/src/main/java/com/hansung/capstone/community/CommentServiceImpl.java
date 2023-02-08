@@ -21,4 +21,13 @@ public class CommentServiceImpl implements CommentService {
                 .post(post).build();
         this.commentRepository.save(comment);
     }
+
+    @Override
+    public void modifyComment(Long id, String content) {
+        Optional<Comment> comment = this.commentRepository.findById(id);
+        comment.ifPresent(s->{
+            comment.get().modify(content, LocalDateTime.now());
+                }
+        );
+    }
 }

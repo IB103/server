@@ -32,4 +32,9 @@ public class Comment {
         this.post = post;
     }
 
+    public void modify(String content, LocalDateTime modifiedDate){
+        this.content = content;
+        this.modifiedDate = modifiedDate;
+    }
+
 }

@@ -57,7 +57,7 @@ class PostControllerTest {
                         .content(cnt)
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andDo(print())
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.code").value(100))
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.message").value("SUCCESS"))

@@ -1,22 +1,20 @@
 package com.hansung.capstone.community;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.mail.internet.MimeMessage;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -50,35 +48,47 @@ public class CommentControllerTest {
                 .content("테스트 콘텐트 입니다").build();
 
         String cnt = objectMapper.writeValueAsString(req);
-
-        MvcResult result = mockMvc.perform(post("/api/community/post/create")
+        mockMvc.perform(post("/api/community/post/create")
                         .content(cnt)
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andDo(print())
-                .andExpect(status().isOk())
-                .andReturn();
-
-        String exp = "\"id\":1,\"title\":\"test-title\"";
-        assertTrue(result.getResponse().getContentAsString().contains(exp));
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.code").value(100))
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.message").value("SUCCESS"))
+                .andExpect(jsonPath("$.data.id").value(1))
+                .andExpect(jsonPath("$.data.title").value("test-title"))
+                .andExpect(jsonPath("$.data.content").value("테스트 콘텐트 입니다"));
 
         CommentDTO.CreateRequestDTO comment = CommentDTO.CreateRequestDTO.builder()
                 .postId(1L)
                 .content("1번 댓글")
                 .build();
 
-        MvcResult result1 = mockMvc.perform(post("/api/community/comment/create")
+        mockMvc.perform(post("/api/community/comment/create")
                 .content(objectMapper.writeValueAsBytes(comment))
                 .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andDo(print())
-                .andExpect(status().isOk())
-                .andReturn();
+                .andExpect(status().isCreated());
 
-        MvcResult result2 = mockMvc.perform(get("/api/community/post/detail")
-                        .param("id", "1"))
+
+    }
+
+    @Test
+    @Order(200)
+    @DisplayName("Post modify comment test - /api/community/comment/modify")
+    void modifyCommentTest() throws Exception {
+        CommentDTO.ModifyRequestDTO req = CommentDTO.ModifyRequestDTO.builder()
+                .postId(1L)
+                .id(1L)
+                .content("수정테스트").build();
+
+        mockMvc.perform(put("/api/community/comment/modify")
+                        .content(objectMapper.writeValueAsString(req))
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andReturn();
-
+                .andExpect(jsonPath("$.data.commentList[0].content").value("수정테스트"));
     }
 
 }

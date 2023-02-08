@@ -13,4 +13,13 @@ public class CommentDTO {
         Long postId;
         String content;
     }
+
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    public static class ModifyRequestDTO {
+        Long postId;
+        Long id;
+        String content;
+    }
 }
