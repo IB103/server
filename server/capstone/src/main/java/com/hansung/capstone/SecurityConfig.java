@@ -22,6 +22,7 @@ public class SecurityConfig {
                         authorize ->
                                 authorize
                                         .requestMatchers("/login/ho").fullyAuthenticated()
+//                                        .requestMatchers("/v3/api-doxs/**","/swagger-ui/**").permitAll()
                                         .anyRequest().permitAll()
                 )
                 .csrf().disable()
