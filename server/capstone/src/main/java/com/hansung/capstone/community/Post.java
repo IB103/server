@@ -1,5 +1,7 @@
 package com.hansung.capstone.community;
 
+import com.hansung.capstone.user.User;
+import com.hansung.capstone.user.UserDTO;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -24,14 +26,18 @@ public class Post {
 
     private LocalDateTime modifiedDate;
 
+    @ManyToOne
+    private User author;
+
     @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
     private List<Comment> commentList;
 
     @Builder
-    public Post(Post post ,String title, String content, LocalDateTime createdDate){
+    public Post(Post post ,String title, String content, LocalDateTime createdDate, User author){
         this.title = title;
         this.content = content;
         this.createdDate = createdDate;
+        this.author = author;
     }
 
     public void modify(String title, String content, LocalDateTime modifiedDate){

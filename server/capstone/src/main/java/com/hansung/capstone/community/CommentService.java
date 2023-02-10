@@ -4,7 +4,7 @@ import java.util.Optional;
 
 public interface CommentService {
 
-    void createComment(Post post, String content);
+    PostDTO.PostResponseDTO createComment(CommentDTO.CreateRequestDTO req);
 
     void modifyComment(Long id, String content);
 }

@@ -41,6 +41,7 @@ public class UserDTO {
     public static class SignInResponseDTO {
         private boolean check;
         private String nickname;
+        private String token;
     }
 
     @Getter
@@ -77,6 +78,22 @@ public class UserDTO {
     @AllArgsConstructor
     public static class ModifyNickRequestDTO {
         private String email;
+        private String nickname;
+    }
+
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    public static class PostUserResponseDTO{
+        private Long id;
+        private String nickname;
+    }
+
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    public static class CommentUserResponseDTO{
+        private Long id;
         private String nickname;
     }
 

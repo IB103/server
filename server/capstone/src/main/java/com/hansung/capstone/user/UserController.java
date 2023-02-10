@@ -21,6 +21,8 @@ public class UserController {
 
     private final ResponseService responseService;
 
+    private final UserDetailServiceImpl userDetailService;
+
     @PostMapping("/signup")
     private ResponseEntity<SingleResponse<UserDTO.SignUpResponseDTO>> SignUp(@RequestBody UserDTO.SignUpRequestDTO req){
         SingleResponse<UserDTO.SignUpResponseDTO> res = this.responseService.getSuccessSingleResponse(this.userService.SignUp(req));
@@ -47,6 +49,8 @@ public class UserController {
         } else{
             return new ResponseEntity<>(this.responseService.getFailureSingleResponse(), HttpStatus.OK);
         }
+
+
     }
 
     @GetMapping("/nickname/duplicate-check")

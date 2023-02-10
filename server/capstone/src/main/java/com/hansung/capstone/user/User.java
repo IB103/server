@@ -24,6 +24,9 @@ public class User {
 
     private String birthday;
 
+    @Enumerated(EnumType.STRING)
+    private UserRole role;
+
     @Builder
     public User(String email, String password, String nickname, String username, String birthday){
         this.email = email;
@@ -31,6 +34,7 @@ public class User {
         this.username = username;
         this.nickname = nickname;
         this.birthday = birthday;
+        this.role = UserRole.USER;
     }
 
     public void modifyPW(String password){

@@ -1,6 +1,7 @@
 package com.hansung.capstone.community;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.hansung.capstone.user.User;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -25,12 +26,17 @@ public class Comment {
     @JsonIgnore
     private Post post;
 
+    @ManyToOne
+    private User author;
+
     @Builder
-    public Comment(String content, LocalDateTime createDate, Post post){
+    public Comment(String content, LocalDateTime createDate, Post post, User author){
         this.content = content;
         this.createDate = createDate;
         this.post = post;
+        this.author = author;
     }
+
 
     public void modify(String content, LocalDateTime modifiedDate){
         this.content = content;

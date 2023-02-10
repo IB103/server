@@ -21,14 +21,12 @@ public class CommentController {
     private final ResponseService responseService;
 
     @PostMapping("/create")
-    private ResponseEntity<SingleResponse<Optional<Post>>> createComment(@RequestBody CommentDTO.CreateRequestDTO req){
-        Post post = this.postService.getDetailPost(req.getPostId()).get();
-        this.commentService.createComment(post, req.getContent());
-        return new ResponseEntity<>(this.responseService.getSuccessSingleResponse(this.postService.getDetailPost(req.getPostId())), HttpStatus.CREATED);
+    private ResponseEntity<SingleResponse<PostDTO.PostResponseDTO>> createComment(@RequestBody CommentDTO.CreateRequestDTO req){
+        return new ResponseEntity<>(this.responseService.getSuccessSingleResponse(this.commentService.createComment(req)), HttpStatus.CREATED);
     }
 
     @PutMapping("/modify")
-    public ResponseEntity<SingleResponse<Optional<Post>>> modifyComment(@RequestBody CommentDTO.ModifyRequestDTO req){
+    public ResponseEntity<SingleResponse<PostDTO.PostResponseDTO>> modifyComment(@RequestBody CommentDTO.ModifyRequestDTO req){
         this.commentService.modifyComment(req.getId(), req.getContent());
         return new ResponseEntity<>(this.responseService.getSuccessSingleResponse(this.postService.getDetailPost(req.getPostId())), HttpStatus.OK);
     }
