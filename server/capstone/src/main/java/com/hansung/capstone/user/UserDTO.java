@@ -41,7 +41,7 @@ public class UserDTO {
     public static class SignInResponseDTO {
         private boolean check;
         private String nickname;
-        private String token;
+        private TokenInfo tokenInfo;
     }
 
     @Getter

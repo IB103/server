@@ -4,6 +4,9 @@ import com.hansung.capstone.DataExistException;
 import com.hansung.capstone.DataNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +20,10 @@ public class UserServiceImpl implements UserService{
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+
+    private final JwtTokenProvider jwtTokenProvider;
+
+    private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
     @Override
     public UserDTO.SignUpResponseDTO SignUp(UserDTO.SignUpRequestDTO req) {
@@ -41,24 +48,22 @@ public class UserServiceImpl implements UserService{
         }
     }
 
-
-    @Override
-    public UserDTO.SignInResponseDTO SignIn(UserDTO.SignInRequestDTO req){
-        Optional<User> appuser = this.userRepository.findByEmail(req.getEmail());
-        if (appuser.isPresent()){
-            if (req.getEmail().equals(appuser.get().getEmail()) && passwordEncoder.matches(req.getPassword(), appuser.get().getPassword())){
-                return UserDTO.SignInResponseDTO.builder()
-                        .nickname(appuser.get().getNickname())
-                        .check(Boolean.TRUE)
-                        .build();
-            } else{
-                return UserDTO.SignInResponseDTO.builder()
-                        .check(Boolean.FALSE).build();
-            }
-        }else {
-            throw new DataNotFoundException("");
-        }
-    }
+//
+//    @Override
+//    public TokenInfo SignIn(UserDTO.SignInRequestDTO req){
+//        // 1. Login ID/PW 를 기반으로 Authentication 객체 생성
+//        // 이때 authentication 는 인증 여부를 확인하는 authenticated 값이 false
+//        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(req.getEmail(), req.getPassword());
+//
+//        // 2. 실제 검증 (사용자 비밀번호 체크)이 이루어지는 부분
+//        // authenticate 매서드가 실행될 때 CustomUserDetailsService 에서 만든 loadUserByUsername 메서드가 실행
+//        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+//
+//        // 3. 인증 정보를 기반으로 JWT 토큰 생성
+//        TokenInfo tokenInfo = jwtTokenProvider.generateToken(authentication);
+//
+//        return tokenInfo;
+//    }
 
     @Override
     public List<String> findEmail(String username, String birthday){

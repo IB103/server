@@ -6,7 +6,7 @@ import java.util.Optional;
 public interface UserService {
     UserDTO.SignUpResponseDTO SignUp(UserDTO.SignUpRequestDTO req);
 
-    UserDTO.SignInResponseDTO SignIn(UserDTO.SignInRequestDTO req);
+//    TokenInfo SignIn(UserDTO.SignInRequestDTO req);
 
     List<String> findEmail(String username, String birthday);
 

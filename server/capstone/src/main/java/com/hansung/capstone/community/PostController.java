@@ -3,17 +3,14 @@ package com.hansung.capstone.community;
 import com.hansung.capstone.response.ListResponse;
 import com.hansung.capstone.response.ResponseService;
 import com.hansung.capstone.response.SingleResponse;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/community/post")
