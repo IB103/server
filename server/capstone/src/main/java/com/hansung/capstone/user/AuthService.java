@@ -33,7 +33,7 @@ public class AuthService {
                 .authenticate(authenticationToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        return generateToken(SERVER, req.getEmail(), getAuthorities(authentication));
+        return createToken(SERVER, req.getEmail(), getAuthorities(authentication));
     }
 
     // AT가 만료일자만 초과한 유효한 토큰인지 검사
@@ -42,38 +42,38 @@ public class AuthService {
         return jwtTokenProvider.validateAccessTokenOnlyExpired(requestAccessToken); // true = 재발급
     }
 
-//    // 토큰 재발급: validate 메서드가 true 반환할 때만 사용 -> AT, RT 재발급
-////    @Transactional
-////    public TokenInfo reissue(String requestAccessTokenInHeader, String requestRefreshToken) {
-////        String requestAccessToken = resolveToken(requestAccessTokenInHeader);
-////
-////        Authentication authentication = jwtTokenProvider.getAuthentication(requestAccessToken);
-////        String principal = getPrincipal(requestAccessToken);
-////
-////        String refreshTokenInRedis = redisService.getValues("RT(" + SERVER + "):" + principal);
-////        if (refreshTokenInRedis == null) { // Redis에 저장되어 있는 RT가 없을 경우
-////            return null; // -> 재로그인 요청
-////        }
-////
-////        // 요청된 RT의 유효성 검사 & Redis에 저장되어 있는 RT와 같은지 비교
-////        if(!jwtTokenProvider.validateRefreshToken(requestRefreshToken)) {
-//////            redisService.deleteValues("RT(" + SERVER + "):" + principal); // 탈취 가능성 -> 삭제
-////            return null; // -> 재로그인 요청
-////        }
-//
-//        SecurityContextHolder.getContext().setAuthentication(authentication);
-//        String authorities = getAuthorities(authentication);
-//
-//        // 토큰 재발급 및 Redis 업데이트
-////        redisService.deleteValues("RT(" + SERVER + "):" + principal); // 기존 RT 삭제
-//        TokenInfo tokenInfo = jwtTokenProvider.createToken(principal, authorities);
-////        saveRefreshToken(SERVER, principal, tokenDto.getRefreshToken());
-//        return tokenDto;
-//    }
+//     토큰 재발급: validate 메서드가 true 반환할 때만 사용 -> AT, RT 재발급
+    @Transactional
+    public TokenInfo reissue(String requestAccessTokenInHeader, String requestRefreshToken) {
+        String requestAccessToken = resolveToken(requestAccessTokenInHeader);
+
+        Authentication authentication = jwtTokenProvider.getAuthentication(requestAccessToken);
+        String principal = getPrincipal(requestAccessToken);
+
+//        String refreshTokenInRedis = redisService.getValues("RT(" + SERVER + "):" + principal);
+//        if (refreshTokenInRedis == null) { // Redis에 저장되어 있는 RT가 없을 경우
+//            return null; // -> 재로그인 요청
+//        }
+
+//        // 요청된 RT의 유효성 검사 & Redis에 저장되어 있는 RT와 같은지 비교
+//        if(!jwtTokenProvider.validateRefreshToken(requestRefreshToken)) {
+////            redisService.deleteValues("RT(" + SERVER + "):" + principal); // 탈취 가능성 -> 삭제
+//            return null; // -> 재로그인 요청
+//        }
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        String authorities = getAuthorities(authentication);
+
+        // 토큰 재발급 및 Redis 업데이트
+//        redisService.deleteValues("RT(" + SERVER + "):" + principal); // 기존 RT 삭제
+        TokenInfo tokenInfo = jwtTokenProvider.createToken(principal, authorities);
+//        saveRefreshToken(SERVER, principal, tokenDto.getRefreshToken());
+        return tokenInfo;
+    }
 
     // 토큰 발급
     @Transactional
-    public TokenInfo generateToken(String provider, String email, String authorities) {
+    public TokenInfo createToken(String provider, String email, String authorities) {
         // RT가 이미 있을 경우
 //        if(redisService.getValues("RT(" + provider + "):" + email) != null) {
 //            redisService.deleteValues("RT(" + provider + "):" + email); // 삭제

@@ -2,6 +2,8 @@ package com.hansung.capstone;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
+import com.hansung.capstone.user.JwtAccessDeniedHandler;
+import com.hansung.capstone.user.JwtAuthenticationEntryPoint;
 import com.hansung.capstone.user.JwtAuthenticationFilter;
 import com.hansung.capstone.user.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +25,10 @@ import org.springframework.security.web.header.writers.frameoptions.XFrameOption
 public class SecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
+
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+
+    private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
     @Bean
     protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -35,6 +41,10 @@ public class SecurityConfig {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .csrf().disable()
+                .exceptionHandling()
+                .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                .accessDeniedHandler(jwtAccessDeniedHandler)
+                .and()
                 .headers()
                 .addHeaderWriter(new XFrameOptionsHeaderWriter(
                         XFrameOptionsHeaderWriter.XFrameOptionsMode.SAMEORIGIN))

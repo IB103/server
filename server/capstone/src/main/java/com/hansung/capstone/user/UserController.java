@@ -33,8 +33,13 @@ public class UserController {
 
     @PostMapping("/signin")
     private ResponseEntity<SingleResponse<TokenInfo>> SignIn(@RequestBody UserDTO.SignInRequestDTO req) {
-        TokenInfo res = authService.login(req);
+        try {
+            TokenInfo res = authService.login(req);
             return new ResponseEntity<>(this.responseService.getSuccessSingleResponse(res), HttpStatus.OK);
+        } catch (Exception e){
+            return new ResponseEntity<>(this.responseService.getFailureSingleResponse(), HttpStatus.OK);
+        }
+
     }
 
     @GetMapping("/email/duplicate-check")
