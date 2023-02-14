@@ -33,6 +33,7 @@ public class PostDTO {
         private Long authorId;
         private String nickname;
         private List<CommentDTO.ResponseDTO> commentList;
+        private List<Long> imageId;
     }
 
     @Getter

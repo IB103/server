@@ -8,11 +8,13 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.FileHandler;
 
 @RequiredArgsConstructor
 @Service
@@ -21,6 +23,10 @@ public class PostServiceImpl implements PostService {
     private final PostRepository postRepository;
 
     private final UserRepository userRepository;
+
+    private final ImageRepository imageRepository;
+
+    private final ImageHandler imageHandler;
 
 
     @Override
@@ -73,6 +79,11 @@ public class PostServiceImpl implements PostService {
             }
         }
 
+        List<ImageIdInterface> imageIdList = this.imageRepository.findByPostId(req.getId());
+        List<Long> images = new ArrayList<>();
+        for(ImageIdInterface id : imageIdList){
+            images.add(id.getId());
+        }
 
         PostDTO.PostResponseDTO res = PostDTO.PostResponseDTO.builder()
                 .id(req.getId())
@@ -82,7 +93,25 @@ public class PostServiceImpl implements PostService {
                 .modifiedDate(req.getModifiedDate())
                 .authorId(req.getAuthor().getId())
                 .nickname(req.getAuthor().getNickname())
-                .commentList(comments).build();
+                .commentList(comments)
+                .imageId(images).build();
         return res;
+    }
+
+    @Transactional
+    public PostDTO.PostResponseDTO testPost(PostDTO.CreateRequestDTO req, List<MultipartFile> files) throws Exception {
+        Post newPost = Post.builder()
+                .title(req.getTitle())
+                .content(req.getContent())
+                .createdDate(LocalDateTime.now())
+                .author(this.userRepository.findById(req.getUserId()).get()).build();
+        List<Image> imageList = imageHandler.parseFileInfo(files);
+
+        if(!imageList.isEmpty()){
+            for(Image image : imageList){
+                newPost.addImage(imageRepository.save(image));
+            }
+        }
+        return createResponse(this.postRepository.save(newPost));
     }
 }

@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,5 +48,18 @@ public class PostController {
     @GetMapping("/detail")
     public ResponseEntity<SingleResponse<PostDTO.PostResponseDTO>> getDetailPost(@RequestParam Long id){
         return new ResponseEntity<>(this.responseService.getSuccessSingleResponse(this.postService.getDetailPost(id)),HttpStatus.OK);
+    }
+
+    @PostMapping("/temp")
+    public ResponseEntity<SingleResponse<PostDTO.PostResponseDTO>> testPost(
+            @RequestPart(value = "requestDTO") PostDTO.CreateRequestDTO req,
+            @RequestPart(value = "image", required = false) List<MultipartFile> files
+    ) throws Exception {
+        return new ResponseEntity<>(this.responseService.getSuccessSingleResponse(this.postService.testPost(req, files)), HttpStatus.CREATED);
+    }
+
+    @GetMapping("/test")
+    public String test(){
+        return "hi";
     }
 }

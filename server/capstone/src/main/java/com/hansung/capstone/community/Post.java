@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -32,6 +33,9 @@ public class Post {
     @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
     private List<Comment> commentList;
 
+    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
+    private List<Image> images = new ArrayList<>();
+
     @Builder
     public Post(Post post ,String title, String content, LocalDateTime createdDate, User author){
         this.title = title;
@@ -44,6 +48,14 @@ public class Post {
         this.title = title;
         this.content = content;
         this.modifiedDate = modifiedDate;
+    }
+
+    public void addImage(Image image){
+        this.images.add(image);
+
+        if(image.getPost() != this) {
+            image.setPost(this);
+        }
     }
 
 }
