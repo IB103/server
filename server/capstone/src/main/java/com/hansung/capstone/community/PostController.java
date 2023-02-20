@@ -4,9 +4,11 @@ import com.hansung.capstone.response.ListResponse;
 import com.hansung.capstone.response.ResponseService;
 import com.hansung.capstone.response.SingleResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,14 +25,23 @@ public class PostController {
     private final ResponseService responseService;
 
 
+
     @PostMapping("/create")
-    public ResponseEntity<SingleResponse<PostDTO.PostResponseDTO>> createPost(@RequestBody PostDTO.CreateRequestDTO req){
-        return new ResponseEntity<>(this.responseService.getSuccessSingleResponse(this.postService.createPost(req)), HttpStatus.CREATED);
+    public ResponseEntity<SingleResponse<PostDTO.PostResponseDTO>> createPost(
+            @RequestPart(value = "requestDTO") PostDTO.CreateRequestDTO req,
+            @RequestPart(value = "image", required = false) List<MultipartFile> files)  {
+        try {
+            return new ResponseEntity<>(this.responseService.getSuccessSingleResponse(this.postService.createPost(req, files)), HttpStatus.CREATED);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @PutMapping("/modify")
-    public ResponseEntity<SingleResponse<PostDTO.PostResponseDTO>> modifyPost(@RequestBody PostDTO.ModifyRequestDTO req){
-        return new ResponseEntity<>(this.responseService.getSuccessSingleResponse(this.postService.modifyPost(req)), HttpStatus.OK);
+    public ResponseEntity<SingleResponse<PostDTO.PostResponseDTO>> modifyPost(
+            @RequestPart(value = "requestDTO") PostDTO.ModifyRequestDTO req,
+            @RequestPart(value = "image", required = false) List<MultipartFile> files ) throws Exception {
+        return new ResponseEntity<>(this.responseService.getSuccessSingleResponse(this.postService.modifyPost(req, files)), HttpStatus.OK);
     }
 
     @GetMapping("/list")
@@ -50,13 +61,6 @@ public class PostController {
         return new ResponseEntity<>(this.responseService.getSuccessSingleResponse(this.postService.getDetailPost(id)),HttpStatus.OK);
     }
 
-    @PostMapping("/temp")
-    public ResponseEntity<SingleResponse<PostDTO.PostResponseDTO>> testPost(
-            @RequestPart(value = "requestDTO") PostDTO.CreateRequestDTO req,
-            @RequestPart(value = "image", required = false) List<MultipartFile> files
-    ) throws Exception {
-        return new ResponseEntity<>(this.responseService.getSuccessSingleResponse(this.postService.testPost(req, files)), HttpStatus.CREATED);
-    }
 
     @GetMapping("/test")
     public String test(){

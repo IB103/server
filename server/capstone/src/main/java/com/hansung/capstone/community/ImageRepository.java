@@ -6,5 +6,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ImageRepository extends JpaRepository<Image, Long> {
-    List<ImageIdInterface> findByPostId(Long postId);
+    List<Image> findAllByPostId(Long postId);
+
+    void deleteById(Long id);
 }
+

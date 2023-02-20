@@ -8,6 +8,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
@@ -15,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.FileHandler;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -28,21 +30,73 @@ public class PostServiceImpl implements PostService {
 
     private final ImageHandler imageHandler;
 
+    private final ImageService imageService;
 
+
+    @Transactional
     @Override
-    public PostDTO.PostResponseDTO createPost(PostDTO.CreateRequestDTO req) {
+    public PostDTO.PostResponseDTO createPost(PostDTO.CreateRequestDTO req, List<MultipartFile> files) throws Exception {
         Post newPost = Post.builder()
                 .title(req.getTitle())
                 .content(req.getContent())
                 .createdDate(LocalDateTime.now())
                 .author(this.userRepository.findById(req.getUserId()).get()).build();
+        List<Image> imageList = imageHandler.parseFileInfo(files);
+
+        if(!imageList.isEmpty()){
+            for(Image image : imageList){
+                newPost.addImage(imageRepository.save(image));
+            }
+        }
         return createResponse(this.postRepository.save(newPost));
     }
 
     @Transactional
     @Override
-    public PostDTO.PostResponseDTO modifyPost(PostDTO.ModifyRequestDTO req) {
+    public PostDTO.PostResponseDTO modifyPost(PostDTO.ModifyRequestDTO req, List<MultipartFile> files) throws Exception {
         Optional<Post> modifyPost = this.postRepository.findById(req.getId());
+        List<Image> dbImageList = this.imageRepository.findAllByPostId(req.getId());
+        List<MultipartFile> addFileList = new ArrayList<>();
+        if(CollectionUtils.isEmpty(dbImageList)){ // db에 존재 x
+            if(!CollectionUtils.isEmpty(files)){ // 전달 file 존재
+                for (MultipartFile multipartFile : files){
+                    addFileList.add(multipartFile);
+                }
+            }
+        }
+        else{ // DB에 한장이상 존재
+            if(CollectionUtils.isEmpty(files)){ // 전달 file x
+                for(Image dbImage : dbImageList){
+                    this.imageRepository.deleteById(dbImage.getId());
+                }
+            }
+            else{
+                List<String> dbOriginNameList = new ArrayList<>();
+                for(Image dbImage: dbImageList){
+                    ImageDTO dbImageDTO = this.imageService.findByFileId(dbImage.getId());
+                    String dbOriginName = dbImageDTO.getOriginFileName();
+                    if(!files.contains(dbOriginName)){
+                        this.imageRepository.deleteById(dbImage.getId());
+                    } else{
+                        dbOriginNameList.add(dbOriginName);
+                    }
+                }
+                for (MultipartFile multipartFile : files){
+                    String multipartOriginName = multipartFile.getOriginalFilename();
+                    if(!dbOriginNameList.contains(multipartOriginName)){
+                        addFileList.add(multipartFile);
+                    }
+                }
+            }
+        }
+        List<Image> imageList = imageHandler.parseFileInfo(addFileList);
+
+        if(!imageList.isEmpty()){
+            for(Image image : imageList){
+                modifyPost.get().addImage(imageRepository.save(image));
+            }
+        }
+
         modifyPost.ifPresent( s -> {
             modifyPost.get().modify(req.getTitle(), req.getContent(), LocalDateTime.now());
                 }
@@ -79,10 +133,10 @@ public class PostServiceImpl implements PostService {
             }
         }
 
-        List<ImageIdInterface> imageIdList = this.imageRepository.findByPostId(req.getId());
+        List<ImageDTO.ResponseDTO> imageIdList = this.imageService.findAllByPostId(req.getId());
         List<Long> images = new ArrayList<>();
-        for(ImageIdInterface id : imageIdList){
-            images.add(id.getId());
+        for(ImageDTO.ResponseDTO id : imageIdList){
+            images.add(id.getFileId());
         }
 
         PostDTO.PostResponseDTO res = PostDTO.PostResponseDTO.builder()
@@ -98,20 +152,5 @@ public class PostServiceImpl implements PostService {
         return res;
     }
 
-    @Transactional
-    public PostDTO.PostResponseDTO testPost(PostDTO.CreateRequestDTO req, List<MultipartFile> files) throws Exception {
-        Post newPost = Post.builder()
-                .title(req.getTitle())
-                .content(req.getContent())
-                .createdDate(LocalDateTime.now())
-                .author(this.userRepository.findById(req.getUserId()).get()).build();
-        List<Image> imageList = imageHandler.parseFileInfo(files);
 
-        if(!imageList.isEmpty()){
-            for(Image image : imageList){
-                newPost.addImage(imageRepository.save(image));
-            }
-        }
-        return createResponse(this.postRepository.save(newPost));
-    }
 }

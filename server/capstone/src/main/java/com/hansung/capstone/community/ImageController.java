@@ -20,7 +20,6 @@ public class ImageController {
 
     private final ImageService imageService;
 
-    @CrossOrigin
     @GetMapping(value = "/image/{id}",
             produces = {MediaType.IMAGE_PNG_VALUE, MediaType.IMAGE_JPEG_VALUE})
     public ResponseEntity<byte[]> getImage(@PathVariable Long id) throws Exception{

@@ -4,6 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class ImageService {
@@ -25,5 +28,14 @@ public class ImageService {
                 .fileSize(image.getFileSize()).build();
 
         return imageDTO;
+    }
+
+    @Transactional(readOnly = true)
+    public List<ImageDTO.ResponseDTO> findAllByPostId(Long postId){
+        List<Image> imageList = this.imageRepository.findAllByPostId(postId);
+        return imageList.stream()
+                .map(ImageDTO.ResponseDTO::new)
+                .collect(Collectors.toList());
+
     }
 }

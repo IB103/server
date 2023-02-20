@@ -17,4 +17,13 @@ public class ImageDTO {
         this.filePath = filePath;
         this.fileSize = fileSize;
     }
+
+    @Getter
+    public static class ResponseDTO{
+        private Long fileId;
+        public ResponseDTO(Image entity){
+            this.fileId = entity.getId();
+        }
+    }
+
 }
