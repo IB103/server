@@ -10,6 +10,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -21,19 +22,34 @@ public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
+    private final UserRepository userRepository;
+
     private final String SERVER = "Server";
 
     // 로그인: 인증 정보 저장 및 비어 토큰 발급
     @Transactional
-    public TokenInfo login(UserDTO.SignInRequestDTO req) {
+    public UserDTO.SignInResponseDTO login(UserDTO.SignInRequestDTO req) {
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(req.getEmail(), req.getPassword());
 
         Authentication authentication = authenticationManagerBuilder.getObject()
                 .authenticate(authenticationToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        return createToken(SERVER, req.getEmail(), getAuthorities(authentication));
+        TokenInfo tokenInfo = createToken(SERVER, req.getEmail(), getAuthorities(authentication));
+        Optional<User> user = this.userRepository.findByEmail(req.getEmail());
+        if(user.isPresent())
+        {
+            UserDTO.SignInResponseDTO res = UserDTO.SignInResponseDTO.builder()
+                    .nickname(user.get().getNickname())
+                    .birthday(user.get().getBirthday())
+                    .check(true)
+                    .email(user.get().getEmail())
+                    .tokenInfo(tokenInfo)
+                    .username(user.get().getUsername()).build();
+            return res;
+        }else{
+            return null;
+        }
     }
 
     // AT가 만료일자만 초과한 유효한 토큰인지 검사

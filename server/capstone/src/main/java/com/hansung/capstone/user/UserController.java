@@ -32,9 +32,9 @@ public class UserController {
     }
 
     @PostMapping("/signin")
-    private ResponseEntity<SingleResponse<TokenInfo>> SignIn(@RequestBody UserDTO.SignInRequestDTO req) {
+    private ResponseEntity<SingleResponse<UserDTO.SignInResponseDTO>> SignIn(@RequestBody UserDTO.SignInRequestDTO req) {
         try {
-            TokenInfo res = authService.login(req);
+            UserDTO.SignInResponseDTO res = authService.login(req);
             return new ResponseEntity<>(this.responseService.getSuccessSingleResponse(res), HttpStatus.OK);
         } catch (Exception e){
             return new ResponseEntity<>(this.responseService.getFailureSingleResponse(), HttpStatus.OK);
