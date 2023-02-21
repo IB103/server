@@ -22,8 +22,8 @@ public class ImageHandler {
         this.imageService = imageService;
     }
 
-    public List<Image> parseFileInfo(List<MultipartFile> multipartFiles) throws Exception {
-        List<Image> imageList = new ArrayList<>();
+    public List<PostImage> parseFileInfo(List<MultipartFile> multipartFiles) throws Exception {
+        List<PostImage> postImageList = new ArrayList<>();
         if(!CollectionUtils.isEmpty(multipartFiles)){
             LocalDateTime now = LocalDateTime.now();
             DateTimeFormatter dateTimeFormatter =
@@ -32,7 +32,7 @@ public class ImageHandler {
 
             String absolutePath = new File("").getAbsolutePath() + File.separator;
 
-            String path = "images" + File.separator + current_date;
+            String path = "images/post" + File.separator + current_date;
             File file = new File(path);
 
             if(!file.exists()) {
@@ -60,17 +60,17 @@ public class ImageHandler {
 
                 String new_file_name = System.nanoTime() + extension;
 
-                ImageDTO imageDTO = ImageDTO.builder()
+                PostImageDTO postImageDTO = PostImageDTO.builder()
                         .originFileName(multipartFile.getOriginalFilename())
                         .filePath(path + File.separator + new_file_name)
                         .fileSize(multipartFile.getSize()).build();
 
-                Image image = new Image(
-                        imageDTO.getOriginFileName(),
-                        imageDTO.getFilePath(),
-                        imageDTO.getFileSize()
+                PostImage postImage = new PostImage(
+                        postImageDTO.getOriginFileName(),
+                        postImageDTO.getFilePath(),
+                        postImageDTO.getFileSize()
                 );
-                imageList.add(image);
+                postImageList.add(postImage);
 
                 file = new File(absolutePath + path + File.separator + new_file_name);
                 multipartFile.transferTo(file);
@@ -79,6 +79,6 @@ public class ImageHandler {
                 file.setReadable(true);
             }
         }
-        return imageList;
+        return postImageList;
     }
 }

@@ -15,8 +15,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.FileHandler;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -41,11 +39,11 @@ public class PostServiceImpl implements PostService {
                 .content(req.getContent())
                 .createdDate(LocalDateTime.now())
                 .author(this.userRepository.findById(req.getUserId()).get()).build();
-        List<Image> imageList = imageHandler.parseFileInfo(files);
+        List<PostImage> postImageList = imageHandler.parseFileInfo(files);
 
-        if(!imageList.isEmpty()){
-            for(Image image : imageList){
-                newPost.addImage(imageRepository.save(image));
+        if(!postImageList.isEmpty()){
+            for(PostImage postImage : postImageList){
+                newPost.addImage(imageRepository.save(postImage));
             }
         }
         return createResponse(this.postRepository.save(newPost));
@@ -55,9 +53,9 @@ public class PostServiceImpl implements PostService {
     @Override
     public PostDTO.PostResponseDTO modifyPost(PostDTO.ModifyRequestDTO req, List<MultipartFile> files) throws Exception {
         Optional<Post> modifyPost = this.postRepository.findById(req.getId());
-        List<Image> dbImageList = this.imageRepository.findAllByPostId(req.getId());
+        List<PostImage> dbPostImageList = this.imageRepository.findAllByPostId(req.getId());
         List<MultipartFile> addFileList = new ArrayList<>();
-        if(CollectionUtils.isEmpty(dbImageList)){ // db에 존재 x
+        if(CollectionUtils.isEmpty(dbPostImageList)){ // db에 존재 x
             if(!CollectionUtils.isEmpty(files)){ // 전달 file 존재
                 for (MultipartFile multipartFile : files){
                     addFileList.add(multipartFile);
@@ -66,17 +64,17 @@ public class PostServiceImpl implements PostService {
         }
         else{ // DB에 한장이상 존재
             if(CollectionUtils.isEmpty(files)){ // 전달 file x
-                for(Image dbImage : dbImageList){
-                    this.imageRepository.deleteById(dbImage.getId());
+                for(PostImage dbPostImage : dbPostImageList){
+                    this.imageRepository.deleteById(dbPostImage.getId());
                 }
             }
             else{
                 List<String> dbOriginNameList = new ArrayList<>();
-                for(Image dbImage: dbImageList){
-                    ImageDTO dbImageDTO = this.imageService.findByFileId(dbImage.getId());
-                    String dbOriginName = dbImageDTO.getOriginFileName();
+                for(PostImage dbPostImage : dbPostImageList){
+                    PostImageDTO dbPostImageDTO = this.imageService.findByFileId(dbPostImage.getId());
+                    String dbOriginName = dbPostImageDTO.getOriginFileName();
                     if(!files.contains(dbOriginName)){
-                        this.imageRepository.deleteById(dbImage.getId());
+                        this.imageRepository.deleteById(dbPostImage.getId());
                     } else{
                         dbOriginNameList.add(dbOriginName);
                     }
@@ -89,11 +87,11 @@ public class PostServiceImpl implements PostService {
                 }
             }
         }
-        List<Image> imageList = imageHandler.parseFileInfo(addFileList);
+        List<PostImage> postImageList = imageHandler.parseFileInfo(addFileList);
 
-        if(!imageList.isEmpty()){
-            for(Image image : imageList){
-                modifyPost.get().addImage(imageRepository.save(image));
+        if(!postImageList.isEmpty()){
+            for(PostImage postImage : postImageList){
+                modifyPost.get().addImage(imageRepository.save(postImage));
             }
         }
 
@@ -133,9 +131,9 @@ public class PostServiceImpl implements PostService {
             }
         }
 
-        List<ImageDTO.ResponseDTO> imageIdList = this.imageService.findAllByPostId(req.getId());
+        List<PostImageDTO.ResponseDTO> imageIdList = this.imageService.findAllByPostId(req.getId());
         List<Long> images = new ArrayList<>();
-        for(ImageDTO.ResponseDTO id : imageIdList){
+        for(PostImageDTO.ResponseDTO id : imageIdList){
             images.add(id.getFileId());
         }
 

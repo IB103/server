@@ -6,13 +6,13 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class ImageDTO {
+public class PostImageDTO {
     private String originFileName;
     private String filePath;
     private Long fileSize;
 
     @Builder
-    public ImageDTO(String originFileName, String filePath, Long fileSize){
+    public PostImageDTO(String originFileName, String filePath, Long fileSize){
         this.originFileName = originFileName;
         this.filePath = filePath;
         this.fileSize = fileSize;
@@ -21,7 +21,7 @@ public class ImageDTO {
     @Getter
     public static class ResponseDTO{
         private Long fileId;
-        public ResponseDTO(Image entity){
+        public ResponseDTO(PostImage entity){
             this.fileId = entity.getId();
         }
     }

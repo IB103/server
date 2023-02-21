@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @Entity
-public class Image {
+public class PostImage {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,7 +26,7 @@ public class Image {
 
 
     @Builder
-    public Image(String originFileName, String filePath, Long fileSize){
+    public PostImage(String originFileName, String filePath, Long fileSize){
         this.originFileName = originFileName;
         this.filePath = filePath;
         this.fileSize = fileSize;
@@ -35,8 +35,8 @@ public class Image {
     public void setPost(Post post){
         this.post = post;
 
-        if(!post.getImages().contains(this)){
-            post.getImages().add(this);
+        if(!post.getPostImages().contains(this)){
+            post.getPostImages().add(this);
         }
     }
 

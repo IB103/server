@@ -5,7 +5,6 @@ import org.apache.commons.io.IOUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,10 +22,10 @@ public class ImageController {
     @GetMapping(value = "/image/{id}",
             produces = {MediaType.IMAGE_PNG_VALUE, MediaType.IMAGE_JPEG_VALUE})
     public ResponseEntity<byte[]> getImage(@PathVariable Long id) throws Exception{
-        ImageDTO imageDTO = this.imageService.findByFileId(id);
+        PostImageDTO postImageDTO = this.imageService.findByFileId(id);
         String absolutePath
                 = new File("").getAbsolutePath() + File.separator; // File.separator
-        String path = imageDTO.getFilePath();
+        String path = postImageDTO.getFilePath();
 
         InputStream imageStream = new FileInputStream(absolutePath + path);
         byte[] imageByteArray = IOUtils.toByteArray(imageStream);

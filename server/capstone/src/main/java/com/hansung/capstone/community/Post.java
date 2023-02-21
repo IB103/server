@@ -1,7 +1,6 @@
 package com.hansung.capstone.community;
 
 import com.hansung.capstone.user.User;
-import com.hansung.capstone.user.UserDTO;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -34,7 +33,7 @@ public class Post {
     private List<Comment> commentList;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<Image> images = new ArrayList<>();
+    private List<PostImage> postImages = new ArrayList<>();
 
     @Builder
     public Post(Post post ,String title, String content, LocalDateTime createdDate, User author){
@@ -50,11 +49,11 @@ public class Post {
         this.modifiedDate = modifiedDate;
     }
 
-    public void addImage(Image image){
-        this.images.add(image);
+    public void addImage(PostImage postImage){
+        this.postImages.add(postImage);
 
-        if(image.getPost() != this) {
-            image.setPost(this);
+        if(postImage.getPost() != this) {
+            postImage.setPost(this);
         }
     }
 
