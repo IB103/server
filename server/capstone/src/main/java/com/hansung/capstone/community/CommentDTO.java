@@ -39,6 +39,7 @@ public class CommentDTO {
         LocalDateTime modifiedDate;
         Long userId;
         String userNickname;
+        Long userProfileImageId;
     }
 
     @Getter

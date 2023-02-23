@@ -24,7 +24,7 @@ public class PostServiceImpl implements PostService {
 
     private final UserRepository userRepository;
 
-    private final ImageRepository imageRepository;
+    private final PostImageRepository postImageRepository;
 
     private final ImageHandler imageHandler;
 
@@ -39,11 +39,11 @@ public class PostServiceImpl implements PostService {
                 .content(req.getContent())
                 .createdDate(LocalDateTime.now())
                 .author(this.userRepository.findById(req.getUserId()).get()).build();
-        List<PostImage> postImageList = imageHandler.parseFileInfo(files);
+        List<PostImage> postImageList = imageHandler.parsePostImageInfo(files);
 
         if(!postImageList.isEmpty()){
             for(PostImage postImage : postImageList){
-                newPost.addImage(imageRepository.save(postImage));
+                newPost.addImage(postImageRepository.save(postImage));
             }
         }
         return createResponse(this.postRepository.save(newPost));
@@ -53,7 +53,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public PostDTO.PostResponseDTO modifyPost(PostDTO.ModifyRequestDTO req, List<MultipartFile> files) throws Exception {
         Optional<Post> modifyPost = this.postRepository.findById(req.getId());
-        List<PostImage> dbPostImageList = this.imageRepository.findAllByPostId(req.getId());
+        List<PostImage> dbPostImageList = this.postImageRepository.findAllByPostId(req.getId());
         List<MultipartFile> addFileList = new ArrayList<>();
         if(CollectionUtils.isEmpty(dbPostImageList)){ // db에 존재 x
             if(!CollectionUtils.isEmpty(files)){ // 전달 file 존재
@@ -65,7 +65,7 @@ public class PostServiceImpl implements PostService {
         else{ // DB에 한장이상 존재
             if(CollectionUtils.isEmpty(files)){ // 전달 file x
                 for(PostImage dbPostImage : dbPostImageList){
-                    this.imageRepository.deleteById(dbPostImage.getId());
+                    this.postImageRepository.deleteById(dbPostImage.getId());
                 }
             }
             else{
@@ -74,7 +74,7 @@ public class PostServiceImpl implements PostService {
                     PostImageDTO dbPostImageDTO = this.imageService.findByFileId(dbPostImage.getId());
                     String dbOriginName = dbPostImageDTO.getOriginFileName();
                     if(!files.contains(dbOriginName)){
-                        this.imageRepository.deleteById(dbPostImage.getId());
+                        this.postImageRepository.deleteById(dbPostImage.getId());
                     } else{
                         dbOriginNameList.add(dbOriginName);
                     }
@@ -87,11 +87,11 @@ public class PostServiceImpl implements PostService {
                 }
             }
         }
-        List<PostImage> postImageList = imageHandler.parseFileInfo(addFileList);
+        List<PostImage> postImageList = imageHandler.parsePostImageInfo(addFileList);
 
         if(!postImageList.isEmpty()){
             for(PostImage postImage : postImageList){
-                modifyPost.get().addImage(imageRepository.save(postImage));
+                modifyPost.get().addImage(postImageRepository.save(postImage));
             }
         }
 
@@ -117,6 +117,12 @@ public class PostServiceImpl implements PostService {
 
     public PostDTO.PostResponseDTO createResponse(Post req){
         List<CommentDTO.ResponseDTO> comments = new ArrayList<>();
+        Long profileImageId;
+        if(req.getAuthor().getProfileImage() != null){
+            profileImageId = req.getAuthor().getProfileImage().getId();
+        }else{
+            profileImageId = -1L;
+        }
         if (req.getCommentList() != null) {
             for (int i = 0; i < req.getCommentList().size(); i++) {
                 Comment comment = req.getCommentList().get(i);
@@ -126,7 +132,8 @@ public class PostServiceImpl implements PostService {
                         .createdDate(comment.getCreateDate())
                         .modifiedDate(comment.getModifiedDate())
                         .userId(comment.getAuthor().getId())
-                        .userNickname(comment.getAuthor().getNickname()).build();
+                        .userNickname(comment.getAuthor().getNickname())
+                        .userProfileImageId(profileImageId).build();
                 comments.add(commentRes);
             }
         }
@@ -137,6 +144,7 @@ public class PostServiceImpl implements PostService {
             images.add(id.getFileId());
         }
 
+
         PostDTO.PostResponseDTO res = PostDTO.PostResponseDTO.builder()
                 .id(req.getId())
                 .title(req.getTitle())
@@ -145,6 +153,7 @@ public class PostServiceImpl implements PostService {
                 .modifiedDate(req.getModifiedDate())
                 .authorId(req.getAuthor().getId())
                 .nickname(req.getAuthor().getNickname())
+                .authorProfileImageId(profileImageId)
                 .commentList(comments)
                 .imageId(images).build();
         return res;

@@ -1,5 +1,7 @@
 package com.hansung.capstone.user;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -17,6 +19,8 @@ public interface UserService {
     Optional<User> modifyPassword(UserDTO.ModifyPWRequestDTO req);
 
     Optional<User> modifyNickname(UserDTO.ModifyNickRequestDTO req);
+
+    UserDTO.ProfileImageResponseDTO setProfileImage(UserDTO.ProfileImageRequestDTO req, MultipartFile image) throws Exception;
 
 }
 

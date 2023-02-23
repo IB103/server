@@ -32,6 +32,7 @@ public class PostDTO {
         private LocalDateTime modifiedDate;
         private Long authorId;
         private String nickname;
+        private Long authorProfileImageId;
         private List<CommentDTO.ResponseDTO> commentList;
         private List<Long> imageId;
     }

@@ -2,13 +2,17 @@ package com.hansung.capstone.user;
 
 import com.hansung.capstone.DataExistException;
 import com.hansung.capstone.DataNotFoundException;
+import com.hansung.capstone.community.ImageHandler;
+import com.hansung.capstone.community.PostImage;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,14 +20,15 @@ import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class UserServiceImpl implements UserService{
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    private final JwtTokenProvider jwtTokenProvider;
+    private final ProfileImageRepository profileImageRepository;
 
-    private final AuthenticationManagerBuilder authenticationManagerBuilder;
+    private final ImageHandler imageHandler;
 
     @Override
     public UserDTO.SignUpResponseDTO SignUp(UserDTO.SignUpRequestDTO req) {
@@ -122,5 +127,28 @@ public class UserServiceImpl implements UserService{
         });
         Optional<User> modifiedUser = this.userRepository.findByEmail(req.getEmail());
         return modifiedUser;
+    }
+
+    @Transactional
+    @Override
+    public UserDTO.ProfileImageResponseDTO setProfileImage(UserDTO.ProfileImageRequestDTO req, MultipartFile Image) throws Exception {
+        ProfileImage profileImage = this.imageHandler.parseProfileImageInfo(Image);
+        Optional<User> user = this.userRepository.findById(req.getId());
+        if(profileImage != null){
+            user.ifPresent( s -> {
+                if(req.getProfileImageId() != -1L){
+                    this.profileImageRepository.deleteById(req.getProfileImageId());
+                }
+                user.get().addProfileImage(this.profileImageRepository.save(profileImage));
+            });
+        }
+        UserDTO.ProfileImageResponseDTO res = UserDTO.ProfileImageResponseDTO.builder()
+                .id(user.get().getId())
+                .email(user.get().getEmail())
+                .nickname(user.get().getNickname())
+                .birthday(user.get().getBirthday())
+                .username(user.get().getUsername())
+                .profileImageId(user.get().getProfileImage().getId()).build();
+        return res;
     }
 }

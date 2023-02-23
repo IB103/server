@@ -1,5 +1,6 @@
 package com.hansung.capstone.community;
 
+import com.hansung.capstone.user.ProfileImageDTO;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.IOUtils;
 import org.springframework.http.HttpStatus;
@@ -29,7 +30,21 @@ public class ImageController {
 
         InputStream imageStream = new FileInputStream(absolutePath + path);
         byte[] imageByteArray = IOUtils.toByteArray(imageStream);
-        imageStream.close();;
+        imageStream.close();
+
+        return new ResponseEntity<>(imageByteArray, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/profile-image/{id}",
+            produces = {MediaType.IMAGE_PNG_VALUE, MediaType.IMAGE_JPEG_VALUE})
+    public ResponseEntity<byte[]> getProfileImage(@PathVariable Long id) throws Exception{
+        ProfileImageDTO profileImageDTO = this.imageService.findByImageId(id);
+        String absolutePath
+                = new File("").getAbsolutePath() + File.separator;
+        String path = profileImageDTO.getFilePath();
+        InputStream imageStream = new FileInputStream(absolutePath + path);
+        byte[] imageByteArray = IOUtils.toByteArray(imageStream);
+        imageStream.close();
 
         return new ResponseEntity<>(imageByteArray, HttpStatus.OK);
     }

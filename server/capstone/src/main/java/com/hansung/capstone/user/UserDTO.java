@@ -7,6 +7,7 @@ public class UserDTO {
     @Getter
     @Builder
     @AllArgsConstructor
+    @NoArgsConstructor
     public static class SignUpRequestDTO {
         private String email;
         private String password;
@@ -46,6 +47,8 @@ public class UserDTO {
         private String birthday;
 
         private String nickname;
+
+        private Long profileImageId;
 
         private TokenInfo tokenInfo;
     }
@@ -101,6 +104,33 @@ public class UserDTO {
     public static class CommentUserResponseDTO{
         private Long id;
         private String nickname;
+    }
+
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class ProfileImageRequestDTO{
+        private Long id;
+
+        private Long profileImageId;
+    }
+
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    public static class ProfileImageResponseDTO{
+        private Long id;
+
+        private String email;
+
+        private String username;
+
+        private String birthday;
+
+        private String nickname;
+
+        private Long profileImageId;
     }
 
 }

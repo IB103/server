@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -88,5 +89,12 @@ public class UserController {
     @GetMapping("/test")
     public String test() {
         return "good";
+    }
+
+    @PutMapping("/set-profile-image")
+    public ResponseEntity<SingleResponse<UserDTO.ProfileImageResponseDTO>> setProfileImage(
+            @RequestPart(value = "requestDTO") UserDTO.ProfileImageRequestDTO req,
+            @RequestPart(value = "image", required = false) MultipartFile image) throws Exception {
+        return new ResponseEntity<>(this.responseService.getSuccessSingleResponse(this.userService.setProfileImage(req, image)), HttpStatus.OK);
     }
 }

@@ -39,11 +39,18 @@ public class AuthService {
         Optional<User> user = this.userRepository.findByEmail(req.getEmail());
         if(user.isPresent())
         {
+            Long profileImageId;
+            if(user.get().getProfileImage() != null){
+                profileImageId = user.get().getProfileImage().getId();
+            }else{
+                profileImageId = -1L;
+            }
             UserDTO.SignInResponseDTO res = UserDTO.SignInResponseDTO.builder()
                     .nickname(user.get().getNickname())
                     .birthday(user.get().getBirthday())
                     .check(true)
                     .email(user.get().getEmail())
+                    .profileImageId(profileImageId)
                     .tokenInfo(tokenInfo)
                     .username(user.get().getUsername()).build();
             return res;
