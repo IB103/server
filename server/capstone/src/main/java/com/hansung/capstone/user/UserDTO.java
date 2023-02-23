@@ -69,6 +69,7 @@ public class UserDTO {
     @Getter
     @Builder
     @AllArgsConstructor
+    @NoArgsConstructor
     public static class FindIdRequestDTO {
         private String username;
         private String birthday;
@@ -77,6 +78,7 @@ public class UserDTO {
     @Getter
     @Builder
     @AllArgsConstructor
+    @NoArgsConstructor
     public static class ModifyPWRequestDTO {
         private String email;
         private String password;
@@ -85,6 +87,7 @@ public class UserDTO {
     @Getter
     @Builder
     @AllArgsConstructor
+    @NoArgsConstructor
     public static class ModifyNickRequestDTO {
         private String email;
         private String nickname;

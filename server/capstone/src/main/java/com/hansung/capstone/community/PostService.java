@@ -13,5 +13,7 @@ public interface PostService {
 
     Page<Post> getAllPost(int page);
 
+    Page<Post> getUserNickNamePost(String nickname, int page);
+
     PostDTO.PostResponseDTO getDetailPost(Long id);
 }

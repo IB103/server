@@ -1,12 +1,10 @@
 package com.hansung.capstone.community;
 
+import com.hansung.capstone.user.User;
 import com.hansung.capstone.user.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -108,6 +106,16 @@ public class PostServiceImpl implements PostService {
         sorts.add(Sort.Order.desc("createdDate"));
         Pageable pageable = PageRequest.of(page,10, Sort.by(sorts));
         return this.postRepository.findAll(pageable);
+    }
+
+    @Override
+    public Page<Post> getUserNickNamePost(String nickname, int page) {
+        User user = this.userRepository.findByNickname(nickname).orElseThrow( () ->
+                new IllegalArgumentException("게시글이 존재하지 않습니다."));
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("createdDate"));
+        Pageable pageable = PageRequest.of(page,10, Sort.by(sorts));
+        return this.postRepository.findAllByAuthor(user, pageable);
     }
 
     @Override

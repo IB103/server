@@ -66,4 +66,18 @@ public class PostController {
     public String test(){
         return "hi";
     }
+
+    @GetMapping("/list/nickname")
+    public ResponseEntity<ListResponse<PostDTO.PostResponseDTO>> getUserNickNamePost(
+            @RequestParam String nickname,
+            @RequestParam(defaultValue = "0") int page) {
+        Page<Post> paging = this.postService.getUserNickNamePost(nickname, page);
+        List<PostDTO.PostResponseDTO> res = new ArrayList<>();
+        for(int i = 0; i < paging.getSize(); i++){
+            Post post = paging.getContent().get(i);
+            res.add(this.postService.createResponse(post));
+        }
+
+        return new ResponseEntity<>(this.responseService.getListResponse(res), HttpStatus.OK);
+    }
 }
