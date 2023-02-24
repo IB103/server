@@ -38,7 +38,7 @@ public class UserController {
             UserDTO.SignInResponseDTO res = authService.login(req);
             return new ResponseEntity<>(this.responseService.getSuccessSingleResponse(res), HttpStatus.OK);
         } catch (Exception e){
-            return new ResponseEntity<>(this.responseService.getFailureSingleResponse(), HttpStatus.OK);
+            return new ResponseEntity<>(this.responseService.getFailureSingleResponse(null), HttpStatus.OK);
         }
 
     }
@@ -51,7 +51,7 @@ public class UserController {
                     .email(email).build();
             return new ResponseEntity<>(this.responseService.getSuccessSingleResponse(res), HttpStatus.OK);
         } else{
-            return new ResponseEntity<>(this.responseService.getFailureSingleResponse(), HttpStatus.OK);
+            return new ResponseEntity<>(this.responseService.getFailureSingleResponse(null), HttpStatus.OK);
         }
 
 
@@ -65,7 +65,7 @@ public class UserController {
                     .nickname(nickname).build();
             return new ResponseEntity<>(this.responseService.getSuccessSingleResponse(res), HttpStatus.OK);
         } else
-            return new ResponseEntity<>(this.responseService.getFailureSingleResponse(), HttpStatus.OK);
+            return new ResponseEntity<>(this.responseService.getFailureSingleResponse(null), HttpStatus.OK);
     }
 
     @GetMapping("/findID")

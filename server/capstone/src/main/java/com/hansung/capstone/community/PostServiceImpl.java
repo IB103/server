@@ -10,9 +10,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @RequiredArgsConstructor
 @Service
@@ -119,8 +117,34 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    public Page<Post> getTitleOrContentPost(String titleOrContent, int page) {
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("createdDate"));
+        Pageable pageable = PageRequest.of(page,10, Sort.by(sorts));
+        return this.postRepository.findAllSearch(titleOrContent, pageable);
+    }
+
+    @Override
     public PostDTO.PostResponseDTO getDetailPost(Long id) {
         return createResponse(this.postRepository.findById(id).get());
+    }
+
+    @Transactional
+    @Override
+    public PostDTO.PostResponseDTO setFavorite(Long userId, Long postId) {
+        Post post = this.postRepository.findById(postId).orElseThrow( () ->
+                new IllegalArgumentException("게시글이 존재하지 않습니다.")
+        );
+
+        User user = this.userRepository.findById(userId).orElseThrow( () ->
+                new IllegalArgumentException("유저가 존재하지 않습니다.")
+        );
+        if(post.getVoter().contains(user)){
+            post.getVoter().remove(user);
+        }else {
+            post.getVoter().add(user);
+        }
+        return createResponse(this.postRepository.findById(postId).get());
     }
 
     public PostDTO.PostResponseDTO createResponse(Post req){
@@ -134,14 +158,48 @@ public class PostServiceImpl implements PostService {
         if (req.getCommentList() != null) {
             for (int i = 0; i < req.getCommentList().size(); i++) {
                 Comment comment = req.getCommentList().get(i);
+                List<ReCommentDTO.ResponseDTO> reCommentList = new ArrayList<>();
+                Set<User> commentVoter = comment.getVoter();
+                Set<Long> commentVoterId = new HashSet<>();
+                if(!commentVoter.isEmpty()){
+                    for(User user : commentVoter) {
+                        commentVoterId.add(user.getId());
+                    }
+                }
+                if(comment.getReCommentList() != null) {
+                    for (int j = 0; j < comment.getReCommentList().size(); j++) {
+                        ReComment reComment = comment.getReCommentList().get(j);
+                        Set<User> reCommentVoter = reComment.getVoter();
+                        Set<Long> reCommentVoterId = new HashSet<>();
+                        if(!reCommentVoter.isEmpty()){
+                            for(User user : reCommentVoter) {
+                                reCommentVoterId.add(user.getId());
+                            }
+                        }
+                        ReCommentDTO.ResponseDTO reCommentRes = ReCommentDTO.ResponseDTO.builder()
+                                .id(reComment.getId())
+                                .content(reComment.getContent())
+                                .createdDate(reComment.getCreatedDate())
+                                .modifiedDate(reComment.getModifiedDate())
+                                .userId(reComment.getAuthor().getId())
+                                .userNickname(reComment.getAuthor().getNickname())
+                                .userProfileImageId(reComment.getAuthor().getProfileImage().getId())
+                                .reCommentVoterId(reCommentVoterId)
+                                .build();
+                        reCommentList.add(reCommentRes);
+                    }
+                }
                 CommentDTO.ResponseDTO commentRes = CommentDTO.ResponseDTO.builder()
                         .id(comment.getId())
                         .content(comment.getContent())
-                        .createdDate(comment.getCreateDate())
+                        .createdDate(comment.getCreatedDate())
                         .modifiedDate(comment.getModifiedDate())
                         .userId(comment.getAuthor().getId())
                         .userNickname(comment.getAuthor().getNickname())
-                        .userProfileImageId(profileImageId).build();
+                        .userProfileImageId(profileImageId)
+                        .reCommentList(reCommentList)
+                        .commentVoterId((commentVoterId))
+                        .build();
                 comments.add(commentRes);
             }
         }
@@ -152,6 +210,13 @@ public class PostServiceImpl implements PostService {
             images.add(id.getFileId());
         }
 
+        Set<User> postVoter = req.getVoter();
+        Set<Long> postVoterId = new HashSet<>();
+        if(!postVoter.isEmpty()){
+            for(User user : postVoter) {
+                postVoterId.add(user.getId());
+            }
+        }
 
         PostDTO.PostResponseDTO res = PostDTO.PostResponseDTO.builder()
                 .id(req.getId())
@@ -163,7 +228,8 @@ public class PostServiceImpl implements PostService {
                 .nickname(req.getAuthor().getNickname())
                 .authorProfileImageId(profileImageId)
                 .commentList(comments)
-                .imageId(images).build();
+                .imageId(images)
+                .postVoterId(postVoterId).build();
         return res;
     }
 

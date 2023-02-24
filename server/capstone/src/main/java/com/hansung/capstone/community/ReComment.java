@@ -3,18 +3,23 @@ package com.hansung.capstone.community;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hansung.capstone.user.User;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CompletionException;
 
-@Getter
 @Entity
+@Getter
 @NoArgsConstructor
-public class Comment {
+public class ReComment {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "recomment_id")
     private Long id;
 
     @Column(columnDefinition = "TEXT")
@@ -26,29 +31,24 @@ public class Comment {
 
     @ManyToOne
     @JsonIgnore
-    private Post post;
+    private Comment comment;
 
     @ManyToOne
     private User author;
-
-    @OneToMany(mappedBy = "comment", cascade = CascadeType.REMOVE)
-    private List<ReComment> reCommentList;
 
     @ManyToMany
     private Set<User> voter;
 
     @Builder
-    public Comment(String content, LocalDateTime createdDate, Post post, User author){
+    public ReComment(String content, LocalDateTime createdDate, Comment comment, User author){
         this.content = content;
         this.createdDate = createdDate;
-        this.post = post;
+        this.comment = comment;
         this.author = author;
     }
-
 
     public void modify(String content, LocalDateTime modifiedDate){
         this.content = content;
         this.modifiedDate = modifiedDate;
     }
-
 }

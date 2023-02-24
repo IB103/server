@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 public class PostDTO {
 
@@ -35,6 +36,9 @@ public class PostDTO {
         private Long authorProfileImageId;
         private List<CommentDTO.ResponseDTO> commentList;
         private List<Long> imageId;
+
+        private Set<Long> postVoterId;
+
     }
 
     @Getter

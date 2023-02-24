@@ -49,6 +49,7 @@ public class AuthService {
                     .nickname(user.get().getNickname())
                     .birthday(user.get().getBirthday())
                     .check(true)
+                    .userId(user.get().getId())
                     .email(user.get().getEmail())
                     .profileImageId(profileImageId)
                     .tokenInfo(tokenInfo)

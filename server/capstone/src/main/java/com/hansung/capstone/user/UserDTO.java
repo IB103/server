@@ -42,6 +42,8 @@ public class UserDTO {
 
         private String email;
 
+        private Long userId;
+
         private String username;
 
         private String birthday;

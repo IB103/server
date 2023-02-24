@@ -1,5 +1,6 @@
 package com.hansung.capstone.community;
 
+import com.hansung.capstone.response.CommonResponse;
 import com.hansung.capstone.response.ListResponse;
 import com.hansung.capstone.response.ResponseService;
 import com.hansung.capstone.response.SingleResponse;
@@ -77,7 +78,31 @@ public class PostController {
             Post post = paging.getContent().get(i);
             res.add(this.postService.createResponse(post));
         }
-
         return new ResponseEntity<>(this.responseService.getListResponse(res), HttpStatus.OK);
     }
+
+    @GetMapping("/list/title-or-content")
+    public ResponseEntity<CommonResponse> getTitleOrContentPost(
+            @RequestParam String titleOrContent,
+            @RequestParam(defaultValue = "0") int page) {
+        try{
+            Page<Post> paging = this.postService.getTitleOrContentPost(titleOrContent, page);
+            List<PostDTO.PostResponseDTO> res = new ArrayList<>();
+            for(int i = 0; i < paging.getSize(); i++){
+                Post post = paging.getContent().get(i);
+                res.add(this.postService.createResponse(post));
+            }
+            return new ResponseEntity<>(this.responseService.getListResponse(res), HttpStatus.OK);
+        } catch (Exception e){
+            return new ResponseEntity<>(this.responseService.getFailureSingleResponse(e.getMessage()), HttpStatus.OK);
+        }
+    }
+
+    @GetMapping("/favorite")
+    public ResponseEntity<CommonResponse> postFavorite(
+            @RequestParam Long userId,
+            @RequestParam Long postId){
+        return new ResponseEntity<>(this.responseService.getSuccessSingleResponse(this.postService.setFavorite(userId,postId)), HttpStatus.OK);
+    }
+
 }

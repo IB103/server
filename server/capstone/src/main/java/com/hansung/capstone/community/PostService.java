@@ -15,5 +15,9 @@ public interface PostService {
 
     Page<Post> getUserNickNamePost(String nickname, int page);
 
+    Page<Post> getTitleOrContentPost(String titleOrContent, int page);
+
     PostDTO.PostResponseDTO getDetailPost(Long id);
+
+    PostDTO.PostResponseDTO setFavorite(Long userId, Long postId);
 }

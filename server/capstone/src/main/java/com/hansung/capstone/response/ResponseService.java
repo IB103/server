@@ -15,9 +15,9 @@ public class ResponseService {
         return singleResponse;
     }
 
-    public<T> SingleResponse<T> getFailureSingleResponse(){
+    public<T> SingleResponse<T> getFailureSingleResponse(T data){
         SingleResponse singleResponse = new SingleResponse();
-        singleResponse.data = null;
+        singleResponse.data = data;
         setFailResponse(singleResponse);
 
         return singleResponse;

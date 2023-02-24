@@ -1,8 +1,10 @@
 package com.hansung.capstone.community;
 
+import com.hansung.capstone.user.User;
 import com.hansung.capstone.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -25,7 +27,7 @@ public class CommentServiceImpl implements CommentService {
     public PostDTO.PostResponseDTO createComment(CommentDTO.CreateRequestDTO req) {
         Comment comment = Comment.builder()
                 .content(req.getContent())
-                .createDate(LocalDateTime.now())
+                .createdDate(LocalDateTime.now())
                 .post(this.postRepository.findById(req.getPostId()).get())
                 .author(this.userRepository.findById(req.getUserId()).get()).build();
         this.commentRepository.save(comment);
@@ -42,4 +44,24 @@ public class CommentServiceImpl implements CommentService {
         );
     }
 
+    @Override
+    @Transactional
+    public PostDTO.PostResponseDTO setFavorite(Long userId, Long postId, Long commentId) {
+        Post post = this.postRepository.findById(postId).orElseThrow( () ->
+                new IllegalArgumentException("게시글이 존재하지 않습니다.")
+        );
+
+        User user = this.userRepository.findById(userId).orElseThrow( () ->
+                new IllegalArgumentException("유저가 존재하지 않습니다.")
+        );
+        Comment comment = this.commentRepository.findById(commentId).orElseThrow( () ->
+                new IllegalArgumentException("댓글이 존재하지 않습니다.")
+        );
+        if(comment.getVoter().contains(user)){
+            comment.getVoter().remove(user);
+        }else{
+            comment.getVoter().add(user);
+        }
+        return this.postService.createResponse(post);
+    }
 }

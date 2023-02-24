@@ -1,5 +1,6 @@
 package com.hansung.capstone.community;
 
+import com.hansung.capstone.response.CommonResponse;
 import com.hansung.capstone.response.ResponseService;
 import com.hansung.capstone.response.SingleResponse;
 import lombok.RequiredArgsConstructor;
@@ -29,5 +30,13 @@ public class CommentController {
     public ResponseEntity<SingleResponse<PostDTO.PostResponseDTO>> modifyComment(@RequestBody CommentDTO.ModifyRequestDTO req){
         this.commentService.modifyComment(req.getId(), req.getContent());
         return new ResponseEntity<>(this.responseService.getSuccessSingleResponse(this.postService.getDetailPost(req.getPostId())), HttpStatus.OK);
+    }
+
+    @GetMapping("/favorite")
+    public ResponseEntity<CommonResponse> commentFavorite(
+            @RequestParam Long userId,
+            @RequestParam Long postId,
+            @RequestParam Long commentId){
+        return new ResponseEntity<>(this.responseService.getSuccessSingleResponse(this.commentService.setFavorite(userId,postId,commentId)), HttpStatus.OK);
     }
 }
