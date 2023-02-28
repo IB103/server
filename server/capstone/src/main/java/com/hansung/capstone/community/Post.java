@@ -3,9 +3,12 @@ package com.hansung.capstone.community;
 import com.hansung.capstone.user.User;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -15,6 +18,7 @@ import java.util.Set;
 public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "post_Id")
     private Long id;
 
     @Column(length = 40)
@@ -30,14 +34,15 @@ public class Post {
     @ManyToOne
     private User author;
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "post")
     private List<Comment> commentList;
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "post")
     private List<PostImage> postImages = new ArrayList<>();
 
     @ManyToMany
-    private Set<User> voter;
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private Set<User> voter = new HashSet<>();
 
     @Builder
     public Post(Post post ,String title, String content, LocalDateTime createdDate, User author){

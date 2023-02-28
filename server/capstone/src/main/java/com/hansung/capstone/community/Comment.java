@@ -4,8 +4,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hansung.capstone.user.User;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -15,6 +18,7 @@ import java.util.Set;
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "comment_id")
     private Long id;
 
     @Column(columnDefinition = "TEXT")
@@ -26,16 +30,20 @@ public class Comment {
 
     @ManyToOne
     @JsonIgnore
+    @JoinColumn(name = "post_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Post post;
 
     @ManyToOne
+    @JoinColumn(name = "user_id")
     private User author;
 
-    @OneToMany(mappedBy = "comment", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "comment")
     private List<ReComment> reCommentList;
 
     @ManyToMany
-    private Set<User> voter;
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private Set<User> voter = new HashSet<>();
 
     @Builder
     public Comment(String content, LocalDateTime createdDate, Post post, User author){

@@ -39,4 +39,17 @@ public class CommentController {
             @RequestParam Long commentId){
         return new ResponseEntity<>(this.responseService.getSuccessSingleResponse(this.commentService.setFavorite(userId,postId,commentId)), HttpStatus.OK);
     }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<CommonResponse> deleteComment(
+            @RequestParam Long userId,
+            @RequestParam Long commentId
+    ){
+        try{
+            this.commentService.deleteComment(userId,commentId);
+            return new ResponseEntity<>(this.responseService.getSuccessSingleResponse(null), HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(this.responseService.getFailureSingleResponse(null), HttpStatus.BAD_REQUEST);
+        }
+    }
 }

@@ -23,4 +23,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
             value = "SELECT p FROM Post p Where p.title LIKE %:titleOrContent% OR p.content LIKE %:titleOrContent%"
     )
     Page<Post> findAllSearch(@Param("titleOrContent")String titleOrContent, Pageable pageable);
+
+    void deleteById(Long id);
 }

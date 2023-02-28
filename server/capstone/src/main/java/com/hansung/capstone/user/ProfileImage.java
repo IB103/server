@@ -15,10 +15,11 @@ public class ProfileImage {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "image_id")
+    @Column(name = "profile_image_id")
     private Long id;
 
     @OneToOne
+    @JoinColumn(name = "user_id")
     private User user;
 
     private String originFileName;

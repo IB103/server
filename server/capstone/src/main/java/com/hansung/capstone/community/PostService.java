@@ -20,4 +20,6 @@ public interface PostService {
     PostDTO.PostResponseDTO getDetailPost(Long id);
 
     PostDTO.PostResponseDTO setFavorite(Long userId, Long postId);
+
+    void deletePost(Long userId, Long postId) throws Exception;
 }

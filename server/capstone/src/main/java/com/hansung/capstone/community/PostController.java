@@ -1,18 +1,19 @@
 package com.hansung.capstone.community;
 
-import com.hansung.capstone.response.CommonResponse;
-import com.hansung.capstone.response.ListResponse;
-import com.hansung.capstone.response.ResponseService;
-import com.hansung.capstone.response.SingleResponse;
+import com.hansung.capstone.response.*;
+import com.hansung.capstone.user.AuthService;
+import com.hansung.capstone.user.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,12 +26,14 @@ public class PostController {
 
     private final ResponseService responseService;
 
+    private final AuthService authService;
+
 
 
     @PostMapping("/create")
     public ResponseEntity<SingleResponse<PostDTO.PostResponseDTO>> createPost(
             @RequestPart(value = "requestDTO") PostDTO.CreateRequestDTO req,
-            @RequestPart(value = "image", required = false) List<MultipartFile> files)  {
+            @RequestPart(value = "imageList", required = false) List<MultipartFile> files)  {
         try {
             return new ResponseEntity<>(this.responseService.getSuccessSingleResponse(this.postService.createPost(req, files)), HttpStatus.CREATED);
         } catch (Exception e) {
@@ -41,21 +44,21 @@ public class PostController {
     @PutMapping("/modify")
     public ResponseEntity<SingleResponse<PostDTO.PostResponseDTO>> modifyPost(
             @RequestPart(value = "requestDTO") PostDTO.ModifyRequestDTO req,
-            @RequestPart(value = "image", required = false) List<MultipartFile> files ) throws Exception {
+            @RequestPart(value = "imageList", required = false) List<MultipartFile> files ) throws Exception {
         return new ResponseEntity<>(this.responseService.getSuccessSingleResponse(this.postService.modifyPost(req, files)), HttpStatus.OK);
     }
 
     @GetMapping("/list")
-    public ResponseEntity<ListResponse<PostDTO.PostResponseDTO>> getAllPost(@RequestParam(defaultValue = "0") int page) {
+    public ResponseEntity<PageResponse<PostDTO.PostResponseDTO>> getAllPost(@RequestParam(defaultValue = "0") int page) {
         Page<Post> paging = this.postService.getAllPost(page);
         List<PostDTO.PostResponseDTO> res = new ArrayList<>();
-        for(int i = 0; i < paging.getSize(); i++){
-            Post post = paging.getContent().get(i);
+        for(Post post : paging){
             res.add(this.postService.createResponse(post));
         }
 
-        return new ResponseEntity<>(this.responseService.getListResponse(res), HttpStatus.OK);
+        return new ResponseEntity<>(this.responseService.getPageResponse(paging.getTotalPages(),res), HttpStatus.OK);
     }
+
 
     @GetMapping("/detail")
     public ResponseEntity<SingleResponse<PostDTO.PostResponseDTO>> getDetailPost(@RequestParam Long id){
@@ -103,6 +106,19 @@ public class PostController {
             @RequestParam Long userId,
             @RequestParam Long postId){
         return new ResponseEntity<>(this.responseService.getSuccessSingleResponse(this.postService.setFavorite(userId,postId)), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<CommonResponse> deletePost(
+            @RequestParam Long userId,
+            @RequestParam Long postId
+    ){
+        try{
+            this.postService.deletePost(userId,postId);
+            return new ResponseEntity<>(this.responseService.getSuccessSingleResponse(null), HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(this.responseService.getFailureSingleResponse(null), HttpStatus.BAD_REQUEST);
+        }
     }
 
 }

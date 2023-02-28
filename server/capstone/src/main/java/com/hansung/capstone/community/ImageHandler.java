@@ -53,8 +53,11 @@ public class ImageHandler {
                     break;
                 }
                 else {  // 확장자가 jpeg, png인 파일들만 받아서 처리
-                    if(originalFileExtension.equals("jpeg") || originalFileExtension.equals("png")){
-                        extension = '.' + originalFileExtension;
+                    if(originalFileExtension.contains("jpeg") || originalFileExtension.contains("jpg")){
+                        extension = ".jpeg";
+                    }
+                    else if(originalFileExtension.contains("png")){
+                        extension = ".png";
                     }
                     else  // 다른 확장자일 경우 처리 x
                         break;

@@ -33,4 +33,17 @@ public class ReCommentController {
         return new ResponseEntity<>(this.responseService.getSuccessSingleResponse(
                 this.reCommentService.setFavorite(userId,postId,reCommentId)), HttpStatus.OK);
     }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<CommonResponse> deleteReComment(
+            @RequestParam Long userId,
+            @RequestParam Long reCommentId
+    ){
+        try{
+            this.reCommentService.deleteReComment(userId,reCommentId);
+            return new ResponseEntity<>(this.responseService.getSuccessSingleResponse(null), HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(this.responseService.getFailureSingleResponse(null), HttpStatus.BAD_REQUEST);
+        }
+    }
 }

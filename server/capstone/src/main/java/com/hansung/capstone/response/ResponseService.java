@@ -31,6 +31,15 @@ public class ResponseService {
         return listResponse;
     }
 
+    public<T> PageResponse<T> getPageResponse(int totalPage, List<T> data){
+        PageResponse pageResponse = new PageResponse();
+        pageResponse.totalPage = totalPage;
+        pageResponse.data = data;
+        setSuccessResponse(pageResponse);
+
+        return pageResponse;
+    }
+
     void setSuccessResponse(CommonResponse res){
         res.code = 100;
         res.success = true;

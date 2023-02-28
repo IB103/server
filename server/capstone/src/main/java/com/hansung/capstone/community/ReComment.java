@@ -7,8 +7,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.CompletionException;
 
@@ -19,7 +22,7 @@ public class ReComment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "recomment_id")
+    @Column(name = "re_comment_id")
     private Long id;
 
     @Column(columnDefinition = "TEXT")
@@ -31,13 +34,16 @@ public class ReComment {
 
     @ManyToOne
     @JsonIgnore
+    @JoinColumn(name = "comment_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Comment comment;
 
     @ManyToOne
     private User author;
 
-    @ManyToMany
-    private Set<User> voter;
+    @ManyToMany(cascade = CascadeType.REMOVE)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private Set<User> voter = new HashSet<>();
 
     @Builder
     public ReComment(String content, LocalDateTime createdDate, Comment comment, User author){
