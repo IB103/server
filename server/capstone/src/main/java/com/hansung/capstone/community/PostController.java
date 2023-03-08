@@ -77,8 +77,7 @@ public class PostController {
             @RequestParam(defaultValue = "0") int page) {
         Page<Post> paging = this.postService.getUserNickNamePost(nickname, page);
         List<PostDTO.PostResponseDTO> res = new ArrayList<>();
-        for(int i = 0; i < paging.getSize(); i++){
-            Post post = paging.getContent().get(i);
+        for(Post post : paging){
             res.add(this.postService.createResponse(post));
         }
         return new ResponseEntity<>(this.responseService.getListResponse(res), HttpStatus.OK);

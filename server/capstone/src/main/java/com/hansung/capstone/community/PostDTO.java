@@ -1,5 +1,6 @@
 package com.hansung.capstone.community;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,6 +17,7 @@ public class PostDTO {
     @Builder
     @AllArgsConstructor
     @NoArgsConstructor
+    @Schema(name = "PostCreateDTO")
     public static class CreateRequestDTO {
         private Long userId;
         private String title;

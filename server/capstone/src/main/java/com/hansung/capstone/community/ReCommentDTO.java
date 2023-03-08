@@ -1,5 +1,6 @@
 package com.hansung.capstone.community;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,6 +15,7 @@ public class ReCommentDTO {
     @Builder
     @AllArgsConstructor
     @NoArgsConstructor
+    @Schema(name = "ReCommentCreateDTO")
     public static class CreateRequestDTO{
         Long postId;
         Long commentId;
@@ -33,6 +35,7 @@ public class ReCommentDTO {
     @Getter
     @Builder
     @AllArgsConstructor
+    @Schema(name = "ReCommentResponseDTO")
     public static class ResponseDTO{
         Long id;
         String content;
