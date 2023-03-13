@@ -47,9 +47,9 @@ public class CommentController {
     ){
         try{
             this.commentService.deleteComment(userId,commentId);
-            return new ResponseEntity<>(this.responseService.getSuccessSingleResponse(null), HttpStatus.OK);
+            return new ResponseEntity<>(this.responseService.getSuccessSingleResponse("삭제가 완료되었습니다."), HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>(this.responseService.getFailureSingleResponse(null), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(this.responseService.getFailureSingleResponse(e.getMessage()), HttpStatus.BAD_REQUEST);
         }
     }
 }

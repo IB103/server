@@ -44,6 +44,10 @@ public class Post {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Set<User> voter = new HashSet<>();
 
+    @ManyToMany
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private Set<User> scraper = new HashSet<>();
+
     @Builder
     public Post(Post post ,String title, String content, LocalDateTime createdDate, User author){
         this.title = title;

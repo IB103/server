@@ -1,5 +1,6 @@
 package com.hansung.capstone.community;
 
+import com.hansung.capstone.user.AuthService;
 import com.hansung.capstone.user.User;
 import com.hansung.capstone.user.UserDetailsImpl;
 import com.hansung.capstone.user.UserRepository;
@@ -8,7 +9,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.naming.AuthenticationException;
+import javax.security.sasl.AuthenticationException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +26,8 @@ public class CommentServiceImpl implements CommentService {
     private final UserRepository userRepository;
 
     private final PostServiceImpl postService;
+
+    private final AuthService authService;
 
     @Override
     public PostDTO.PostResponseDTO createComment(CommentDTO.CreateRequestDTO req) {
@@ -49,14 +52,13 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public void deleteComment(Long userId, Long commentId) throws Exception {
-        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Long commentAuthorId = this.commentRepository.findById(commentId).orElseThrow( () ->
                 new IllegalArgumentException("댓글이 존재하지 않습니다.")
         ).getAuthor().getId();
-        if(userDetails.getUserId().equals(userId) && commentId.equals(commentAuthorId)){
+        if(authService.checkIdAndToken(userId) && userId.equals(commentAuthorId)){
             this.commentRepository.deleteById(commentId);
         }else{
-            throw new AuthenticationException();
+            throw new AuthenticationException("유저 정보와 토큰 값이 일치하지 않습니다.");
         }
     }
 

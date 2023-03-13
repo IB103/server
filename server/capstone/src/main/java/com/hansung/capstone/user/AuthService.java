@@ -155,4 +155,13 @@ public class AuthService {
 //                "logout",
 //                expiration);
 //    }
+
+    public boolean checkIdAndToken(Long userId){
+        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if(userId.equals(userDetails.getUserId())){
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

@@ -17,9 +17,13 @@ public interface PostService {
 
     Page<Post> getTitleOrContentPost(String titleOrContent, int page);
 
+    Page<Post> getScrapPost(Long userId, int page);
+
     PostDTO.PostResponseDTO getDetailPost(Long id);
 
     PostDTO.PostResponseDTO setFavorite(Long userId, Long postId);
+
+    PostDTO.PostResponseDTO setScrap(Long userId, Long postId);
 
     void deletePost(Long userId, Long postId) throws Exception;
 }

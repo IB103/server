@@ -1,5 +1,6 @@
 package com.hansung.capstone.community;
 
+import com.hansung.capstone.user.AuthService;
 import com.hansung.capstone.user.User;
 import com.hansung.capstone.user.UserDetailsImpl;
 import com.hansung.capstone.user.UserRepository;
@@ -24,6 +25,8 @@ public class PostServiceImpl implements PostService {
     private final UserRepository userRepository;
 
     private final PostImageRepository postImageRepository;
+
+    private final AuthService authService;
 
     private final ImageHandler imageHandler;
 
@@ -104,11 +107,10 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public void deletePost(Long userId, Long postId) throws Exception {
-        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Long postAuthorId = this.postRepository.findById(postId).orElseThrow( () ->
                 new IllegalArgumentException("게시글이 존재하지 않습니다.")
         ).getAuthor().getId();
-        if(userDetails.getUserId().equals(userId) && postId.equals(postAuthorId)){
+        if(authService.checkIdAndToken(userId)&& userId.equals(postAuthorId)){
             this.postRepository.deleteById(postId);
         }else{
             throw new AuthenticationException();
@@ -142,6 +144,14 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    public Page<Post> getScrapPost(Long userId, int page) {
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("created_date"));
+        Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
+        return this.postRepository.findAllScrap(userId, pageable);
+    }
+
+    @Override
     public PostDTO.PostResponseDTO getDetailPost(Long id) {
         return createResponse(this.postRepository.findById(id).get());
     }
@@ -160,6 +170,22 @@ public class PostServiceImpl implements PostService {
             post.getVoter().remove(user);
         }else {
             post.getVoter().add(user);
+        }
+        return createResponse(this.postRepository.findById(postId).get());
+    }
+
+    @Transactional
+    @Override
+    public PostDTO.PostResponseDTO setScrap(Long userId, Long postId) {
+        Post post = this.postRepository.findById(postId).orElseThrow( () ->
+                new IllegalArgumentException("게시글이 존재하지 않습니다."));
+
+        User user = this.userRepository.findById(userId).orElseThrow( () ->
+                new IllegalArgumentException("유저가 존재하지 않습니다."));
+        if(post.getScraper().contains(user)){
+            post.getScraper().remove(user);
+        }else {
+            post.getScraper().add(user);
         }
         return createResponse(this.postRepository.findById(postId).get());
     }
@@ -248,6 +274,14 @@ public class PostServiceImpl implements PostService {
             }
         }
 
+        Set<User> postScraper = req.getScraper();
+        Set<Long> postScraperId = new HashSet<>();
+        if(!postScraper.isEmpty()){
+            for(User user : postScraper) {
+                postScraperId.add(user.getId());
+            }
+        }
+
         PostDTO.PostResponseDTO res = PostDTO.PostResponseDTO.builder()
                 .id(req.getId())
                 .title(req.getTitle())
@@ -259,7 +293,9 @@ public class PostServiceImpl implements PostService {
                 .authorProfileImageId(profileImageId)
                 .commentList(comments)
                 .imageId(images)
-                .postVoterId(postVoterId).build();
+                .postVoterId(postVoterId)
+                .postScraperId(postScraperId)
+                .build();
         return res;
     }
 

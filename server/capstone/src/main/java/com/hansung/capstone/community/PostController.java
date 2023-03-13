@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -67,8 +68,8 @@ public class PostController {
 
 
     @GetMapping("/test")
-    public String test(){
-        return "hi";
+    public Principal test(Principal principal){
+        return principal;
     }
 
     @GetMapping("/list/nickname")
@@ -90,8 +91,23 @@ public class PostController {
         try{
             Page<Post> paging = this.postService.getTitleOrContentPost(titleOrContent, page);
             List<PostDTO.PostResponseDTO> res = new ArrayList<>();
-            for(int i = 0; i < paging.getSize(); i++){
-                Post post = paging.getContent().get(i);
+            for(Post post : paging){
+                res.add(this.postService.createResponse(post));
+            }
+            return new ResponseEntity<>(this.responseService.getListResponse(res), HttpStatus.OK);
+        } catch (Exception e){
+            return new ResponseEntity<>(this.responseService.getFailureSingleResponse(e.getMessage()), HttpStatus.OK);
+        }
+    }
+
+    @GetMapping("/list/scrap")
+    public ResponseEntity<CommonResponse> getScrapPost(
+            @RequestParam Long userId,
+            @RequestParam(defaultValue = "0") int page){
+        try{
+            Page<Post> paging = this.postService.getScrapPost(userId,page);
+            List<PostDTO.PostResponseDTO> res = new ArrayList<>();
+            for(Post post : paging){
                 res.add(this.postService.createResponse(post));
             }
             return new ResponseEntity<>(this.responseService.getListResponse(res), HttpStatus.OK);
@@ -105,6 +121,13 @@ public class PostController {
             @RequestParam Long userId,
             @RequestParam Long postId){
         return new ResponseEntity<>(this.responseService.getSuccessSingleResponse(this.postService.setFavorite(userId,postId)), HttpStatus.OK);
+    }
+
+    @GetMapping("/scrap")
+    public ResponseEntity<CommonResponse> postScrap(
+            @RequestParam Long userId,
+            @RequestParam Long postId){
+        return new ResponseEntity<>(this.responseService.getSuccessSingleResponse(this.postService.setScrap(userId, postId)), HttpStatus.OK);
     }
 
     @DeleteMapping("/delete")

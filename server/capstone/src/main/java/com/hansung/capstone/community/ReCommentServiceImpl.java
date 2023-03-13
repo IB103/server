@@ -1,5 +1,6 @@
 package com.hansung.capstone.community;
 
+import com.hansung.capstone.user.AuthService;
 import com.hansung.capstone.user.User;
 import com.hansung.capstone.user.UserDetailsImpl;
 import com.hansung.capstone.user.UserRepository;
@@ -22,6 +23,8 @@ public class ReCommentServiceImpl implements ReCommentService{
     private final UserRepository userRepository;
 
     private final PostRepository postRepository;
+
+    private final AuthService authService;
 
     private final PostServiceImpl postService;
     @Override
@@ -65,11 +68,10 @@ public class ReCommentServiceImpl implements ReCommentService{
 
     @Override
     public void deleteReComment(Long userId, Long reCommentId) throws Exception {
-        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Long reCommentAuthorId = this.reCommentRepository.findById(reCommentId).orElseThrow( () ->
                 new IllegalArgumentException("댓글이 존재하지 않습니다.")
         ).getAuthor().getId();
-        if(userDetails.getUserId().equals(userId) && reCommentId.equals(reCommentAuthorId)){
+        if(authService.checkIdAndToken(userId) && reCommentId.equals(reCommentAuthorId)){
             this.commentRepository.deleteById(reCommentId);
         }else{
             throw new AuthenticationException();

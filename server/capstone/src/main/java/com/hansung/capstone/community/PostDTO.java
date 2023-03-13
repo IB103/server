@@ -38,8 +38,8 @@ public class PostDTO {
         private Long authorProfileImageId;
         private List<CommentDTO.ResponseDTO> commentList;
         private List<Long> imageId;
-
         private Set<Long> postVoterId;
+        private Set<Long> postScraperId;
 
     }
 

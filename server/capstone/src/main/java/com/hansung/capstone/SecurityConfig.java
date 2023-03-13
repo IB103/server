@@ -36,6 +36,7 @@ public class SecurityConfig {
                         authorize ->
                                 authorize
                                         .requestMatchers("/api/users/test").authenticated()
+                                        .requestMatchers("/api/community/comment/delete").authenticated()
                                         .anyRequest().permitAll()
                 )
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
