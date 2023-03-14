@@ -119,36 +119,24 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Page<Post> getAllPost(int page) {
-        List<Sort.Order> sorts = new ArrayList<>();
-        sorts.add(Sort.Order.desc("createdDate"));
-        Pageable pageable = PageRequest.of(page,10, Sort.by(sorts));
-        return this.postRepository.findAll(pageable);
+        return this.postRepository.findAll(sortBy(page,"createdDate"));
     }
     
     @Override
     public Page<Post> getUserNickNamePost(String nickname, int page) {
         User user = this.userRepository.findByNickname(nickname).orElseThrow( () ->
                 new IllegalArgumentException("사용자가 존재하지 않습니다."));
-        List<Sort.Order> sorts = new ArrayList<>();
-        sorts.add(Sort.Order.desc("createdDate"));
-        Pageable pageable = PageRequest.of(page,10, Sort.by(sorts));
-        return this.postRepository.findAllByAuthor(user, pageable);
+        return this.postRepository.findAllByAuthor(user, sortBy(page,"createdDate"));
     }
 
     @Override
     public Page<Post> getTitleOrContentPost(String titleOrContent, int page) {
-        List<Sort.Order> sorts = new ArrayList<>();
-        sorts.add(Sort.Order.desc("createdDate"));
-        Pageable pageable = PageRequest.of(page,10, Sort.by(sorts));
-        return this.postRepository.findAllSearch(titleOrContent, pageable);
+        return this.postRepository.findAllSearch(titleOrContent, sortBy(page,"createdDate"));
     }
 
     @Override
     public Page<Post> getScrapPost(Long userId, int page) {
-        List<Sort.Order> sorts = new ArrayList<>();
-        sorts.add(Sort.Order.desc("created_date"));
-        Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
-        return this.postRepository.findAllScrap(userId, pageable);
+        return this.postRepository.findAllScrap(userId, sortBy(page,"created_date"));
     }
 
     @Override
@@ -302,5 +290,10 @@ public class PostServiceImpl implements PostService {
                 .build();
         return res;
     }
-
+    private Pageable sortBy(int page, String sortBy){
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc(sortBy));
+        Pageable pageable = PageRequest.of(page,10, Sort.by(sorts));
+        return pageable;
+    }
 }
