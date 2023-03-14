@@ -68,11 +68,17 @@ public class ReCommentServiceImpl implements ReCommentService{
 
     @Override
     public void deleteReComment(Long userId, Long reCommentId) throws Exception {
-        Long reCommentAuthorId = this.reCommentRepository.findById(reCommentId).orElseThrow( () ->
+        ReComment reComment = this.reCommentRepository.findById(reCommentId).orElseThrow( () ->
                 new IllegalArgumentException("댓글이 존재하지 않습니다.")
-        ).getAuthor().getId();
-        if(authService.checkIdAndToken(userId) && reCommentId.equals(reCommentAuthorId)){
-            this.commentRepository.deleteById(reCommentId);
+        );
+        if(authService.checkIdAndToken(userId) && reCommentId.equals(reComment.getId())){
+            if (reComment.getComment().getReCommentList().size() == 1){
+                this.commentRepository.deleteById(reComment.getComment().getId());
+            }
+            else{
+                this.reCommentRepository.deleteById(reCommentId);
+
+            }
         }else{
             throw new AuthenticationException();
         }

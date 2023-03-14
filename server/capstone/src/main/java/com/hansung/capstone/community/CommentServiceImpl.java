@@ -42,6 +42,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    @Transactional
     public void modifyComment(Long id, String content) {
         Optional<Comment> comment = this.commentRepository.findById(id);
         comment.ifPresent(s->{
@@ -51,12 +52,18 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    @Transactional
     public void deleteComment(Long userId, Long commentId) throws Exception {
-        Long commentAuthorId = this.commentRepository.findById(commentId).orElseThrow( () ->
+        Comment comment = this.commentRepository.findById(commentId).orElseThrow( () ->
                 new IllegalArgumentException("댓글이 존재하지 않습니다.")
-        ).getAuthor().getId();
-        if(authService.checkIdAndToken(userId) && userId.equals(commentAuthorId)){
-            this.commentRepository.deleteById(commentId);
+        );
+        if(authService.checkIdAndToken(userId) && userId.equals(comment.getAuthor().getId())){
+            if(comment.getReCommentList().isEmpty()){
+                this.commentRepository.deleteById(commentId);
+            }
+            else{
+                comment.modify("<--!Has Been Deleted!-->", LocalDateTime.now(), Boolean.TRUE);
+            }
         }else{
             throw new AuthenticationException("유저 정보와 토큰 값이 일치하지 않습니다.");
         }

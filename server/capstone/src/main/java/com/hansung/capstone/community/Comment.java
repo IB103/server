@@ -59,4 +59,12 @@ public class Comment {
         this.modifiedDate = modifiedDate;
     }
 
+    public void modify(String content, LocalDateTime modifiedDate, Boolean deleted){
+        this.content = content;
+        this.modifiedDate = modifiedDate;
+        if (deleted == true){
+            this.author = null;
+        }
+    }
+
 }

@@ -3,6 +3,8 @@ package com.hansung.capstone.user;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hansung.capstone.community.PostImage;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,7 +20,10 @@ public class User {
     private Long id;
 
     @Column(unique = true)
+    @Email
+    @NotBlank
     private String email;
+
 
     private String password;
 

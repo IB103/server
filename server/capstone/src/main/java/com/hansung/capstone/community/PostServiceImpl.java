@@ -239,19 +239,23 @@ public class PostServiceImpl implements PostService {
                         reCommentList.add(reCommentRes);
                     }
                 }
-                Long commentProfileImageId;
-                if(comment.getAuthor().getProfileImage() != null){
-                    commentProfileImageId = comment.getAuthor().getProfileImage().getId();
-                }else{
-                    commentProfileImageId = -1L;
+                Long commentProfileImageId = -1L;
+                Long commentAuthorId = -1L;
+                String commentAuthorNickname = "***";
+                if(comment.getAuthor() != null){
+                    commentAuthorId = comment.getAuthor().getId();
+                    commentAuthorNickname = comment.getAuthor().getNickname();
+                    if(comment.getAuthor().getProfileImage() != null){
+                        commentProfileImageId = comment.getAuthor().getProfileImage().getId();
+                    }
                 }
                 CommentDTO.ResponseDTO commentRes = CommentDTO.ResponseDTO.builder()
                         .id(comment.getId())
                         .content(comment.getContent())
                         .createdDate(comment.getCreatedDate())
                         .modifiedDate(comment.getModifiedDate())
-                        .userId(comment.getAuthor().getId())
-                        .userNickname(comment.getAuthor().getNickname())
+                        .userId(commentAuthorId)
+                        .userNickname(commentAuthorNickname)
                         .userProfileImageId(commentProfileImageId)
                         .reCommentList(reCommentList)
                         .commentVoterId((commentVoterId))
@@ -298,6 +302,5 @@ public class PostServiceImpl implements PostService {
                 .build();
         return res;
     }
-
 
 }
