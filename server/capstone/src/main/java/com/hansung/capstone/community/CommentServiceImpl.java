@@ -43,12 +43,13 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
-    public void modifyComment(Long id, String content) {
-        Optional<Comment> comment = this.commentRepository.findById(id);
+    public PostDTO.PostResponseDTO modifyComment(Long commentId, String content) {
+        Optional<Comment> comment = this.commentRepository.findById(commentId);
         comment.ifPresent(s->{
             comment.get().modify(content, LocalDateTime.now());
                 }
         );
+        return this.postService.createResponse(comment.get().getPost());
     }
 
     @Override

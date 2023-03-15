@@ -2,10 +2,8 @@ package com.hansung.capstone.community;
 
 import com.hansung.capstone.user.AuthService;
 import com.hansung.capstone.user.User;
-import com.hansung.capstone.user.UserDetailsImpl;
 import com.hansung.capstone.user.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

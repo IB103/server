@@ -2,6 +2,7 @@ package com.hansung.capstone.community;
 
 import com.hansung.capstone.user.User;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
@@ -22,9 +23,11 @@ public class Post {
     private Long id;
 
     @Column(length = 40)
+    @NotBlank
     private String title;
 
     @Column(columnDefinition = "TEXT")
+    @NotBlank
     private String content;
 
     private LocalDateTime createdDate;

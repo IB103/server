@@ -100,7 +100,7 @@ class PostControllerTest {
     @DisplayName("Put modify post test - /api/community/post/modify")
     void modifyPostTest() throws Exception {
         PostDTO.ModifyRequestDTO req = PostDTO.ModifyRequestDTO.builder()
-                .id(1L)
+                .postId(1L)
                 .title("제목 변경 테스트")
                 .content("내용 변경 테스트").build();
 

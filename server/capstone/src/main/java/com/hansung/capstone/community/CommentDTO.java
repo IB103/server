@@ -1,6 +1,8 @@
 package com.hansung.capstone.community;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,8 +20,11 @@ public class CommentDTO {
     @NoArgsConstructor
     @Schema(name = "CommentCreateDTO")
     public static class CreateRequestDTO {
+        @Positive
         Long postId;
+        @Positive
         Long userId;
+        @NotBlank
         String content;
     }
 
@@ -27,8 +32,11 @@ public class CommentDTO {
     @Builder
     @AllArgsConstructor
     public static class ModifyRequestDTO {
-        Long postId;
-        Long id;
+        @Positive
+        Long commentId;
+        @Positive
+        Long userId;
+        @NotBlank
         String content;
     }
 

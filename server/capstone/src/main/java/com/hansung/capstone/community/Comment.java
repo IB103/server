@@ -3,6 +3,7 @@ package com.hansung.capstone.community;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hansung.capstone.user.User;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
@@ -22,6 +23,7 @@ public class Comment {
     private Long id;
 
     @Column(columnDefinition = "TEXT")
+    @NotBlank
     private String content;
 
     private LocalDateTime createdDate;

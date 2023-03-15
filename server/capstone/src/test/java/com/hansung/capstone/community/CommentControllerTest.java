@@ -79,8 +79,8 @@ public class CommentControllerTest {
     @DisplayName("Post modify comment test - /api/community/comment/modify")
     void modifyCommentTest() throws Exception {
         CommentDTO.ModifyRequestDTO req = CommentDTO.ModifyRequestDTO.builder()
-                .postId(1L)
-                .id(1L)
+                .commentId(1L)
+                .userId(1L)
                 .content("수정테스트").build();
 
         mockMvc.perform(put("/api/community/comment/modify")

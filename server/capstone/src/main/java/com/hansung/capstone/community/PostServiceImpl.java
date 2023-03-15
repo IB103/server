@@ -55,8 +55,8 @@ public class PostServiceImpl implements PostService {
     @Transactional
     @Override
     public PostDTO.PostResponseDTO modifyPost(PostDTO.ModifyRequestDTO req, List<MultipartFile> files) throws Exception {
-        Optional<Post> modifyPost = this.postRepository.findById(req.getId());
-        List<PostImage> dbPostImageList = this.postImageRepository.findAllByPostId(req.getId());
+        Optional<Post> modifyPost = this.postRepository.findById(req.getUserId());
+        List<PostImage> dbPostImageList = this.postImageRepository.findAllByPostId(req.getUserId());
         List<MultipartFile> addFileList = new ArrayList<>();
         if(CollectionUtils.isEmpty(dbPostImageList)){ // db에 존재 x
             if(!CollectionUtils.isEmpty(files)){ // 전달 file 존재
@@ -102,7 +102,7 @@ public class PostServiceImpl implements PostService {
             modifyPost.get().modify(req.getTitle(), req.getContent(), LocalDateTime.now());
                 }
         );
-        return createResponse(this.postRepository.findById(req.getId()).get());
+        return createResponse(this.postRepository.findById(req.getUserId()).get());
     }
 
     @Override

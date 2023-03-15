@@ -1,6 +1,9 @@
 package com.hansung.capstone.user;
 
 import jakarta.annotation.security.RolesAllowed;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
 public class UserDTO {
@@ -9,10 +12,17 @@ public class UserDTO {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class SignUpRequestDTO {
+        @Email
+        @NotBlank
         private String email;
+        @NotBlank
+        @Size(min = 6, max = 14)
         private String password;
+        @NotBlank
         private String nickname;
+        @NotBlank
         private String username;
+        @Size(min = 8, max = 8)
         private String birthday;
 
     }
@@ -30,7 +40,9 @@ public class UserDTO {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class SignInRequestDTO {
+
         private String email;
+
         private String password;
     }
 
@@ -59,6 +71,7 @@ public class UserDTO {
     @Builder
     @AllArgsConstructor
     public static class DuplicateEmailCheckResponseDTO{
+
         private String email;
     }
 

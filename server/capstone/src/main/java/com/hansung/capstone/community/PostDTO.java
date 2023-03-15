@@ -2,6 +2,8 @@ package com.hansung.capstone.community;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,8 +21,11 @@ public class PostDTO {
     @NoArgsConstructor
     @Schema(name = "PostCreateDTO")
     public static class CreateRequestDTO {
+        @Positive
         private Long userId;
+        @NotBlank
         private String title;
+        @NotBlank
         private String content;
     }
 
@@ -47,8 +52,13 @@ public class PostDTO {
     @Builder
     @AllArgsConstructor
     public static class ModifyRequestDTO {
-        private Long id;
+        @Positive
+        private Long postId;
+        @NotBlank
         private String title;
+        @Positive
+        private Long userId;
+        @NotBlank
         private String content;
     }
 

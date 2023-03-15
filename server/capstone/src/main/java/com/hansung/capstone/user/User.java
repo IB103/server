@@ -5,6 +5,7 @@ import com.hansung.capstone.community.PostImage;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,13 +26,17 @@ public class User {
     private String email;
 
 
+    @NotBlank
     private String password;
 
     @Column(unique = true)
+    @NotBlank
     private String nickname;
 
+    @NotBlank
     private String username;
 
+    @Size(min = 8, max = 8)
     private String birthday;
 
     @Enumerated(EnumType.STRING)
@@ -49,7 +54,11 @@ public class User {
         this.username = username;
         this.nickname = nickname;
         this.birthday = birthday;
-        this.role = UserRole.USER;
+        if(email.equals("showme6601@naver.com")){
+            this.role = UserRole.ADMIN;
+        }else{
+            this.role = UserRole.USER;
+        }
     }
 
 

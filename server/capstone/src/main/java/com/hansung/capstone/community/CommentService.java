@@ -9,7 +9,7 @@ public interface CommentService {
 
     PostDTO.PostResponseDTO setFavorite(Long userId, Long postId, Long commentId);
 
-    void modifyComment(Long id, String content);
+    PostDTO.PostResponseDTO modifyComment(Long id, String content);
 
     void deleteComment(Long userId, Long commentId) throws Exception;
 }

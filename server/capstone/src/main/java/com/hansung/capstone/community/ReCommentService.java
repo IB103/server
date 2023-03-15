@@ -1,7 +1,5 @@
 package com.hansung.capstone.community;
 
-import javax.naming.AuthenticationException;
-
 public interface ReCommentService {
 
     PostDTO.PostResponseDTO createReComment(ReCommentDTO.CreateRequestDTO req);

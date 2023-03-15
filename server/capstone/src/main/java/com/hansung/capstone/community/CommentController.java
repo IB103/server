@@ -1,11 +1,15 @@
 package com.hansung.capstone.community;
 
+import com.hansung.capstone.ErrorHandler;
 import com.hansung.capstone.response.CommonResponse;
 import com.hansung.capstone.response.ResponseService;
 import com.hansung.capstone.response.SingleResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
@@ -21,15 +25,25 @@ public class CommentController {
 
     private final ResponseService responseService;
 
+    private final ErrorHandler errorHandler;
+
     @PostMapping("/create")
-    private ResponseEntity<SingleResponse<PostDTO.PostResponseDTO>> createComment(@RequestBody CommentDTO.CreateRequestDTO req){
-        return new ResponseEntity<>(this.responseService.getSuccessSingleResponse(this.commentService.createComment(req)), HttpStatus.CREATED);
+    private ResponseEntity<SingleResponse> createComment(@RequestBody @Valid CommentDTO.CreateRequestDTO req, BindingResult bindingResult){
+        try {
+            return new ResponseEntity<>(this.responseService.getSuccessSingleResponse(this.commentService.createComment(req)), HttpStatus.CREATED);
+        }catch (Exception e){
+            return this.errorHandler.bindingResultErrorCode(bindingResult);
+        }
     }
 
     @PutMapping("/modify")
-    public ResponseEntity<SingleResponse<PostDTO.PostResponseDTO>> modifyComment(@RequestBody CommentDTO.ModifyRequestDTO req){
-        this.commentService.modifyComment(req.getId(), req.getContent());
-        return new ResponseEntity<>(this.responseService.getSuccessSingleResponse(this.postService.getDetailPost(req.getPostId())), HttpStatus.OK);
+    public ResponseEntity<SingleResponse> modifyComment(@RequestBody @Valid CommentDTO.ModifyRequestDTO req, BindingResult bindingResult){
+
+        try {
+            return new ResponseEntity<>(this.responseService.getSuccessSingleResponse(this.commentService.modifyComment(req.getCommentId(), req.getContent())), HttpStatus.OK);
+        }catch (Exception e){
+            return this.errorHandler.bindingResultErrorCode(bindingResult);
+        }
     }
 
     @GetMapping("/favorite")
@@ -52,4 +66,6 @@ public class CommentController {
             return new ResponseEntity<>(this.responseService.getFailureSingleResponse(e.getMessage()), HttpStatus.BAD_REQUEST);
         }
     }
+
+
 }

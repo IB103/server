@@ -3,6 +3,7 @@ package com.hansung.capstone.community;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hansung.capstone.user.User;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -26,6 +27,7 @@ public class ReComment {
     private Long id;
 
     @Column(columnDefinition = "TEXT")
+    @NotBlank
     private String content;
 
     private LocalDateTime createdDate;
