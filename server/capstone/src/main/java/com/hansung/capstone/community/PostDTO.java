@@ -51,6 +51,7 @@ public class PostDTO {
     @Getter
     @Builder
     @AllArgsConstructor
+    @Schema(name = "PostModifyRequestDTO")
     public static class ModifyRequestDTO {
         @Positive
         private Long postId;

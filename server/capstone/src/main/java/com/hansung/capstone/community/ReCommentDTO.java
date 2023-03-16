@@ -33,6 +33,7 @@ public class ReCommentDTO {
     @Getter
     @Builder
     @AllArgsConstructor
+    @Schema(name = "ReCommentModifyRequestDTO")
     public static class ModifyRequestDTO{
         @Positive
         Long reCommentId;
