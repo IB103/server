@@ -45,6 +45,7 @@ public class Comment {
 
     @ManyToMany
     @OnDelete(action = OnDeleteAction.CASCADE)
+    @Column(name = "comment_id")
     private Set<User> voter = new HashSet<>();
 
     @Builder

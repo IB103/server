@@ -35,6 +35,7 @@ public class Post {
     private LocalDateTime modifiedDate;
 
     @ManyToOne
+    @JoinColumn(name = "user_id")
     private User author;
 
     @OneToMany(mappedBy = "post")
