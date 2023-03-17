@@ -41,7 +41,7 @@ public class ReComment {
     private Comment comment;
 
     @ManyToOne
-    @Column(name = "user_id")
+    @JoinColumn(name = "user_id")
     private User author;
 
     @ManyToMany(cascade = CascadeType.REMOVE)
