@@ -1,5 +1,6 @@
 package com.hansung.capstone.community;
 
+import com.hansung.capstone.DataNotFoundException;
 import com.hansung.capstone.user.AuthService;
 import com.hansung.capstone.user.User;
 import com.hansung.capstone.user.UserRepository;
@@ -62,6 +63,15 @@ public class ReCommentServiceImpl implements ReCommentService{
             reComment.getVoter().add(user);
         }
         return this.postService.createResponse(post);
+    }
+
+    @Override
+    @Transactional
+    public PostDTO.PostResponseDTO modifyReComment(Long reCommentId, String content) {
+        ReComment reComment = this.reCommentRepository.findById(reCommentId).orElseThrow(() ->
+                new DataNotFoundException("댓글이 존재하지 않습니다."));
+        reComment.modify(content, LocalDateTime.now());
+        return this.postService.createResponse(reComment.getComment().getPost());
     }
 
     @Override

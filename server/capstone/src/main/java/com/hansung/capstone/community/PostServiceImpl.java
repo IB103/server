@@ -296,4 +296,22 @@ public class PostServiceImpl implements PostService {
         Pageable pageable = PageRequest.of(page,10, Sort.by(sorts));
         return pageable;
     }
+
+    @Transactional
+    public PostDTO.PostResponseDTO coursePost(PostDTO.CreateRequestDTO req, List<MultipartFile> files) throws Exception {
+        Post newPost = Post.builder()
+                .title(req.getTitle())
+                .content(req.getContent())
+                .createdDate(LocalDateTime.now())
+                .author(this.userRepository.findById(req.getUserId()).get())
+                .build();
+        List<PostImage> postImageList = imageHandler.parsePostImageInfo(files);
+
+        if(!postImageList.isEmpty()){
+            for(PostImage postImage : postImageList){
+                newPost.addImage(postImageRepository.save(postImage));
+            }
+        }
+        return createResponse(this.postRepository.save(newPost));
+    }
 }

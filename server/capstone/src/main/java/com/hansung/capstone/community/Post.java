@@ -52,6 +52,9 @@ public class Post {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Set<User> scraper = new HashSet<>();
 
+    @OneToOne(mappedBy = "post")
+    private Course course;
+
     @Builder
     public Post(Post post ,String title, String content, LocalDateTime createdDate, User author){
         this.title = title;

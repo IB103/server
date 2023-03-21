@@ -67,9 +67,15 @@ public class PostController {
     }
 
 
-    @GetMapping("/test")
-    public Principal test(Principal principal){
-        return principal;
+    @PostMapping("/test")
+    public ResponseEntity<SingleResponse<PostDTO.PostResponseDTO>> coursePost(
+            @RequestPart(value = "requestDTO") PostDTO.CreateRequestDTO req,
+            @RequestPart(value = "imageList", required = false) List<MultipartFile> files)  {
+        try {
+            return new ResponseEntity<>(this.responseService.getSuccessSingleResponse(this.postService.createPost(req, files)), HttpStatus.CREATED);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @GetMapping("/list/nickname")

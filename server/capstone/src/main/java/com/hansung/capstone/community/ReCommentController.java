@@ -1,11 +1,14 @@
 package com.hansung.capstone.community;
 
+import com.hansung.capstone.ErrorHandler;
 import com.hansung.capstone.response.CommonResponse;
 import com.hansung.capstone.response.ResponseService;
 import com.hansung.capstone.response.SingleResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -18,6 +21,8 @@ public class ReCommentController {
     private final PostService postService;
 
     private final ResponseService responseService;
+
+    private final ErrorHandler errorHandler;
 
     @PostMapping("/create")
     private ResponseEntity<SingleResponse<PostDTO.PostResponseDTO>> createComment(@RequestBody ReCommentDTO.CreateRequestDTO req){
@@ -44,6 +49,15 @@ public class ReCommentController {
             return new ResponseEntity<>(this.responseService.getSuccessSingleResponse(null), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(this.responseService.getFailureSingleResponse(null), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PutMapping("/modify")
+    public ResponseEntity<SingleResponse> modifyReComment(@RequestBody @Valid ReCommentDTO.ModifyRequestDTO req, BindingResult bindingResult){
+        try{
+            return new ResponseEntity<>(this.responseService.getSuccessSingleResponse(this.reCommentService.modifyReComment(req.getReCommentId(), req.getContent())), HttpStatus.OK);
+        }catch (Exception e){
+            return this.errorHandler.bindingResultErrorCode(bindingResult);
         }
     }
 }
