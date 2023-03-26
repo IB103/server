@@ -1,10 +1,13 @@
 package com.hansung.capstone.user;
 
+import com.google.maps.model.LatLng;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+
+import java.util.List;
 
 public class UserDTO {
     @Getter
@@ -149,6 +152,11 @@ public class UserDTO {
         private String nickname;
 
         private Long profileImageId;
+    }
+
+    @Getter
+    public static class testDTO{
+        private List<LatLng> list;
     }
 
 }

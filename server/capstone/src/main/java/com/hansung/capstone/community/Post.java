@@ -22,6 +22,9 @@ public class Post {
     @Column(name = "post_Id")
     private Long id;
 
+    @Enumerated(EnumType.STRING)
+    private PostCategory postCategory;
+
     @Column(length = 40)
     @NotBlank
     private String title;
@@ -56,11 +59,12 @@ public class Post {
     private Course course;
 
     @Builder
-    public Post(Post post ,String title, String content, LocalDateTime createdDate, User author){
+    public Post(String title, String content, LocalDateTime createdDate, User author, PostCategory postCategory){
         this.title = title;
         this.content = content;
         this.createdDate = createdDate;
         this.author = author;
+        this.postCategory = postCategory;
     }
 
     public void modify(String title, String content, LocalDateTime modifiedDate){

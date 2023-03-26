@@ -1,7 +1,6 @@
 package com.hansung.capstone.community;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
@@ -23,6 +22,8 @@ public class PostDTO {
     public static class CreateRequestDTO {
         @Positive
         private Long userId;
+        @NotBlank
+        private String category;
         @NotBlank
         private String title;
         @NotBlank

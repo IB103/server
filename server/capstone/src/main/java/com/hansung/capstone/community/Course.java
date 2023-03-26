@@ -20,14 +20,18 @@ public class Course {
 
     private String coordinates;
 
+    @Enumerated(EnumType.STRING)
+    private CourseRegion region;
+
     @OneToOne
     @JoinColumn(name = "post_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Post post;
 
     @Builder
-    public Course(String coordinates, Post post){
+    public Course(String coordinates, Post post, CourseRegion region){
         this.coordinates = coordinates;
         this.post = post;
+        this.region = region;
     }
 }

@@ -1,5 +1,6 @@
 package com.hansung.capstone.user;
 
+import com.google.maps.model.LatLng;
 import com.hansung.capstone.response.ListResponse;
 import com.hansung.capstone.response.ResponseService;
 import com.hansung.capstone.response.SingleResponse;
@@ -92,10 +93,11 @@ public class UserController {
         return new ResponseEntity<>(this.responseService.getSuccessSingleResponse(req.getNickname()), HttpStatus.OK);
     }
 
-    @GetMapping("/test")
-    public String test() {
-        UserDetailsImpl user = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return user.getUserRole().getTitle();
+    @PostMapping("/test")
+    public List<LatLng> test(@RequestBody UserDTO.testDTO list) {
+        List<LatLng> lt = list.getList();
+        return lt;
+
     }
 
     @PutMapping("/set-profile-image")

@@ -1,13 +1,15 @@
 package com.hansung.capstone.community;
 
+import com.hansung.capstone.DataNotFoundException;
 import com.hansung.capstone.user.AuthService;
 import com.hansung.capstone.user.User;
-import com.hansung.capstone.user.UserDetailsImpl;
 import com.hansung.capstone.user.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.*;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -35,21 +37,53 @@ public class PostServiceImpl implements PostService {
 
     @Transactional
     @Override
-    public PostDTO.PostResponseDTO createPost(PostDTO.CreateRequestDTO req, List<MultipartFile> files) throws Exception {
-        Post newPost = Post.builder()
-                .title(req.getTitle())
-                .content(req.getContent())
-                .createdDate(LocalDateTime.now())
-                .author(this.userRepository.findById(req.getUserId()).get())
-                .build();
-        List<PostImage> postImageList = imageHandler.parsePostImageInfo(files);
+    public PostDTO.PostResponseDTO createFreeBoardPost(PostDTO.CreateRequestDTO req, List<MultipartFile> files) throws Exception {
+        if(req.getCategory().equals("FREE")) {
+            Post newPost = Post.builder()
+                    .title(req.getTitle())
+                    .content(req.getContent())
+                    .createdDate(LocalDateTime.now())
+                    .author(this.userRepository.findById(req.getUserId()).orElseThrow( () ->
+                    new DataNotFoundException("존재하지 않는 사용자입니다.")))
+                    .postCategory(PostCategory.FREE)
+                    .build();
+            List<PostImage> postImageList = imageHandler.parsePostImageInfo(files);
 
-        if(!postImageList.isEmpty()){
-            for(PostImage postImage : postImageList){
-                newPost.addImage(postImageRepository.save(postImage));
+            if(!postImageList.isEmpty()){
+                for(PostImage postImage : postImageList){
+                    newPost.addImage(postImageRepository.save(postImage));
+                }
             }
+            return createResponse(this.postRepository.save(newPost));
         }
-        return createResponse(this.postRepository.save(newPost));
+        else{
+            throw new IllegalArgumentException("잘못된 요청입니다.");
+        }
+    }
+
+    @Override
+    public Post createCourseBoardPost(CourseDTO.CreateRequestDTO req, List<MultipartFile> files) throws Exception {
+        if(req.getCategory().equals("COURSE")) {
+            Post newPost = Post.builder()
+                    .title(req.getTitle())
+                    .content(req.getContent())
+                    .createdDate(LocalDateTime.now())
+                    .author(this.userRepository.findById(req.getUserId()).orElseThrow( () ->
+                            new DataNotFoundException("존재하지 않는 사용자입니다.")))
+                    .postCategory(PostCategory.COURSE)
+                    .build();
+            List<PostImage> postImageList = imageHandler.parsePostImageInfo(files);
+
+            if(!postImageList.isEmpty()){
+                for(PostImage postImage : postImageList){
+                    newPost.addImage(postImageRepository.save(postImage));
+                }
+            }
+            return this.postRepository.save(newPost);
+        }
+        else{
+            throw new IllegalArgumentException("잘못된 요청입니다.");
+        }
     }
 
     @Transactional
@@ -121,7 +155,16 @@ public class PostServiceImpl implements PostService {
     public Page<Post> getAllPost(int page) {
         return this.postRepository.findAll(sortBy(page,"createdDate"));
     }
-    
+
+    @Override
+    public Page<Post> getBoardPost(int page, String board) {
+        if(board.equals("FREE")) {
+            return this.postRepository.findAllByPostCategory(sortBy(page, "createdDate"), PostCategory.FREE);
+        }else{
+            return this.postRepository.findAllByPostCategory(sortBy(page, "createdDate"), PostCategory.COURSE);
+        }
+    }
+
     @Override
     public Page<Post> getUserNickNamePost(String nickname, int page) {
         User user = this.userRepository.findByNickname(nickname).orElseThrow( () ->

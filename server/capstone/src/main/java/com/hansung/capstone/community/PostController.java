@@ -2,19 +2,13 @@ package com.hansung.capstone.community;
 
 import com.hansung.capstone.response.*;
 import com.hansung.capstone.user.AuthService;
-import com.hansung.capstone.user.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.lang.Nullable;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,7 +30,7 @@ public class PostController {
             @RequestPart(value = "requestDTO") PostDTO.CreateRequestDTO req,
             @RequestPart(value = "imageList", required = false) List<MultipartFile> files)  {
         try {
-            return new ResponseEntity<>(this.responseService.getSuccessSingleResponse(this.postService.createPost(req, files)), HttpStatus.CREATED);
+            return new ResponseEntity<>(this.responseService.getSuccessSingleResponse(this.postService.createFreeBoardPost(req, files)), HttpStatus.CREATED);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -49,15 +43,22 @@ public class PostController {
         return new ResponseEntity<>(this.responseService.getSuccessSingleResponse(this.postService.modifyPost(req, files)), HttpStatus.OK);
     }
 
-    @GetMapping("/list")
+    @GetMapping("/list/all")
     public ResponseEntity<PageResponse<PostDTO.PostResponseDTO>> getAllPost(@RequestParam(defaultValue = "0") int page) {
         Page<Post> paging = this.postService.getAllPost(page);
-        List<PostDTO.PostResponseDTO> res = new ArrayList<>();
-        for(Post post : paging){
-            res.add(this.postService.createResponse(post));
-        }
+        return new ResponseEntity<>(this.responseService.getPageResponse(paging.getTotalPages(),preProcess(paging)), HttpStatus.OK);
+    }
 
-        return new ResponseEntity<>(this.responseService.getPageResponse(paging.getTotalPages(),res), HttpStatus.OK);
+    @GetMapping("/list/free")
+    public ResponseEntity<PageResponse<PostDTO.PostResponseDTO>> getFreeBoardPost(@RequestParam(defaultValue = "0") int page){
+        Page<Post> paging = this.postService.getBoardPost(page,"FREE");
+        return new ResponseEntity<>(this.responseService.getPageResponse(paging.getTotalPages(),preProcess(paging)), HttpStatus.OK);
+    }
+
+    @GetMapping("/list/course")
+    public ResponseEntity<PageResponse<PostDTO.PostResponseDTO>> getCourseBoardPost(@RequestParam(defaultValue = "0") int page){
+        Page<Post> paging = this.postService.getBoardPost(page,"COURSE");
+        return new ResponseEntity<>(this.responseService.getPageResponse(paging.getTotalPages(),preProcess(paging)), HttpStatus.OK);
     }
 
 
@@ -72,7 +73,7 @@ public class PostController {
             @RequestPart(value = "requestDTO") PostDTO.CreateRequestDTO req,
             @RequestPart(value = "imageList", required = false) List<MultipartFile> files)  {
         try {
-            return new ResponseEntity<>(this.responseService.getSuccessSingleResponse(this.postService.createPost(req, files)), HttpStatus.CREATED);
+            return new ResponseEntity<>(this.responseService.getSuccessSingleResponse(this.postService.createFreeBoardPost(req, files)), HttpStatus.CREATED);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -83,11 +84,7 @@ public class PostController {
             @RequestParam String nickname,
             @RequestParam(defaultValue = "0") int page) {
         Page<Post> paging = this.postService.getUserNickNamePost(nickname, page);
-        List<PostDTO.PostResponseDTO> res = new ArrayList<>();
-        for(Post post : paging){
-            res.add(this.postService.createResponse(post));
-        }
-        return new ResponseEntity<>(this.responseService.getListResponse(res), HttpStatus.OK);
+        return new ResponseEntity<>(this.responseService.getListResponse(preProcess(paging)), HttpStatus.OK);
     }
 
     @GetMapping("/list/title-or-content")
@@ -96,11 +93,7 @@ public class PostController {
             @RequestParam(defaultValue = "0") int page) {
         try{
             Page<Post> paging = this.postService.getTitleOrContentPost(titleOrContent, page);
-            List<PostDTO.PostResponseDTO> res = new ArrayList<>();
-            for(Post post : paging){
-                res.add(this.postService.createResponse(post));
-            }
-            return new ResponseEntity<>(this.responseService.getListResponse(res), HttpStatus.OK);
+            return new ResponseEntity<>(this.responseService.getListResponse(preProcess(paging)), HttpStatus.OK);
         } catch (Exception e){
             return new ResponseEntity<>(this.responseService.getFailureSingleResponse(e.getMessage()), HttpStatus.OK);
         }
@@ -112,11 +105,7 @@ public class PostController {
             @RequestParam(defaultValue = "0") int page){
         try{
             Page<Post> paging = this.postService.getScrapPost(userId,page);
-            List<PostDTO.PostResponseDTO> res = new ArrayList<>();
-            for(Post post : paging){
-                res.add(this.postService.createResponse(post));
-            }
-            return new ResponseEntity<>(this.responseService.getListResponse(res), HttpStatus.OK);
+            return new ResponseEntity<>(this.responseService.getListResponse(preProcess(paging)), HttpStatus.OK);
         } catch (Exception e){
             return new ResponseEntity<>(this.responseService.getFailureSingleResponse(e.getMessage()), HttpStatus.OK);
         }
@@ -149,4 +138,11 @@ public class PostController {
         }
     }
 
+    private List<PostDTO.PostResponseDTO> preProcess(Page<Post> paging){
+        List<PostDTO.PostResponseDTO> res = new ArrayList<>();
+        for(Post post : paging){
+            res.add(this.postService.createResponse(post));
+        }
+        return res;
+    }
 }

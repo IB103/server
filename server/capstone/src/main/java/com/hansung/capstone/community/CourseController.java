@@ -13,8 +13,8 @@ public class CourseController {
 
     private final CourseServiceImpl courseService;
 
-    @PostMapping("/create")
-    public String createCourse(@RequestBody CourseDTO courseDTO){
-        return this.courseService.createCourse(courseDTO.getString(), courseDTO.getPostId());
-    }
+//    @PostMapping("/create")
+//    public String createCourse(@RequestBody CourseDTO courseDTO){
+//        return this.courseService.createCourse(courseDTO.getString(), courseDTO.getPostId());
+//    }
 }

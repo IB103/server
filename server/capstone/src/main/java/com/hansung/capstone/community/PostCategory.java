@@ -6,8 +6,9 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum PostCategory {
-    Free("1","자유 게시판");
+    FREE("FREE","자유 게시판"),
+    COURSE("COURSE","코스 추천 게시판");
 
     private final String key;
-    private final String category;
+    private final String title;
 }
