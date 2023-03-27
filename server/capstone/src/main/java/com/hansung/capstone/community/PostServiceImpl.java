@@ -1,6 +1,7 @@
 package com.hansung.capstone.community;
 
 import com.hansung.capstone.DataNotFoundException;
+import com.hansung.capstone.course.CourseDTO;
 import com.hansung.capstone.user.AuthService;
 import com.hansung.capstone.user.User;
 import com.hansung.capstone.user.UserRepository;
@@ -89,54 +90,67 @@ public class PostServiceImpl implements PostService {
     @Transactional
     @Override
     public PostDTO.PostResponseDTO modifyPost(PostDTO.ModifyRequestDTO req, List<MultipartFile> files) throws Exception {
-        Optional<Post> modifyPost = this.postRepository.findById(req.getUserId());
-        List<PostImage> dbPostImageList = this.postImageRepository.findAllByPostId(req.getUserId());
-        List<MultipartFile> addFileList = new ArrayList<>();
-        if(CollectionUtils.isEmpty(dbPostImageList)){ // db에 존재 x
-            if(!CollectionUtils.isEmpty(files)){ // 전달 file 존재
-                for (MultipartFile multipartFile : files){
-                    addFileList.add(multipartFile);
-                }
+        Post modifyPost = this.postRepository.findById(req.getPostId()).orElseThrow(
+                () ->  new DataNotFoundException("게시글이 존재하지 않습니다.")
+        );
+        List<PostImage> dbPostImageList = this.postImageRepository.findAllByPostId(req.getPostId());
+        List<Long> dbPostImageId = new ArrayList<>();
+        for(PostImage postImage : dbPostImageList){
+            dbPostImageId.add(postImage.getId());
+        }
+
+        dbPostImageId.removeAll(req.getImageId());
+        if(!dbPostImageId.isEmpty()){
+            for(Long id : dbPostImageId){
+                this.imageService.deleteImage(id);
             }
         }
-        else{ // DB에 한장이상 존재
-            if(CollectionUtils.isEmpty(files)){ // 전달 file x
-                for(PostImage dbPostImage : dbPostImageList){
-                    this.postImageRepository.deleteById(dbPostImage.getId());
-                }
-            }
-            else{
-                List<String> dbOriginNameList = new ArrayList<>();
-                for(PostImage dbPostImage : dbPostImageList){
-                    PostImageDTO dbPostImageDTO = this.imageService.findByFileId(dbPostImage.getId());
-                    String dbOriginName = dbPostImageDTO.getOriginFileName();
-                    if(!files.contains(dbOriginName)){
-                        this.postImageRepository.deleteById(dbPostImage.getId());
-                    } else{
-                        dbOriginNameList.add(dbOriginName);
-                    }
-                }
-                for (MultipartFile multipartFile : files){
-                    String multipartOriginName = multipartFile.getOriginalFilename();
-                    if(!dbOriginNameList.contains(multipartOriginName)){
-                        addFileList.add(multipartFile);
-                    }
-                }
-            }
-        }
-        List<PostImage> postImageList = imageHandler.parsePostImageInfo(addFileList);
+
+
+
+//        List<MultipartFile> addFileList = new ArrayList<>();
+//        if(CollectionUtils.isEmpty(dbPostImageList)){ // db에 존재 x
+//            if(!CollectionUtils.isEmpty(files)){ // 전달 file 존재
+//                for (MultipartFile multipartFile : files){
+//                    addFileList.add(multipartFile);
+//                }
+//            }
+//        }
+//        else{ // DB에 한장이상 존재
+//            if(CollectionUtils.isEmpty(files)){ // 전달 file x
+//                for(PostImage dbPostImage : dbPostImageList){
+//                    this.postImageRepository.deleteById(dbPostImage.getId());
+//                }
+//            }
+//            else{
+//                List<String> dbOriginNameList = new ArrayList<>();
+//                for(PostImage dbPostImage : dbPostImageList){
+//                    PostImageDTO dbPostImageDTO = this.imageService.findByFileId(dbPostImage.getId());
+//                    String dbOriginName = dbPostImageDTO.getOriginFileName();
+//                    if(!files.contains(dbOriginName)){
+//                        this.postImageRepository.deleteById(dbPostImage.getId());
+//                    } else{
+//                        dbOriginNameList.add(dbOriginName);
+//                    }
+//                }
+//                for (MultipartFile multipartFile : files){
+//                    String multipartOriginName = multipartFile.getOriginalFilename();
+//                    if(!dbOriginNameList.contains(multipartOriginName)){
+//                        addFileList.add(multipartFile);
+//                    }
+//                }
+//            }
+//        }
+        List<PostImage> postImageList = imageHandler.parsePostImageInfo(files);
 
         if(!postImageList.isEmpty()){
             for(PostImage postImage : postImageList){
-                modifyPost.get().addImage(postImageRepository.save(postImage));
+                modifyPost.addImage(postImageRepository.save(postImage));
             }
         }
 
-        modifyPost.ifPresent( s -> {
-            modifyPost.get().modify(req.getTitle(), req.getContent(), LocalDateTime.now());
-                }
-        );
-        return createResponse(this.postRepository.findById(req.getUserId()).get());
+        modifyPost.modify(req.getTitle(), req.getContent(), LocalDateTime.now());
+        return createResponse(this.postRepository.findById(req.getPostId()).get());
     }
 
     @Override

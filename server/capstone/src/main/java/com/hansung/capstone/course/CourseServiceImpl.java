@@ -1,7 +1,10 @@
-package com.hansung.capstone.community;
+package com.hansung.capstone.course;
 
 import com.google.maps.internal.PolylineEncoding;
 import com.google.maps.model.LatLng;
+import com.hansung.capstone.community.PostDTO;
+import com.hansung.capstone.community.PostRepository;
+import com.hansung.capstone.community.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;

@@ -1,4 +1,4 @@
-package com.hansung.capstone.community;
+package com.hansung.capstone.course;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;

@@ -1,13 +1,12 @@
-package com.hansung.capstone.community;
+package com.hansung.capstone.course;
 
+import com.hansung.capstone.community.Post;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
-
-import java.util.List;
 
 @Entity
 @Getter

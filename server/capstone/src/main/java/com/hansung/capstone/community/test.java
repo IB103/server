@@ -2,12 +2,10 @@ package com.hansung.capstone.community;
 
 import com.google.maps.internal.PolylineEncoding;
 import com.google.maps.model.LatLng;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
+import com.hansung.capstone.course.CourseServiceImpl;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 

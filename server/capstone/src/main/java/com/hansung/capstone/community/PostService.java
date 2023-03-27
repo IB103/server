@@ -1,5 +1,6 @@
 package com.hansung.capstone.community;
 
+import com.hansung.capstone.course.CourseDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 

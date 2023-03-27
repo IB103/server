@@ -1,4 +1,4 @@
-package com.hansung.capstone.community;
+package com.hansung.capstone.course;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

@@ -52,6 +52,7 @@ public class PostDTO {
     @Getter
     @Builder
     @AllArgsConstructor
+    @NoArgsConstructor
     @Schema(name = "PostModifyRequestDTO")
     public static class ModifyRequestDTO {
         @Positive
@@ -62,6 +63,7 @@ public class PostDTO {
         private Long userId;
         @NotBlank
         private String content;
+        private List<Long> imageId;
     }
 
     @Getter

@@ -1,5 +1,6 @@
 package com.hansung.capstone.community;
 
+import com.hansung.capstone.course.Course;
 import com.hansung.capstone.user.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;

@@ -1,6 +1,6 @@
-package com.hansung.capstone.community;
+package com.hansung.capstone.course;
 
-import org.springframework.stereotype.Service;
+import com.hansung.capstone.community.PostDTO;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;

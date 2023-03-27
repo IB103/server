@@ -1,4 +1,4 @@
-package com.hansung.capstone.community;
+package com.hansung.capstone.course;
 
 import com.hansung.capstone.response.ResponseService;
 import com.hansung.capstone.response.SingleResponse;
