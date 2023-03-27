@@ -23,11 +23,11 @@ public class CourseServiceImpl implements CourseService{
     public PostDTO.PostResponseDTO createCourse(CourseDTO.CreateRequestDTO req, List<MultipartFile> files) throws Exception {
         if (req.getCategory().equals("COURSE")) {
             Course newCourse = Course.builder()
-                    .coordinates(convertCoordinatesToPolyline(req.getCoordinates()))
-                    .region(CourseRegion.valueOf(req.getRegion()))
+                    .coordinates(req.getCoordinates())
+                    .region(CourseRegion.valueOf(req.getRegion().name()))
+                    .post(this.postService.createCourseBoardPost(req,files))
                     .build();
-            this.postService.createCourseBoardPost(req, files);
-            return null;
+            this.courseRepository.save(newCourse);
         }
         return null;
     }

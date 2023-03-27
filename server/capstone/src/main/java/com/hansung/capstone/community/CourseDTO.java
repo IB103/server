@@ -17,9 +17,10 @@ public class CourseDTO {
     @NoArgsConstructor
     @Schema(name = "CourseCreateDTO")
     public static class CreateRequestDTO{
-        private List<List<Double>> coordinates;
         @NotBlank
-        private String region;
+        private String coordinates;
+        @NotBlank
+        private CourseRegion region;
         @Positive
         private Long userId;
         @NotBlank
