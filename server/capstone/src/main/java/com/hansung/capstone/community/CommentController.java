@@ -30,6 +30,7 @@ public class CommentController {
     @PostMapping("/create")
     private ResponseEntity<CommonResponse> createComment(@RequestBody @Valid CommentDTO.CreateRequestDTO req, BindingResult bindingResult){
         try {
+            this.commentService.createComment(req);
             return new ResponseEntity<>(this.responseService.getSuccessCommonResponse(), HttpStatus.CREATED);
         }catch (Exception e){
             return this.errorHandler.bindingResultErrorCode(bindingResult);

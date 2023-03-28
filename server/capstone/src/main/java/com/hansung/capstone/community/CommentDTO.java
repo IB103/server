@@ -31,6 +31,7 @@ public class CommentDTO {
     @Getter
     @Builder
     @AllArgsConstructor
+    @NoArgsConstructor
     @Schema(name = "CommentModifyRequestDTO")
     public static class ModifyRequestDTO {
         @Positive
