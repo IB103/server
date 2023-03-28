@@ -1,5 +1,6 @@
 package com.hansung.capstone;
 
+import com.hansung.capstone.response.CommonResponse;
 import com.hansung.capstone.response.ResponseService;
 import com.hansung.capstone.response.SingleResponse;
 import org.springframework.context.annotation.Configuration;
@@ -20,7 +21,7 @@ public class ErrorHandler {
         this.responseService = responseService;
     }
 
-    public ResponseEntity<SingleResponse> bindingResultErrorCode(BindingResult bindingResult){
+    public ResponseEntity<CommonResponse> bindingResultErrorCode(BindingResult bindingResult){
         if(bindingResult.hasErrors()){
             List<FieldError> errors = bindingResult.getFieldErrors();
             List<String> errorMessages = new ArrayList<>();

@@ -28,19 +28,20 @@ public class CommentController {
     private final ErrorHandler errorHandler;
 
     @PostMapping("/create")
-    private ResponseEntity<SingleResponse> createComment(@RequestBody @Valid CommentDTO.CreateRequestDTO req, BindingResult bindingResult){
+    private ResponseEntity<CommonResponse> createComment(@RequestBody @Valid CommentDTO.CreateRequestDTO req, BindingResult bindingResult){
         try {
-            return new ResponseEntity<>(this.responseService.getSuccessSingleResponse(this.commentService.createComment(req)), HttpStatus.CREATED);
+            return new ResponseEntity<>(this.responseService.getSuccessCommonResponse(), HttpStatus.CREATED);
         }catch (Exception e){
             return this.errorHandler.bindingResultErrorCode(bindingResult);
         }
     }
 
     @PutMapping("/modify")
-    public ResponseEntity<SingleResponse> modifyComment(@RequestBody @Valid CommentDTO.ModifyRequestDTO req, BindingResult bindingResult){
+    public ResponseEntity<CommonResponse> modifyComment(@RequestBody @Valid CommentDTO.ModifyRequestDTO req, BindingResult bindingResult){
 
         try {
-            return new ResponseEntity<>(this.responseService.getSuccessSingleResponse(this.commentService.modifyComment(req.getCommentId(), req.getContent())), HttpStatus.OK);
+            this.commentService.modifyComment(req.getCommentId(), req.getContent());
+            return new ResponseEntity<>(this.responseService.getSuccessCommonResponse(), HttpStatus.OK);
         }catch (Exception e){
             return this.errorHandler.bindingResultErrorCode(bindingResult);
         }
@@ -61,7 +62,7 @@ public class CommentController {
     ){
         try{
             this.commentService.deleteComment(userId,commentId);
-            return new ResponseEntity<>(this.responseService.getSuccessSingleResponse("삭제가 완료되었습니다."), HttpStatus.OK);
+            return new ResponseEntity<>(this.responseService.getSuccessCommonResponse(), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(this.responseService.getFailureSingleResponse(e.getMessage()), HttpStatus.BAD_REQUEST);
         }

@@ -26,11 +26,12 @@ public class PostController {
 
 
     @PostMapping("/create")
-    public ResponseEntity<SingleResponse<PostDTO.PostResponseDTO>> createPost(
+    public ResponseEntity<CommonResponse> createPost(
             @RequestPart(value = "requestDTO") PostDTO.CreateRequestDTO req,
             @RequestPart(value = "imageList", required = false) List<MultipartFile> files)  {
         try {
-            return new ResponseEntity<>(this.responseService.getSuccessSingleResponse(this.postService.createFreeBoardPost(req, files)), HttpStatus.CREATED);
+            this.postService.createFreeBoardPost(req, files);
+            return new ResponseEntity<>(this.responseService.getSuccessCommonResponse(), HttpStatus.CREATED);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

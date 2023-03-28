@@ -7,6 +7,18 @@ import java.util.List;
 @Service
 public class ResponseService {
 
+    public CommonResponse getSuccessCommonResponse(){
+        CommonResponse commonResponse = new CommonResponse();
+        setSuccessResponse(commonResponse);
+        return commonResponse;
+    }
+
+    public CommonResponse getFailureCommonResponse(){
+        CommonResponse commonResponse = new CommonResponse();
+        setFailResponse(commonResponse);
+        return commonResponse;
+    }
+
     public<T> SingleResponse<T> getSuccessSingleResponse(T data){
         SingleResponse singleResponse = new SingleResponse();
         singleResponse.data = data;

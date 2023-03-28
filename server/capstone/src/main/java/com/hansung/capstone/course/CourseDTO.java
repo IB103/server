@@ -21,6 +21,8 @@ public class CourseDTO {
         private String coordinates;
         @NotBlank
         private CourseRegion region;
+        @NotBlank
+        private String originToDestination;
         @Positive
         private Long userId;
         @NotBlank
@@ -35,8 +37,9 @@ public class CourseDTO {
     @Builder
     @AllArgsConstructor
     public static class CourseResponseDTO{
-        private List<Double> coordinates;
+        private String coordinates;
         private String region;
+        private String originToDestination;
         private Long postId;
     }
 }

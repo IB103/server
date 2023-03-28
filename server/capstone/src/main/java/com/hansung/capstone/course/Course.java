@@ -22,6 +22,8 @@ public class Course {
     @Enumerated(EnumType.STRING)
     private CourseRegion region;
 
+    private String originToDestination;
+
     @OneToOne
     @JoinColumn(name = "post_id")
     @OnDelete(action = OnDeleteAction.CASCADE)

@@ -25,13 +25,13 @@ public class ReCommentController {
     private final ErrorHandler errorHandler;
 
     @PostMapping("/create")
-    private ResponseEntity<SingleResponse<PostDTO.PostResponseDTO>> createComment(@RequestBody ReCommentDTO.CreateRequestDTO req){
+    private ResponseEntity<CommonResponse> createReComment(@RequestBody ReCommentDTO.CreateRequestDTO req){
         return new ResponseEntity<>(this.responseService.getSuccessSingleResponse(
                 this.reCommentService.createReComment(req)), HttpStatus.CREATED);
     }
 
     @GetMapping("/favorite")
-    public ResponseEntity<CommonResponse> commentFavorite(
+    public ResponseEntity<CommonResponse> reCommentFavorite(
             @RequestParam Long userId,
             @RequestParam Long postId,
             @RequestParam Long reCommentId){
@@ -46,16 +46,17 @@ public class ReCommentController {
     ){
         try{
             this.reCommentService.deleteReComment(userId,reCommentId);
-            return new ResponseEntity<>(this.responseService.getSuccessSingleResponse(null), HttpStatus.OK);
+            return new ResponseEntity<>(this.responseService.getSuccessCommonResponse(), HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>(this.responseService.getFailureSingleResponse(null), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(this.responseService.getFailureCommonResponse(), HttpStatus.BAD_REQUEST);
         }
     }
 
     @PutMapping("/modify")
-    public ResponseEntity<SingleResponse> modifyReComment(@RequestBody @Valid ReCommentDTO.ModifyRequestDTO req, BindingResult bindingResult){
+    public ResponseEntity<CommonResponse> modifyReComment(@RequestBody @Valid ReCommentDTO.ModifyRequestDTO req, BindingResult bindingResult){
         try{
-            return new ResponseEntity<>(this.responseService.getSuccessSingleResponse(this.reCommentService.modifyReComment(req.getReCommentId(), req.getContent())), HttpStatus.OK);
+            this.reCommentService.modifyReComment(req.getReCommentId(), req.getContent());
+            return new ResponseEntity<>(this.responseService.getSuccessCommonResponse(), HttpStatus.OK);
         }catch (Exception e){
             return this.errorHandler.bindingResultErrorCode(bindingResult);
         }
