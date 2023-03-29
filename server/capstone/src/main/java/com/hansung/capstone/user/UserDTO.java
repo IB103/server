@@ -154,9 +154,4 @@ public class UserDTO {
         private Long profileImageId;
     }
 
-    @Getter
-    public static class testDTO{
-        private List<LatLng> list;
-    }
-
 }

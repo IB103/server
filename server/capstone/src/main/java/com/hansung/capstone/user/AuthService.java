@@ -26,7 +26,6 @@ public class AuthService {
     private final RedisService redisService;
     private final UserRepository userRepository;
 
-    private final String SERVER = "103Friends";
 
     // 로그인: 인증 정보 저장 및 비어 토큰 발급
     @Transactional
@@ -37,7 +36,7 @@ public class AuthService {
         Authentication authentication = authenticationManagerBuilder.getObject()
                 .authenticate(authenticationToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        TokenInfo tokenInfo = createToken(SERVER, req.getEmail(), getAuthorities(authentication));
+        TokenInfo tokenInfo = createToken("103Friends", req.getEmail(), getAuthorities(authentication));
         Optional<User> user = this.userRepository.findByEmail(req.getEmail());
         if(user.isPresent())
         {
@@ -74,16 +73,16 @@ public class AuthService {
         String requestAccessToken = resolveToken(requestAccessTokenInHeader);
 
         Authentication authentication = jwtTokenProvider.getAuthentication(requestAccessToken);
-        String email = getEmail(requestAccessToken);
+        String email = this.jwtTokenProvider.getClaims(requestAccessToken).get("email").toString();
 
-        String refreshTokenInRedis = redisService.getValues("RT(" + SERVER + "):" + email);
+        String refreshTokenInRedis = redisService.getValues("RT:" + email);
         if (refreshTokenInRedis == null) { // Redis에 저장되어 있는 RT가 없을 경우
             return null; // -> 재로그인 요청
         }
 
         // 요청된 RT의 유효성 검사 & Redis에 저장되어 있는 RT와 같은지 비교
         if(!jwtTokenProvider.validateRefreshToken(requestRefreshToken)) {
-            redisService.deleteValues("RT(" + SERVER + "):" + email); // 탈취 가능성 -> 삭제
+            redisService.deleteValues("RT:" + email); // 탈취 가능성 -> 삭제
             return null; // -> 재로그인 요청
         }
 
@@ -91,9 +90,9 @@ public class AuthService {
         String authorities = getAuthorities(authentication);
 
         // 토큰 재발급 및 Redis 업데이트
-        redisService.deleteValues("RT(" + SERVER + "):" + email); // 기존 RT 삭제
+        redisService.deleteValues("RT:" + email); // 기존 RT 삭제
         TokenInfo tokenInfo = jwtTokenProvider.createToken(email, authorities);
-        saveRefreshToken(SERVER, email, tokenInfo.getRefreshToken());
+        saveRefreshToken("103Friends", email, tokenInfo.getRefreshToken());
         return tokenInfo;
     }
 
@@ -101,8 +100,8 @@ public class AuthService {
     @Transactional
     public TokenInfo createToken(String provider, String email, String authorities) {
         // RT가 이미 있을 경우
-        if(redisService.getValues("RT(" + provider + "):" + email) != null) {
-            redisService.deleteValues("RT(" + provider + "):" + email); // 삭제
+        if(redisService.getValues("RT:" + email) != null) {
+            redisService.deleteValues("RT:" + email); // 삭제
         }
 
         // AT, RT 생성 및 Redis에 RT 저장
@@ -114,7 +113,7 @@ public class AuthService {
 //     RT를 Redis에 저장
     @Transactional
     public void saveRefreshToken(String provider, String email, String refreshToken) {
-        redisService.setValuesWithTimeout("RT(" + provider + "):" + email, // key
+        redisService.setValuesWithTimeout("RT:" + email, // key
                 refreshToken, // value
                 jwtTokenProvider.getTokenExpirationTime(refreshToken)); // timeout(milliseconds)
     }
@@ -124,12 +123,6 @@ public class AuthService {
         return authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
-    }
-
-    // AT로부터 principal 추출
-    public String getEmail(String requestAccessToken) {
-        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication();
-        return userDetails.getEmail();
     }
 
     // "Bearer {AT}"에서 {AT} 추출
@@ -144,12 +137,12 @@ public class AuthService {
     @Transactional
     public void logout(String requestAccessTokenInHeader) {
         String requestAccessToken = resolveToken(requestAccessTokenInHeader);
-        String email = getEmail(requestAccessToken);
+        String email = this.jwtTokenProvider.getClaims(requestAccessToken).get("email").toString();
 
         // Redis에 저장되어 있는 RT 삭제
-        String refreshTokenInRedis = redisService.getValues("RT(" + SERVER + "):" + email);
+        String refreshTokenInRedis = redisService.getValues("RT:" + email);
         if (refreshTokenInRedis != null) {
-            redisService.deleteValues("RT(" + SERVER + "):" + email);
+            redisService.deleteValues("RT:" + email);
         }
 
         // Redis에 로그아웃 처리한 AT 저장

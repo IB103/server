@@ -1,6 +1,7 @@
 package com.hansung.capstone.user;
 
 import com.google.maps.model.LatLng;
+import com.hansung.capstone.response.CommonResponse;
 import com.hansung.capstone.response.ListResponse;
 import com.hansung.capstone.response.ResponseService;
 import com.hansung.capstone.response.SingleResponse;
@@ -27,6 +28,8 @@ public class UserController {
     private final ResponseService responseService;
 
     private final AuthService authService;
+
+    private final JwtTokenProvider jwtTokenProvider;
 
 //    private final UserDetailServiceImpl userDetailService;
 
@@ -93,10 +96,9 @@ public class UserController {
         return new ResponseEntity<>(this.responseService.getSuccessSingleResponse(req.getNickname()), HttpStatus.OK);
     }
 
-    @PostMapping("/test")
-    public List<LatLng> test(@RequestBody UserDTO.testDTO list) {
-        List<LatLng> lt = list.getList();
-        return lt;
+    @GetMapping("/test")
+    public String test(@RequestHeader(value = "Authorization") String token) {
+        return this.jwtTokenProvider.getClaims(this.authService.resolveToken(token)).get("email").toString();
 
     }
 
@@ -105,5 +107,15 @@ public class UserController {
             @RequestPart(value = "requestDTO") UserDTO.ProfileImageRequestDTO req,
             @RequestPart(value = "image", required = false) MultipartFile image) throws Exception {
         return new ResponseEntity<>(this.responseService.getSuccessSingleResponse(this.userService.setProfileImage(req, image)), HttpStatus.OK);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<CommonResponse> logout(@RequestHeader("Authorization") String accessToken){
+        try{
+            this.authService.logout(accessToken);
+            return new ResponseEntity<>(this.responseService.getSuccessCommonResponse(), HttpStatus.OK);
+        } catch (Exception e){
+            return new ResponseEntity<>(this.responseService.getFailureCommonResponse(), HttpStatus.UNAUTHORIZED);
+        }
     }
 }

@@ -35,6 +35,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(
                         authorize ->
                                 authorize
+                                        .requestMatchers("/api/users/test").authenticated()
                                         .requestMatchers("/api/community/comment/delete").authenticated()
                                         .anyRequest().permitAll()
                 )
