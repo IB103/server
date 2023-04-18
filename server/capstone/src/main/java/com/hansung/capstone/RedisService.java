@@ -22,7 +22,7 @@ public class RedisService {
     //만료기간 설정
     @Transactional
     public void setValuesWithTimeout(String key, String value, long timeout){
-        redisTemplate.opsForValue().set(key,value,timeout, TimeUnit.MICROSECONDS);
+        redisTemplate.opsForValue().set(key,value,timeout, TimeUnit.MILLISECONDS);
     }
 
     public String getValues(String key){

@@ -1,8 +1,10 @@
 package com.hansung.capstone.user.email;
 
+import com.hansung.capstone.RedisService;
 import jakarta.mail.Message;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
+import lombok.RequiredArgsConstructor;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -12,17 +14,15 @@ import java.util.Map;
 import java.util.Random;
 
 @Service
+@RequiredArgsConstructor
 public class EmailServiceImpl implements EmailService{
 
 
     private final JavaMailSender javaMailSender;
 
+    private final RedisService redisService;
 
-    public EmailServiceImpl(JavaMailSender javaMailSender) {
-        this.javaMailSender = javaMailSender;
-    }
 
-    Map<String, String> codeMap = new HashMap<>();
     private MimeMessage createMessage(String to, String code) throws Exception{
         System.out.println("보내는 대상 : " + to);
         System.out.println("인증 번호 : "+code);
@@ -41,7 +41,7 @@ public class EmailServiceImpl implements EmailService{
         msgg+= "<p>감사합니다.<p>";
         msgg+= "<br>";
         msgg+= "<div align='center' style='border:1px solid black; font-family:verdana';>";
-        msgg+= "<h3 style='color:blue;'>회원가입 인증 코드입니다.</h3>";
+        msgg+= "<h3 style='color:blue;'>이메일 인증 코드입니다.</h3>";
         msgg+= "<div style='font-size:130%'>";
         msgg+= "CODE : <strong>";
         msgg+= code+"</strong><div><br/> ";
@@ -77,7 +77,7 @@ public class EmailServiceImpl implements EmailService{
     @Override
     public String sendSimpleMessage(String to, String code) throws Exception {
         MimeMessage message = createMessage(to,code);
-        codeMap.put(to,code);
+        this.redisService.setValuesWithTimeout("Email-Confirm:" + to, code, 300000); // 5분
         try{
             javaMailSender.send(message);
         }catch (MailException e){
@@ -89,8 +89,8 @@ public class EmailServiceImpl implements EmailService{
 
     @Override
     public Boolean checkCode(String email, String code) throws Exception {
-        if (codeMap.get(email).equals(code)){
-            codeMap.remove(email);
+        if (this.redisService.getValues("Email-Confirm:" + email).equals(code)){
+            this.redisService.deleteValues("Email-Confirm:" + email);
             return true;
         } else{
             return false;
