@@ -6,6 +6,9 @@ import com.hansung.capstone.community.PostDTO;
 import com.hansung.capstone.community.PostRepository;
 import com.hansung.capstone.community.PostService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -14,24 +17,48 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class CourseServiceImpl implements CourseService{
+public class UserCourseServiceImpl implements UserCourseService {
 
-    private final CourseRepository courseRepository;
+    private final UserCourseRepository userCourseRepository;
 
     private final PostRepository postRepository;
 
     private final PostService postService;
 
     @Override
-    public PostDTO.PostResponseDTO createCourse(CourseDTO.CreateRequestDTO req, List<MultipartFile> files) throws Exception {
+    public PostDTO.PostResponseDTO createCourse(UserCourseDTO.CreateRequestDTO req, List<MultipartFile> files) throws Exception {
         if (req.getCategory().equals("COURSE")) {
-            Course newCourse = Course.builder()
+            UserCourse newUserCourse = UserCourse.builder()
                     .coordinates(req.getCoordinates())
-                    .region(CourseRegion.valueOf(req.getRegion().name()))
+                    .region(UserCourseRegion.valueOf(req.getRegion()))
                     .post(this.postService.createCourseBoardPost(req,files))
+                    .originToDestination(req.getOriginToDestination())
                     .build();
-            this.courseRepository.save(newCourse);
+            this.userCourseRepository.save(newUserCourse).getPost();
         }
+        return null;
+    }
+
+    @Override
+    public Page<UserCourse> getCourseListByRegion(int page, String region) {
+        Pageable pageable = PageRequest.of(page, 10);
+        Page<UserCourse> paging = this.userCourseRepository.findAllByRegion(pageable,region);
+        return paging;
+    }
+
+    public UserCourseDTO.CourseResponseDTO createResponse(UserCourse userCourse) {
+        UserCourseDTO.CourseResponseDTO res = UserCourseDTO.CourseResponseDTO.builder()
+                .coordinates(userCourse.getCoordinates())
+                .originToDestination(userCourse.getOriginToDestination())
+                .numOfFavorite(userCourse.getPost().getVoter().size())
+                .region(userCourse.getRegion().name())
+                .postId(userCourse.getPost().getId())
+                .build();
+        return res;
+    }
+
+    @Override
+    public PostDTO.PostResponseDTO getDetailPost(Long id) {
         return null;
     }
 

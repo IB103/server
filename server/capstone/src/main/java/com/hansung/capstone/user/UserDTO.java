@@ -132,7 +132,7 @@ public class UserDTO {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class ProfileImageRequestDTO{
-        private Long id;
+        private Long userId;
 
         private Long profileImageId;
     }

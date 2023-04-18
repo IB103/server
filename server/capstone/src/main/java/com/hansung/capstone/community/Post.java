@@ -1,6 +1,6 @@
 package com.hansung.capstone.community;
 
-import com.hansung.capstone.course.Course;
+import com.hansung.capstone.course.UserCourse;
 import com.hansung.capstone.user.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -57,7 +57,7 @@ public class Post {
     private Set<User> scraper = new HashSet<>();
 
     @OneToOne(mappedBy = "post")
-    private Course course;
+    private UserCourse userCourse;
 
     @Builder
     public Post(String title, String content, LocalDateTime createdDate, User author, PostCategory postCategory){

@@ -1,5 +1,6 @@
 package com.hansung.capstone.course;
 
+import com.hansung.capstone.community.CommentDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
@@ -8,9 +9,11 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
-public class CourseDTO {
+public class UserCourseDTO {
     @Getter
     @Builder
     @AllArgsConstructor
@@ -20,7 +23,7 @@ public class CourseDTO {
         @NotBlank
         private String coordinates;
         @NotBlank
-        private CourseRegion region;
+        private String region;
         @NotBlank
         private String originToDestination;
         @Positive
@@ -41,5 +44,27 @@ public class CourseDTO {
         private String region;
         private String originToDestination;
         private Long postId;
+        private int numOfFavorite;
+    }
+
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    public static class CourseDetailResponseDTO {
+        private Long id;
+        private String title;
+        private String content;
+        private LocalDateTime createdDate;
+        private LocalDateTime modifiedDate;
+        private Long authorId;
+        private String nickname;
+        private Long authorProfileImageId;
+        private List<CommentDTO.ResponseDTO> commentList;
+        private List<Long> imageId;
+        private Set<Long> postVoterId;
+        private Set<Long> postScraperId;
+
+        private List<String> waypoint;
+
     }
 }

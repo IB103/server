@@ -133,7 +133,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDTO.ProfileImageResponseDTO setProfileImage(UserDTO.ProfileImageRequestDTO req, MultipartFile Image) throws Exception {
         ProfileImage profileImage = this.imageHandler.parseProfileImageInfo(Image);
-        Optional<User> user = this.userRepository.findById(req.getId());
+        Optional<User> user = this.userRepository.findById(req.getUserId());
         if (profileImage != null) {
             user.ifPresent(s -> {
                 if (req.getProfileImageId() != -1L) {

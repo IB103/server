@@ -1,7 +1,7 @@
 package com.hansung.capstone.community;
 
 import com.hansung.capstone.DataNotFoundException;
-import com.hansung.capstone.course.CourseDTO;
+import com.hansung.capstone.course.UserCourseDTO;
 import com.hansung.capstone.user.AuthService;
 import com.hansung.capstone.user.User;
 import com.hansung.capstone.user.UserRepository;
@@ -12,7 +12,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.naming.AuthenticationException;
@@ -63,7 +62,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Post createCourseBoardPost(CourseDTO.CreateRequestDTO req, List<MultipartFile> files) throws Exception {
+    public Post createCourseBoardPost(UserCourseDTO.CreateRequestDTO req, List<MultipartFile> files) throws Exception {
         if(req.getCategory().equals("COURSE")) {
             Post newPost = Post.builder()
                     .title(req.getTitle())

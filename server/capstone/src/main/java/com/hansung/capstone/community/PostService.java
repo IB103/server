@@ -1,6 +1,6 @@
 package com.hansung.capstone.community;
 
-import com.hansung.capstone.course.CourseDTO;
+import com.hansung.capstone.course.UserCourseDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -9,7 +9,7 @@ import java.util.List;
 public interface PostService {
     PostDTO.PostResponseDTO createFreeBoardPost(PostDTO.CreateRequestDTO req, List<MultipartFile> files) throws Exception;
 
-    Post createCourseBoardPost(CourseDTO.CreateRequestDTO req, List<MultipartFile> files) throws Exception;
+    Post createCourseBoardPost(UserCourseDTO.CreateRequestDTO req, List<MultipartFile> files) throws Exception;
 
     PostDTO.PostResponseDTO modifyPost(PostDTO.ModifyRequestDTO req, List<MultipartFile> files) throws Exception;
 

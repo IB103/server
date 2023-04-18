@@ -8,19 +8,22 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import java.util.List;
+
 @Entity
 @Getter
 @NoArgsConstructor
-public class Course {
+public class UserCourse {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(columnDefinition = "TEXT")
     private String coordinates;
 
     @Enumerated(EnumType.STRING)
-    private CourseRegion region;
+    private UserCourseRegion region;
 
     private String originToDestination;
 
@@ -30,9 +33,10 @@ public class Course {
     private Post post;
 
     @Builder
-    public Course(String coordinates, Post post, CourseRegion region){
+    public UserCourse(String coordinates, Post post, UserCourseRegion region, String originToDestination){
         this.coordinates = coordinates;
         this.post = post;
         this.region = region;
+        this.originToDestination = originToDestination;
     }
 }

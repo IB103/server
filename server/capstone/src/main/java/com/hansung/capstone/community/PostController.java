@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -70,14 +71,8 @@ public class PostController {
 
 
     @PostMapping("/test")
-    public ResponseEntity<SingleResponse<PostDTO.PostResponseDTO>> coursePost(
-            @RequestPart(value = "requestDTO") PostDTO.CreateRequestDTO req,
-            @RequestPart(value = "imageList", required = false) List<MultipartFile> files)  {
-        try {
-            return new ResponseEntity<>(this.responseService.getSuccessSingleResponse(this.postService.createFreeBoardPost(req, files)), HttpStatus.CREATED);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+    public String coursePost(@RequestBody String coordinates){
+        return coordinates.replaceAll("\\\\","");
     }
 
     @GetMapping("/list/nickname")

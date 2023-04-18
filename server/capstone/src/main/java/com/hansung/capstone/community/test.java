@@ -2,7 +2,7 @@ package com.hansung.capstone.community;
 
 import com.google.maps.internal.PolylineEncoding;
 import com.google.maps.model.LatLng;
-import com.hansung.capstone.course.CourseServiceImpl;
+import com.hansung.capstone.course.UserCourseServiceImpl;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -58,7 +58,7 @@ public class test {
             LatLng latLng = new LatLng(lat, lng);
             latLngList.add(latLng);
         }
-        sb.append(CourseServiceImpl.Polyline.encode(latLngList));
+        sb.append(UserCourseServiceImpl.Polyline.encode(latLngList));
         return sb.toString();
     }
 

@@ -105,8 +105,9 @@ public class UserController {
     @PutMapping("/set-profile-image")
     public ResponseEntity<SingleResponse<UserDTO.ProfileImageResponseDTO>> setProfileImage(
             @RequestPart(value = "requestDTO") UserDTO.ProfileImageRequestDTO req,
-            @RequestPart(value = "image", required = false) MultipartFile image) throws Exception {
-        return new ResponseEntity<>(this.responseService.getSuccessSingleResponse(this.userService.setProfileImage(req, image)), HttpStatus.OK);
+            @RequestPart(value = "imageList", required = false) MultipartFile imageList) throws Exception {
+        System.out.println("hi");
+        return new ResponseEntity<>(this.responseService.getSuccessSingleResponse(this.userService.setProfileImage(req, imageList)), HttpStatus.OK);
     }
 
     @PostMapping("/logout")

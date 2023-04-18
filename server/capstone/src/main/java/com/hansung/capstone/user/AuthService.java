@@ -92,7 +92,7 @@ public class AuthService {
         // 토큰 재발급 및 Redis 업데이트
         redisService.deleteValues("RT:" + email); // 기존 RT 삭제
         TokenInfo tokenInfo = jwtTokenProvider.createToken(email, authorities);
-        saveRefreshToken("103Friends", email, tokenInfo.getRefreshToken());
+        saveRefreshToken(email, tokenInfo.getRefreshToken());
         return tokenInfo;
     }
 
@@ -106,13 +106,13 @@ public class AuthService {
 
         // AT, RT 생성 및 Redis에 RT 저장
         TokenInfo tokenInfo = jwtTokenProvider.createToken(email, authorities);
-        saveRefreshToken(provider, email, tokenInfo.getRefreshToken());
+        saveRefreshToken(email, tokenInfo.getRefreshToken());
         return tokenInfo;
     }
 
 //     RT를 Redis에 저장
     @Transactional
-    public void saveRefreshToken(String provider, String email, String refreshToken) {
+    public void saveRefreshToken(String email, String refreshToken) {
         redisService.setValuesWithTimeout("RT:" + email, // key
                 refreshToken, // value
                 jwtTokenProvider.getTokenExpirationTime(refreshToken)); // timeout(milliseconds)

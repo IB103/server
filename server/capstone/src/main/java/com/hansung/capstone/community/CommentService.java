@@ -1,8 +1,5 @@
 package com.hansung.capstone.community;
 
-import javax.naming.AuthenticationException;
-import java.util.Optional;
-
 public interface CommentService {
 
     PostDTO.PostResponseDTO createComment(CommentDTO.CreateRequestDTO req);
