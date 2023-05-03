@@ -53,14 +53,10 @@ public class ImageHandler {
                     break;
                 }
                 else {  // 확장자가 jpeg, png인 파일들만 받아서 처리
-                    if(originalFileExtension.contains("jpeg") || originalFileExtension.contains("jpg")){
-                        extension = ".jpeg";
-                    }
-                    else if(originalFileExtension.contains("png")){
-                        extension = ".png";
-                    }
-                    else  // 다른 확장자일 경우 처리 x
+                    extension = fileExtensionCheck(originalFileExtension);
+                    if (extension == null){
                         break;
+                    }
                 }
 
                 String new_file_name = System.nanoTime() + extension;
@@ -114,11 +110,10 @@ public class ImageHandler {
                     throw new RuntimeException();
                 }
                 else {  // 확장자가 jpeg, png인 파일들만 받아서 처리
-                    if(originalFileExtension.equals("jpeg") || originalFileExtension.equals("png")){
-                        extension = '.' + originalFileExtension;
-                    }
-                    else  // 다른 확장자일 경우 처리 x
+                    extension = fileExtensionCheck(originalFileExtension);
+                    if (extension == null){
                         throw new RuntimeException();
+                    }
                 }
 
                 String new_file_name = System.nanoTime() + extension;
@@ -143,5 +138,14 @@ public class ImageHandler {
             }else{
             throw new RuntimeException();
         }
+    }
+
+    private String fileExtensionCheck(String originFileExtension){
+        if(originFileExtension.contains("jpeg") || originFileExtension.contains("jpg")){
+            return ".jpeg";
+        } else if (originFileExtension.contains("png")) {
+            return ".png";
+        }
+        return null;
     }
 }
