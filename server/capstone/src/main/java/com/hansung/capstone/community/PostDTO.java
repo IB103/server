@@ -1,5 +1,6 @@
 package com.hansung.capstone.community;
 
+import com.hansung.capstone.course.CourseImageInfoDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
@@ -33,7 +34,7 @@ public class PostDTO {
     @Getter
     @Builder
     @AllArgsConstructor
-    public static class PostResponseDTO {
+    public static class FreePostResponseDTO {
         private Long id;
         private String title;
         private String content;
@@ -44,6 +45,26 @@ public class PostDTO {
         private Long authorProfileImageId;
         private List<CommentDTO.ResponseDTO> commentList;
         private List<Long> imageId;
+        private Set<Long> postVoterId;
+        private Set<Long> postScraperId;
+
+    }
+
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    public static class CoursePostResponseDTO {
+        private Long id;
+        private String title;
+        private String content;
+        private LocalDateTime createdDate;
+        private LocalDateTime modifiedDate;
+        private Long authorId;
+        private String nickname;
+        private Long authorProfileImageId;
+        private List<CommentDTO.ResponseDTO> commentList;
+        private List<Long> imageId;
+        private List<CourseImageInfoDTO.responseDTO> imageInfoList;
         private Set<Long> postVoterId;
         private Set<Long> postScraperId;
 

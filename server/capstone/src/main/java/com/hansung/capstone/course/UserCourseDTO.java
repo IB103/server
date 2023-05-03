@@ -34,6 +34,8 @@ public class UserCourseDTO {
         private String title;
         @NotBlank
         private String content;
+
+        private List<ImageInfo> imageInfoList;
     }
 
     @Getter

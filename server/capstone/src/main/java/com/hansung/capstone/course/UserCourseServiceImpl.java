@@ -26,12 +26,12 @@ public class UserCourseServiceImpl implements UserCourseService {
     private final PostService postService;
 
     @Override
-    public PostDTO.PostResponseDTO createCourse(UserCourseDTO.CreateRequestDTO req, List<MultipartFile> files) throws Exception {
+    public PostDTO.FreePostResponseDTO createCourse(UserCourseDTO.CreateRequestDTO req, List<MultipartFile> files, MultipartFile thumbnail) throws Exception {
         if (req.getCategory().equals("COURSE")) {
             UserCourse newUserCourse = UserCourse.builder()
                     .coordinates(req.getCoordinates())
                     .region(UserCourseRegion.valueOf(req.getRegion()))
-                    .post(this.postService.createCourseBoardPost(req,files))
+                    .post(this.postService.createCourseBoardPost(req,files,thumbnail))
                     .originToDestination(req.getOriginToDestination())
                     .build();
             this.userCourseRepository.save(newUserCourse).getPost();
@@ -58,7 +58,7 @@ public class UserCourseServiceImpl implements UserCourseService {
     }
 
     @Override
-    public PostDTO.PostResponseDTO getDetailPost(Long id) {
+    public PostDTO.FreePostResponseDTO getDetailPost(Long id) {
         return null;
     }
 

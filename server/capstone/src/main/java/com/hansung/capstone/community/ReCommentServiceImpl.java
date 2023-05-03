@@ -27,7 +27,7 @@ public class ReCommentServiceImpl implements ReCommentService{
 
     private final PostServiceImpl postService;
     @Override
-    public PostDTO.PostResponseDTO createReComment(ReCommentDTO.CreateRequestDTO req) {
+    public PostDTO.FreePostResponseDTO createReComment(ReCommentDTO.CreateRequestDTO req) {
         ReComment reComment = ReComment.builder()
                 .content(req.getContent())
                 .createdDate(LocalDateTime.now())
@@ -41,12 +41,12 @@ public class ReCommentServiceImpl implements ReCommentService{
         Post post = this.postRepository.findById(req.getPostId()).orElseThrow( () ->
                 new IllegalArgumentException("게시글이 존재하지 않습니다.")
                 );
-        return this.postService.createResponse(post);
+        return this.postService.createFreeBoardResponse(post);
     }
 
     @Override
     @Transactional
-    public PostDTO.PostResponseDTO setFavorite(Long userId, Long postId,Long reCommentId) {
+    public PostDTO.FreePostResponseDTO setFavorite(Long userId, Long postId, Long reCommentId) {
         Post post = this.postRepository.findById(postId).orElseThrow( () ->
                 new IllegalArgumentException("게시글이 존재하지 않습니다.")
         );
@@ -62,16 +62,16 @@ public class ReCommentServiceImpl implements ReCommentService{
         }else{
             reComment.getVoter().add(user);
         }
-        return this.postService.createResponse(post);
+        return this.postService.createFreeBoardResponse(post);
     }
 
     @Override
     @Transactional
-    public PostDTO.PostResponseDTO modifyReComment(Long reCommentId, String content) {
+    public PostDTO.FreePostResponseDTO modifyReComment(Long reCommentId, String content) {
         ReComment reComment = this.reCommentRepository.findById(reCommentId).orElseThrow(() ->
                 new DataNotFoundException("댓글이 존재하지 않습니다."));
         reComment.modify(content, LocalDateTime.now());
-        return this.postService.createResponse(reComment.getComment().getPost());
+        return this.postService.createFreeBoardResponse(reComment.getComment().getPost());
     }
 
     @Override

@@ -2,11 +2,11 @@ package com.hansung.capstone.community;
 
 public interface ReCommentService {
 
-    PostDTO.PostResponseDTO createReComment(ReCommentDTO.CreateRequestDTO req);
+    PostDTO.FreePostResponseDTO createReComment(ReCommentDTO.CreateRequestDTO req);
 
-    PostDTO.PostResponseDTO setFavorite(Long userId, Long postId,Long reCommentId);
+    PostDTO.FreePostResponseDTO setFavorite(Long userId, Long postId, Long reCommentId);
 
-    PostDTO.PostResponseDTO modifyReComment(Long reCommentId, String content);
+    PostDTO.FreePostResponseDTO modifyReComment(Long reCommentId, String content);
 
     void deleteReComment(Long userId, Long reCommentId) throws Exception;
 }

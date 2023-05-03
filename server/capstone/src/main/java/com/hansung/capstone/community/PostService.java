@@ -7,11 +7,11 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 public interface PostService {
-    PostDTO.PostResponseDTO createFreeBoardPost(PostDTO.CreateRequestDTO req, List<MultipartFile> files) throws Exception;
+    PostDTO.FreePostResponseDTO createFreeBoardPost(PostDTO.CreateRequestDTO req, List<MultipartFile> files) throws Exception;
 
-    Post createCourseBoardPost(UserCourseDTO.CreateRequestDTO req, List<MultipartFile> files) throws Exception;
+    Post createCourseBoardPost(UserCourseDTO.CreateRequestDTO req, List<MultipartFile> files, MultipartFile thumbnail) throws Exception;
 
-    PostDTO.PostResponseDTO modifyPost(PostDTO.ModifyRequestDTO req, List<MultipartFile> files) throws Exception;
+    PostDTO.FreePostResponseDTO modifyPost(PostDTO.ModifyRequestDTO req, List<MultipartFile> files) throws Exception;
 
     Page<Post> getAllPost(int page);
 
@@ -24,11 +24,13 @@ public interface PostService {
 
     Page<Post> getScrapPost(Long userId, int page);
 
-    PostDTO.PostResponseDTO getDetailPost(Long id);
+    PostDTO.FreePostResponseDTO getFreeBoardDetailPost(Long id);
 
-    PostDTO.PostResponseDTO setFavorite(Long userId, Long postId);
+    PostDTO.CoursePostResponseDTO getCourseBoardDetailPost(Long id);
 
-    PostDTO.PostResponseDTO setScrap(Long userId, Long postId);
+    PostDTO.FreePostResponseDTO setFavorite(Long userId, Long postId);
+
+    PostDTO.FreePostResponseDTO setScrap(Long userId, Long postId);
 
     void deletePost(Long userId, Long postId) throws Exception;
 }

@@ -2,17 +2,13 @@ package com.hansung.capstone.community;
 
 import com.hansung.capstone.user.AuthService;
 import com.hansung.capstone.user.User;
-import com.hansung.capstone.user.UserDetailsImpl;
 import com.hansung.capstone.user.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.security.sasl.AuthenticationException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -30,7 +26,7 @@ public class CommentServiceImpl implements CommentService {
     private final AuthService authService;
 
     @Override
-    public PostDTO.PostResponseDTO createComment(CommentDTO.CreateRequestDTO req) {
+    public PostDTO.FreePostResponseDTO createComment(CommentDTO.CreateRequestDTO req) {
         Comment comment = Comment.builder()
                 .content(req.getContent())
                 .createdDate(LocalDateTime.now())
@@ -38,18 +34,18 @@ public class CommentServiceImpl implements CommentService {
                 .author(this.userRepository.findById(req.getUserId()).get()).build();
         this.commentRepository.save(comment);
         Post post = this.postRepository.findById(req.getPostId()).get();
-        return this.postService.createResponse(post);
+        return this.postService.createFreeBoardResponse(post);
     }
 
     @Override
     @Transactional
-    public PostDTO.PostResponseDTO modifyComment(Long commentId, String content) {
+    public PostDTO.FreePostResponseDTO modifyComment(Long commentId, String content) {
         Optional<Comment> comment = this.commentRepository.findById(commentId);
         comment.ifPresent(s->{
             comment.get().modify(content, LocalDateTime.now());
                 }
         );
-        return this.postService.createResponse(comment.get().getPost());
+        return this.postService.createFreeBoardResponse(comment.get().getPost());
     }
 
     @Override
@@ -72,7 +68,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
-    public PostDTO.PostResponseDTO setFavorite(Long userId, Long postId, Long commentId) {
+    public PostDTO.FreePostResponseDTO setFavorite(Long userId, Long postId, Long commentId) {
         Post post = this.postRepository.findById(postId).orElseThrow( () ->
                 new IllegalArgumentException("게시글이 존재하지 않습니다.")
         );
@@ -88,6 +84,6 @@ public class CommentServiceImpl implements CommentService {
         }else{
             comment.getVoter().add(user);
         }
-        return this.postService.createResponse(post);
+        return this.postService.createFreeBoardResponse(post);
     }
 }

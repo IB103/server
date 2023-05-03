@@ -7,9 +7,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 public interface UserCourseService {
-    PostDTO.PostResponseDTO createCourse(UserCourseDTO.CreateRequestDTO req, List<MultipartFile> files) throws Exception;
+    PostDTO.FreePostResponseDTO createCourse(UserCourseDTO.CreateRequestDTO req, List<MultipartFile> files, MultipartFile thumbnail) throws Exception;
 
     Page<UserCourse> getCourseListByRegion(int page, String region);
 
-    PostDTO.PostResponseDTO getDetailPost(Long id);
+    PostDTO.FreePostResponseDTO getDetailPost(Long id);
 }

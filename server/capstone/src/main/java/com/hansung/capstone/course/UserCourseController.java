@@ -25,9 +25,10 @@ public class UserCourseController {
     @PostMapping("/create")
     public ResponseEntity<SingleResponse> createCourse(
             @RequestPart(value = "requestDTO") UserCourseDTO.CreateRequestDTO req,
-            @RequestPart(value = "imageList") List<MultipartFile> files)  {
+            @RequestPart(value = "imageList") List<MultipartFile> files,
+            @RequestPart(value = "thumbnail") MultipartFile thumbnail) {
         try {
-            return new ResponseEntity<>(this.responseService.getSuccessSingleResponse(this.courseService.createCourse(req, files)), HttpStatus.CREATED);
+            return new ResponseEntity<>(this.responseService.getSuccessSingleResponse(this.courseService.createCourse(req, files,thumbnail)), HttpStatus.CREATED);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

@@ -45,7 +45,7 @@ public class Post {
     @OneToMany(mappedBy = "post")
     private List<Comment> commentList;
 
-    @OneToMany(mappedBy = "post")
+    @OneToMany(mappedBy = "post", cascade = CascadeType.PERSIST)
     private List<PostImage> postImages = new ArrayList<>();
 
     @ManyToMany
@@ -56,7 +56,7 @@ public class Post {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Set<User> scraper = new HashSet<>();
 
-    @OneToOne(mappedBy = "post")
+    @OneToOne(mappedBy = "post", cascade = CascadeType.PERSIST)
     private UserCourse userCourse;
 
     @Builder

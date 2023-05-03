@@ -9,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +22,8 @@ public class PostController {
     private final ResponseService responseService;
 
     private final AuthService authService;
+
+    private final PostRepository postRepository;
 
 
 
@@ -39,34 +40,41 @@ public class PostController {
     }
 
     @PutMapping("/modify")
-    public ResponseEntity<SingleResponse<PostDTO.PostResponseDTO>> modifyPost(
+    public ResponseEntity<SingleResponse<PostDTO.FreePostResponseDTO>> modifyPost(
             @RequestPart(value = "requestDTO") PostDTO.ModifyRequestDTO req,
             @RequestPart(value = "imageList", required = false) List<MultipartFile> files ) throws Exception {
         return new ResponseEntity<>(this.responseService.getSuccessSingleResponse(this.postService.modifyPost(req, files)), HttpStatus.OK);
     }
 
     @GetMapping("/list/all")
-    public ResponseEntity<PageResponse<PostDTO.PostResponseDTO>> getAllPost(@RequestParam(defaultValue = "0") int page) {
+    public ResponseEntity<PageResponse<PostDTO.FreePostResponseDTO>> getAllPost(@RequestParam(defaultValue = "0") int page) {
         Page<Post> paging = this.postService.getAllPost(page);
         return new ResponseEntity<>(this.responseService.getPageResponse(paging.getTotalPages(),preProcess(paging)), HttpStatus.OK);
     }
 
     @GetMapping("/list/free")
-    public ResponseEntity<PageResponse<PostDTO.PostResponseDTO>> getFreeBoardPost(@RequestParam(defaultValue = "0") int page){
+    public ResponseEntity<PageResponse<PostDTO.FreePostResponseDTO>> getFreeBoardPost(@RequestParam(defaultValue = "0") int page){
         Page<Post> paging = this.postService.getBoardPost(page,"FREE");
         return new ResponseEntity<>(this.responseService.getPageResponse(paging.getTotalPages(),preProcess(paging)), HttpStatus.OK);
     }
 
     @GetMapping("/list/course")
-    public ResponseEntity<PageResponse<PostDTO.PostResponseDTO>> getCourseBoardPost(@RequestParam(defaultValue = "0") int page){
+    public ResponseEntity<PageResponse<PostDTO.FreePostResponseDTO>> getCourseBoardPost(@RequestParam(defaultValue = "0") int page){
         Page<Post> paging = this.postService.getBoardPost(page,"COURSE");
         return new ResponseEntity<>(this.responseService.getPageResponse(paging.getTotalPages(),preProcess(paging)), HttpStatus.OK);
     }
 
 
     @GetMapping("/detail")
-    public ResponseEntity<SingleResponse<PostDTO.PostResponseDTO>> getDetailPost(@RequestParam Long id){
-        return new ResponseEntity<>(this.responseService.getSuccessSingleResponse(this.postService.getDetailPost(id)),HttpStatus.OK);
+    public ResponseEntity<SingleResponse> getDetailPost(@RequestParam Long id){
+        String category = this.postRepository.findById(id).get().getPostCategory().getKey();
+        if(category.equals("FREE")) {
+            return new ResponseEntity<>(this.responseService.getSuccessSingleResponse(this.postService.getFreeBoardDetailPost(id)), HttpStatus.OK);
+        }else if(category.equals("COURSE")){
+            return new ResponseEntity<>(this.responseService.getSuccessSingleResponse(this.postService.getCourseBoardDetailPost(id)), HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>(this.responseService.getFailureSingleResponse(null), HttpStatus.BAD_REQUEST);
+        }
     }
 
 
@@ -76,7 +84,7 @@ public class PostController {
     }
 
     @GetMapping("/list/nickname")
-    public ResponseEntity<ListResponse<PostDTO.PostResponseDTO>> getUserNickNamePost(
+    public ResponseEntity<ListResponse<PostDTO.FreePostResponseDTO>> getUserNickNamePost(
             @RequestParam String nickname,
             @RequestParam(defaultValue = "0") int page) {
         Page<Post> paging = this.postService.getUserNickNamePost(nickname, page);
@@ -134,10 +142,10 @@ public class PostController {
         }
     }
 
-    private List<PostDTO.PostResponseDTO> preProcess(Page<Post> paging){
-        List<PostDTO.PostResponseDTO> res = new ArrayList<>();
+    private List<PostDTO.FreePostResponseDTO> preProcess(Page<Post> paging){
+        List<PostDTO.FreePostResponseDTO> res = new ArrayList<>();
         for(Post post : paging){
-            res.add(this.postService.createResponse(post));
+            res.add(this.postService.createFreeBoardResponse(post));
         }
         return res;
     }

@@ -2,11 +2,11 @@ package com.hansung.capstone.community;
 
 public interface CommentService {
 
-    PostDTO.PostResponseDTO createComment(CommentDTO.CreateRequestDTO req);
+    PostDTO.FreePostResponseDTO createComment(CommentDTO.CreateRequestDTO req);
 
-    PostDTO.PostResponseDTO setFavorite(Long userId, Long postId, Long commentId);
+    PostDTO.FreePostResponseDTO setFavorite(Long userId, Long postId, Long commentId);
 
-    PostDTO.PostResponseDTO modifyComment(Long id, String content);
+    PostDTO.FreePostResponseDTO modifyComment(Long id, String content);
 
     void deleteComment(Long userId, Long commentId) throws Exception;
 }
