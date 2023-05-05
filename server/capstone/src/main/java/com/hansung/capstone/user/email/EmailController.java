@@ -1,5 +1,11 @@
 package com.hansung.capstone.user.email;
 
+import com.hansung.capstone.response.ResponseService;
+import com.hansung.capstone.user.AuthService;
+import com.hansung.capstone.user.TokenInfo;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -7,13 +13,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/email")
+@RequiredArgsConstructor
 public class EmailController {
 
     private final EmailServiceImpl emailService;
 
-    public EmailController(EmailServiceImpl emailService) {
-        this.emailService = emailService;
-    }
+    private final AuthService authService;
+
+    private final ResponseService responseService;
 
 
     @PostMapping("/send")
@@ -24,11 +31,12 @@ public class EmailController {
     }
 
     @PostMapping("/confirm")
-    public String emailConfirm(@RequestParam String email, @RequestParam String code) throws Exception {
+    public ResponseEntity emailConfirm(@RequestParam String email, @RequestParam String code) throws Exception {
         if(emailService.checkCode(email,code)){
-            return "good";
+            TokenInfo tokenInfo = this.authService.createToken("103Friends", email, null);
+            return new ResponseEntity<>(this.responseService.getSuccessSingleResponse(tokenInfo), HttpStatus.OK);
         } else{
-            return "bad";
+            return new ResponseEntity<>(this.responseService.getFailureCommonResponse(), HttpStatus.UNAUTHORIZED);
         }
     }
 }

@@ -31,6 +31,7 @@ public class EmailServiceImpl implements EmailService{
         System.out.println(System.currentTimeMillis());
         MimeMessage message = javaMailSender.createMimeMessage();
         LocalDateTime expiredTime = LocalDateTime.now(ZoneId.of("Asia/Seoul")).plusMinutes(5);
+        DateTimeFormatter dtf = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.FULL, FormatStyle.MEDIUM);
 
         message.addRecipients(Message.RecipientType.TO, to);
         message.setSubject("이메일 인증 테스트");
@@ -41,7 +42,7 @@ public class EmailServiceImpl implements EmailService{
         msgg+= "<br>";
         msgg+= "<p>아래 코드를 복사해 입력해주세요<p>";
         msgg+= "<br>";
-        msgg+= "<p> 유효기간 : " + DateTimeFormatter.ofLocalizedTime(FormatStyle.LONG).format(expiredTime) +"<p>";
+        msgg+= "<p> 유효기간 : " + dtf.format(expiredTime) +"<p>";
         msgg+= "<br>";
         msgg+= "<p>감사합니다.<p>";
         msgg+= "<br>";
