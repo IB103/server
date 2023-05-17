@@ -3,6 +3,7 @@ package com.hansung.capstone.course;
 import com.google.maps.internal.PolylineEncoding;
 import com.google.maps.model.LatLng;
 import com.hansung.capstone.community.PostDTO;
+import com.hansung.capstone.community.PostImage;
 import com.hansung.capstone.community.PostRepository;
 import com.hansung.capstone.community.PostService;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,8 @@ public class UserCourseServiceImpl implements UserCourseService {
     private final PostRepository postRepository;
 
     private final PostService postService;
+
+    private final CourseImageInfoRepository courseImageInfoRepository;
 
     @Override
     public PostDTO.FreePostResponseDTO createCourse(UserCourseDTO.CreateRequestDTO req, List<MultipartFile> files, MultipartFile thumbnail) throws Exception {
@@ -47,10 +50,29 @@ public class UserCourseServiceImpl implements UserCourseService {
     }
 
     public UserCourseDTO.CourseResponseDTO createResponse(UserCourse userCourse) {
+        List<Long> imageIdList = new ArrayList<>();
+        for (int i = 1; i < userCourse.getPost().getPostImages().size(); i++){
+            imageIdList.add(userCourse.getPost().getPostImages().get(i).getId());
+        }
+        List<ImageInfo> imageInfoList = new ArrayList<>();
+        for (Long imageId : imageIdList){
+            CourseImageInfo courseImageInfo = this.courseImageInfoRepository.findByPostImageId(imageId).orElseThrow(
+                    () -> new RuntimeException("정보가 존재하지 않습니다")
+            );
+            ImageInfo imageInfo = ImageInfo.builder()
+                    .coordinate(courseImageInfo.getCoordinate())
+                    .placeLink(courseImageInfo.getPlaceLink())
+                    .placeName(courseImageInfo.getPlaceName()).build();
+            imageInfoList.add(imageInfo);
+        }
+
         UserCourseDTO.CourseResponseDTO res = UserCourseDTO.CourseResponseDTO.builder()
                 .coordinates(userCourse.getCoordinates())
                 .originToDestination(userCourse.getOriginToDestination())
                 .numOfFavorite(userCourse.getPost().getVoter().size())
+                .imageId(imageIdList)
+                .imageInfoList(imageInfoList)
+                .thumbnailId(userCourse.getPost().getPostImages().get(0).getId())
                 .region(userCourse.getRegion().name())
                 .postId(userCourse.getPost().getId())
                 .build();

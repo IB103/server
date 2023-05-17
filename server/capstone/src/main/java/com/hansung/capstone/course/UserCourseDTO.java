@@ -46,6 +46,9 @@ public class UserCourseDTO {
         private String region;
         private String originToDestination;
         private Long postId;
+        private Long thumbnailId;
+        private List<Long> imageId;
+        private List<ImageInfo> imageInfoList;
         private int numOfFavorite;
     }
 

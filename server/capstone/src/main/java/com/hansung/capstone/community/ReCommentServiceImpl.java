@@ -80,7 +80,7 @@ public class ReCommentServiceImpl implements ReCommentService{
                 new IllegalArgumentException("댓글이 존재하지 않습니다.")
         );
         if(authService.checkIdAndToken(userId) && reCommentId.equals(reComment.getId())){
-            if (reComment.getComment().getReCommentList().size() == 1){
+            if (reComment.getComment().getReCommentList().size() == 1 && reComment.getComment().getContent().equals("<--!Has Been Deleted!-->")){
                 this.commentRepository.deleteById(reComment.getComment().getId());
             }
             else{

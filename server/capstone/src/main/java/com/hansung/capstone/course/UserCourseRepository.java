@@ -9,7 +9,7 @@ import org.springframework.data.repository.query.Param;
 public interface UserCourseRepository extends JpaRepository<UserCourse, Long> {
 
     @Query(
-            value = "select * from course where region = :region and post_id in (select post_post_id from post_voter group by post_post_id HAVING COUNT(*) >= 2)",
+            value = "select * from user_course where region = :region and post_id in (select post_post_id from post_voter group by post_post_id HAVING COUNT(*) >= 1)",
             nativeQuery = true
     )
     Page<UserCourse> findAllByRegion(Pageable pageable, @Param("region") String region);
