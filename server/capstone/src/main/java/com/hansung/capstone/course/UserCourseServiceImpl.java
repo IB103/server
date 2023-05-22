@@ -2,15 +2,15 @@ package com.hansung.capstone.course;
 
 import com.google.maps.internal.PolylineEncoding;
 import com.google.maps.model.LatLng;
-import com.hansung.capstone.community.PostDTO;
-import com.hansung.capstone.community.PostImage;
-import com.hansung.capstone.community.PostRepository;
-import com.hansung.capstone.community.PostService;
+import com.hansung.capstone.community.*;
+import com.hansung.capstone.user.User;
+import com.hansung.capstone.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
@@ -22,9 +22,9 @@ public class UserCourseServiceImpl implements UserCourseService {
 
     private final UserCourseRepository userCourseRepository;
 
-    private final PostRepository postRepository;
+    private final UserRepository userRepository;
 
-    private final PostService postService;
+    private final PostServiceImpl postService;
 
     private final CourseImageInfoRepository courseImageInfoRepository;
 
@@ -49,6 +49,29 @@ public class UserCourseServiceImpl implements UserCourseService {
         return paging;
     }
 
+    @Transactional
+    @Override
+    public void setCourseScrap(Long userId, Long courseId) {
+        UserCourse userCourse = this.userCourseRepository.findById(courseId).orElseThrow(
+                () -> new RuntimeException("코스가 존재하지 않습니다.")
+        );
+
+        User user = this.userRepository.findById(userId).orElseThrow(
+                () -> new RuntimeException("유저가 존재하지 않습니다.")
+        );
+
+        if (userCourse.getScraper().contains(user)){
+            userCourse.getScraper().remove(user);
+        } else{
+            userCourse.getScraper().add(user);
+        }
+    }
+
+    @Override
+    public Page<UserCourse> getCourseByScraper(int page, Long userId) {
+        return this.userCourseRepository.findAllScrap(userId,this.postService.sortBy(page,"created_date"));
+    }
+
     public UserCourseDTO.CourseResponseDTO createResponse(UserCourse userCourse) {
         List<Long> imageIdList = new ArrayList<>();
         for (int i = 1; i < userCourse.getPost().getPostImages().size(); i++){
@@ -67,6 +90,7 @@ public class UserCourseServiceImpl implements UserCourseService {
         }
 
         UserCourseDTO.CourseResponseDTO res = UserCourseDTO.CourseResponseDTO.builder()
+                .courseId(userCourse.getId())
                 .coordinates(userCourse.getCoordinates())
                 .originToDestination(userCourse.getOriginToDestination())
                 .numOfFavorite(userCourse.getPost().getVoter().size())
@@ -79,10 +103,6 @@ public class UserCourseServiceImpl implements UserCourseService {
         return res;
     }
 
-    @Override
-    public PostDTO.FreePostResponseDTO getDetailPost(Long id) {
-        return null;
-    }
 
     private String convertCoordinatesToPolyline(List<List<Double>> req){
         StringBuffer sb = new StringBuffer();

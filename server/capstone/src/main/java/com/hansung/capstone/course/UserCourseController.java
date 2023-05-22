@@ -4,6 +4,7 @@ import com.hansung.capstone.response.CommonResponse;
 import com.hansung.capstone.response.ResponseService;
 import com.hansung.capstone.response.SingleResponse;
 import lombok.RequiredArgsConstructor;
+import okhttp3.Response;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,6 +40,27 @@ public class UserCourseController {
             @RequestParam(value = "region") String region,
             @RequestParam(defaultValue = "0") int page){
         Page<UserCourse> paging = this.courseService.getCourseListByRegion(page, region);
+        return new ResponseEntity<>(this.responseService.getPageResponse(paging.getTotalPages(), preProcess(paging)), HttpStatus.OK);
+    }
+
+    @GetMapping("/scrap")
+    public ResponseEntity<CommonResponse> courseScrap(
+            @RequestParam Long userId,
+            @RequestParam Long courseId
+    ){
+        this.courseService.setCourseScrap(userId, courseId);
+        try{
+            return new ResponseEntity<>(this.responseService.getSuccessCommonResponse(), HttpStatus.OK);
+        } catch (Exception e){
+            return new ResponseEntity<>(this.responseService.getFailureCommonResponse(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/list/scrap")
+    public ResponseEntity<CommonResponse> getCourseScrap(
+            @RequestParam Long userId,
+            @RequestParam(defaultValue = "0") int page){
+        Page<UserCourse> paging = this.courseService.getCourseByScraper(page, userId);
         return new ResponseEntity<>(this.responseService.getPageResponse(paging.getTotalPages(), preProcess(paging)), HttpStatus.OK);
     }
 

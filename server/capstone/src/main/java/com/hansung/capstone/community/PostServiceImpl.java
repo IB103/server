@@ -490,7 +490,7 @@ public class PostServiceImpl implements PostService {
         return res;
     }
 
-    private Pageable sortBy(int page, String sortBy) {
+    public Pageable sortBy(int page, String sortBy) {
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc(sortBy));
         Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));

@@ -42,6 +42,7 @@ public class UserCourseDTO {
     @Builder
     @AllArgsConstructor
     public static class CourseResponseDTO{
+        private Long courseId;
         private String coordinates;
         private String region;
         private String originToDestination;

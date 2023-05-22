@@ -11,5 +11,8 @@ public interface UserCourseService {
 
     Page<UserCourse> getCourseListByRegion(int page, String region);
 
-    PostDTO.FreePostResponseDTO getDetailPost(Long id);
+
+    void setCourseScrap(Long userId, Long courseId);
+
+    Page<UserCourse> getCourseByScraper(int page, Long userId);
 }
