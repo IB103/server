@@ -25,7 +25,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     Page<Post> findAllSearch(@Param("titleOrContent")String titleOrContent, Pageable pageable);
 
     @Query(
-            value = "SELECT * FROM Post WHERE post_id IN (SELECT post_post_id FROM post_scraper WHERE Scraper_user_id = :userId)",
+            value = "SELECT * FROM post WHERE post_id IN (SELECT post_post_id FROM post_scraper WHERE scraper_user_id = :userId)",
             nativeQuery = true
     )
     Page<Post> findAllScrap(@Param("userId")Long userId, Pageable pageable);

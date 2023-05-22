@@ -22,8 +22,7 @@ public class UserCourse {
     @Column(columnDefinition = "TEXT")
     private String coordinates;
 
-    @Enumerated(EnumType.STRING)
-    private UserCourseRegion region;
+    private String region;
 
     private String originToDestination;
 
@@ -33,7 +32,7 @@ public class UserCourse {
     private Post post;
 
     @Builder
-    public UserCourse(String coordinates, Post post, UserCourseRegion region, String originToDestination){
+    public UserCourse(String coordinates, Post post, String region, String originToDestination){
         this.coordinates = coordinates;
         this.post = post;
         this.region = region;

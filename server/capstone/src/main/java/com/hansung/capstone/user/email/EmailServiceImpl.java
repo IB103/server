@@ -4,11 +4,13 @@ import com.hansung.capstone.RedisService;
 import jakarta.mail.Message;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
+import jakarta.mail.internet.MimeMultipart;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -34,11 +36,11 @@ public class EmailServiceImpl implements EmailService{
         DateTimeFormatter dtf = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.FULL, FormatStyle.MEDIUM);
 
         message.addRecipients(Message.RecipientType.TO, to);
-        message.setSubject("이메일 인증 테스트");
+        message.setSubject("자전GO 비밀번호 인증 이메일");
 
         String msgg="";
         msgg+= "<div style='margin:20px;'>";
-        msgg+= "<h1> 안녕하세요 103Friends 입니다. </h1>";
+        msgg+= "<h1> 안녕하세요 자전GO 입니다. </h1>";
         msgg+= "<br>";
         msgg+= "<p>아래 코드를 복사해 입력해주세요<p>";
         msgg+= "<br>";

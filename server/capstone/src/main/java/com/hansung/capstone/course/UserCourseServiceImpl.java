@@ -33,7 +33,7 @@ public class UserCourseServiceImpl implements UserCourseService {
         if (req.getCategory().equals("COURSE")) {
             UserCourse newUserCourse = UserCourse.builder()
                     .coordinates(req.getCoordinates())
-                    .region(UserCourseRegion.valueOf(req.getRegion()))
+                    .region(req.getRegion())
                     .post(this.postService.createCourseBoardPost(req,files,thumbnail))
                     .originToDestination(req.getOriginToDestination())
                     .build();
@@ -73,7 +73,7 @@ public class UserCourseServiceImpl implements UserCourseService {
                 .imageId(imageIdList)
                 .imageInfoList(imageInfoList)
                 .thumbnailId(userCourse.getPost().getPostImages().get(0).getId())
-                .region(userCourse.getRegion().name())
+                .region(userCourse.getRegion())
                 .postId(userCourse.getPost().getId())
                 .build();
         return res;
