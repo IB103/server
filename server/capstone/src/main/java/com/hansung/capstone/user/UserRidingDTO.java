@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 public class UserRidingDTO {
 
     @Getter
@@ -23,6 +25,7 @@ public class UserRidingDTO {
     @AllArgsConstructor
     public static class HistoryResponseDTO{
 
+        private LocalDateTime createdDate;
         private Long ridingTime;
         private Float ridingDistance;
         private int calorie;

@@ -37,6 +37,7 @@ public class UserRidingServiceImpl implements UserRidingService{
         List<UserRidingDTO.HistoryResponseDTO> res = new ArrayList<>();
         for(UserRiding inDB : db){
             UserRidingDTO.HistoryResponseDTO dto = UserRidingDTO.HistoryResponseDTO.builder()
+                    .createdDate(inDB.getCreatedDate())
                     .ridingTime(inDB.getRidingTime())
                     .ridingDistance(inDB.getRidingDistance())
                     .calorie(inDB.getCalorie()).build();

@@ -41,6 +41,7 @@ public class UserCourseDTO {
     @Getter
     @Builder
     @AllArgsConstructor
+    @Schema(name = "CourseResponseDTO")
     public static class CourseResponseDTO{
         private Long courseId;
         private String coordinates;

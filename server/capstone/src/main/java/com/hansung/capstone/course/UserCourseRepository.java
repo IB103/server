@@ -10,7 +10,17 @@ import org.springframework.security.core.parameters.P;
 public interface UserCourseRepository extends JpaRepository<UserCourse, Long> {
 
     @Query(
-            value = "select * from user_course where region = :region and post_id in (select post_post_id from post_voter group by post_post_id HAVING COUNT(*) >= 1 ORDER BY COUNT(*) DESC)" ,
+            value = "SELECT uc.*\n" +
+                    "FROM user_course uc\n" +
+                    "JOIN (\n" +
+                    "    SELECT pv.post_post_id, COUNT(*) AS vote_count\n" +
+                    "    FROM post_voter pv\n" +
+                    "    GROUP BY pv.post_post_id\n" +
+                    "    HAVING COUNT(*) >= 1\n" +
+                    ") AS subquery\n" +
+                    "ON uc.post_id = subquery.post_post_id\n" +
+                    "WHERE uc.region = :region\n" +
+                    "ORDER BY subquery.vote_count DESC;\n" ,
             nativeQuery = true
     )
     Page<UserCourse> findAllByRegion(Pageable pageable, @Param("region") String region);
