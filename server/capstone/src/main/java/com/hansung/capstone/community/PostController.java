@@ -84,11 +84,11 @@ public class PostController {
     }
 
     @GetMapping("/list/nickname")
-    public ResponseEntity<ListResponse<PostDTO.FreePostResponseDTO>> getUserNickNamePost(
+    public ResponseEntity<CommonResponse> getUserNickNamePost(
             @RequestParam String nickname,
             @RequestParam(defaultValue = "0") int page) {
         Page<Post> paging = this.postService.getUserNickNamePost(nickname, page);
-        return new ResponseEntity<>(this.responseService.getListResponse(preProcess(paging)), HttpStatus.OK);
+        return new ResponseEntity<>(this.responseService.getPageResponse(paging.getTotalPages(),preProcess(paging)), HttpStatus.OK);
     }
 
     @GetMapping("/list/title-or-content")
@@ -97,7 +97,7 @@ public class PostController {
             @RequestParam(defaultValue = "0") int page) {
         try{
             Page<Post> paging = this.postService.getTitleOrContentPost(titleOrContent, page);
-            return new ResponseEntity<>(this.responseService.getListResponse(preProcess(paging)), HttpStatus.OK);
+            return new ResponseEntity<>(this.responseService.getPageResponse(paging.getTotalPages(),preProcess(paging)), HttpStatus.OK);
         } catch (Exception e){
             return new ResponseEntity<>(this.responseService.getFailureSingleResponse(e.getMessage()), HttpStatus.OK);
         }
@@ -109,7 +109,7 @@ public class PostController {
             @RequestParam(defaultValue = "0") int page){
         try{
             Page<Post> paging = this.postService.getScrapPost(userId,page);
-            return new ResponseEntity<>(this.responseService.getListResponse(preProcess(paging)), HttpStatus.OK);
+            return new ResponseEntity<>(this.responseService.getPageResponse(paging.getTotalPages(),preProcess(paging)), HttpStatus.OK);
         } catch (Exception e){
             return new ResponseEntity<>(this.responseService.getFailureSingleResponse(e.getMessage()), HttpStatus.OK);
         }
