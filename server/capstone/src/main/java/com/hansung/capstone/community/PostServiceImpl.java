@@ -39,6 +39,8 @@ public class PostServiceImpl implements PostService {
 
     private final CourseImageInfoRepository courseImageInfoRepository;
 
+    private final UserCourseRepository userCourseRepository;
+
 
     @Transactional
     @Override
@@ -475,6 +477,7 @@ public class PostServiceImpl implements PostService {
         }
         PostDTO.CoursePostResponseDTO res = PostDTO.CoursePostResponseDTO.builder()
                 .id(req.getId())
+                .courseId(this.userCourseRepository.findByPostId(req.getId()).getId())
                 .title(req.getTitle())
                 .content(req.getContent())
                 .createdDate(req.getCreatedDate())

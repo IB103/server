@@ -64,6 +64,14 @@ public class UserCourseController {
         return new ResponseEntity<>(this.responseService.getPageResponse(paging.getTotalPages(), preProcess(paging)), HttpStatus.OK);
     }
 
+    @GetMapping("/detail")
+    public ResponseEntity<SingleResponse> getCourseDetail(
+            @RequestParam Long courseId
+    ){
+        return new ResponseEntity<>(this.responseService.getSuccessSingleResponse(this.courseService.getCourseDetail(courseId)), HttpStatus.OK);
+
+    }
+
 
     private List<UserCourseDTO.CourseResponseDTO> preProcess(Page<UserCourse> paging){
         List<UserCourseDTO.CourseResponseDTO> res = new ArrayList<>();

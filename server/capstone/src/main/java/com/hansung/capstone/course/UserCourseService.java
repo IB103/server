@@ -11,6 +11,7 @@ public interface UserCourseService {
 
     Page<UserCourse> getCourseListByRegion(int page, String region);
 
+    UserCourseDTO.CourseResponseDTO getCourseDetail(Long courseId);
 
     void setCourseScrap(Long userId, Long courseId);
 

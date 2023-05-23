@@ -20,7 +20,7 @@ public class UserRiding {
 
     private Float ridingDistance;
 
-    private Float calorie;
+    private int calorie;
 
     private LocalDateTime createdDate;
 
@@ -29,7 +29,7 @@ public class UserRiding {
     private User user;
 
     @Builder
-    public UserRiding(Long ridingTime, Float ridingDistance, Float calorie, User user){
+    public UserRiding(Long ridingTime, Float ridingDistance, int calorie, User user){
         this.ridingTime = ridingTime;
         this.ridingDistance = ridingDistance;
         this.calorie = calorie;

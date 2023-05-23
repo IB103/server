@@ -13,7 +13,7 @@ public class UserRidingDTO {
     public static class RecordDTO {
         private Long ridingTime;
         private Float ridingDistance;
-        private Float calorie;
+        private int calorie;
         private Long userId;
     }
 
@@ -25,6 +25,6 @@ public class UserRidingDTO {
 
         private Long ridingTime;
         private Float ridingDistance;
-        private Float calorie;
+        private int calorie;
     }
 }

@@ -20,4 +20,7 @@ public interface UserCourseRepository extends JpaRepository<UserCourse, Long> {
             nativeQuery = true
     )
     Page<UserCourse> findAllScrap(@Param("userId") Long userId, Pageable pageable);
+
+    UserCourse findByPostId(Long postId);
+
 }

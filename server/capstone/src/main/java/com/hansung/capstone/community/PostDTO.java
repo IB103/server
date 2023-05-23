@@ -55,6 +55,8 @@ public class PostDTO {
     @AllArgsConstructor
     public static class CoursePostResponseDTO {
         private Long id;
+
+        private Long courseId;
         private String title;
         private String content;
         private LocalDateTime createdDate;

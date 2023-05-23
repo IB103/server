@@ -2,7 +2,8 @@ package com.hansung.capstone.course;
 
 import com.google.maps.internal.PolylineEncoding;
 import com.google.maps.model.LatLng;
-import com.hansung.capstone.community.*;
+import com.hansung.capstone.community.PostDTO;
+import com.hansung.capstone.community.PostServiceImpl;
 import com.hansung.capstone.user.User;
 import com.hansung.capstone.user.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -47,6 +48,13 @@ public class UserCourseServiceImpl implements UserCourseService {
         Pageable pageable = PageRequest.of(page, 10);
         Page<UserCourse> paging = this.userCourseRepository.findAllByRegion(pageable,region);
         return paging;
+    }
+
+    @Override
+    public UserCourseDTO.CourseResponseDTO getCourseDetail(Long courseId) {
+        return createResponse(this.userCourseRepository.findById(courseId).orElseThrow(
+                () -> new RuntimeException("코스가 존재하지 않습니다.")
+        ));
     }
 
     @Transactional
