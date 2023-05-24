@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.awt.image.ColorModel;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/users/riding")
@@ -30,10 +32,11 @@ public class UserRidingController {
             @RequestParam Long userId,
             @RequestParam Long period
     ){
-        try {
-            return new ResponseEntity<>(this.responseService.getListResponse(this.userRidingService.getHistory(userId, period)), HttpStatus.OK);
-        } catch (Exception e){
-            return new ResponseEntity<>(this.responseService.getFailureCommonResponse(), HttpStatus.BAD_REQUEST);
-        }
+        return new ResponseEntity<>(this.responseService.getListResponse(this.userRidingService.getHistory(userId, period)), HttpStatus.OK);
+    }
+
+    @GetMapping("/rank")
+    public ResponseEntity<CommonResponse> getRank(){
+        return new ResponseEntity<>(this.responseService.getListResponse(this.userRidingService.getRank()), HttpStatus.OK);
     }
 }
