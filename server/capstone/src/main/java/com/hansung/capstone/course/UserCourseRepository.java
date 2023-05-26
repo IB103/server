@@ -20,7 +20,17 @@ public interface UserCourseRepository extends JpaRepository<UserCourse, Long> {
                     ") AS subquery\n" +
                     "ON uc.post_id = subquery.post_post_id\n" +
                     "WHERE uc.region = :region\n" +
-                    "ORDER BY subquery.vote_count DESC;\n" ,
+                    "ORDER BY subquery.vote_count DESC",
+            countQuery = "SELECT COUNT(*)\n" +
+                    "FROM user_course uc\n" +
+                    "JOIN (\n" +
+                    "    SELECT pv.post_post_id, COUNT(*) AS vote_count\n" +
+                    "    FROM post_voter pv\n" +
+                    "    GROUP BY pv.post_post_id\n" +
+                    "    HAVING COUNT(*) >= 1\n" +
+                    ") AS subquery\n" +
+                    "ON uc.post_id = subquery.post_post_id\n" +
+                    "WHERE uc.region = :region",
             nativeQuery = true
     )
     Page<UserCourse> findAllByRegion(Pageable pageable, @Param("region") String region);
