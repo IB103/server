@@ -37,7 +37,8 @@ public class UserRidingDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class RankResponseDTO{
-        private Long userId;
+        private Long profileImageId;
+        private String userNickname;
         private Float totalDistance;
         private int distanceRank;
     }

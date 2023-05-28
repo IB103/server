@@ -64,17 +64,21 @@ public class UserRidingServiceImpl implements UserRidingService{
             if(this.redisService.getValues("Rank_No"+String.valueOf(i)) != null) {
                 String value = this.redisService.getValues("Rank_No" + String.valueOf(i));
                 String[] parts = value.split(":");
-                UserRidingDTO.RankResponseDTO user = UserRidingDTO.RankResponseDTO.builder()
-                        .userId(Long.parseLong(parts[0]))
+                User user = this.userRepository.findById(Long.parseLong(parts[0])).orElseThrow(
+                        () -> new RuntimeException("유저가 존재하지 않습니다.")
+                );
+                UserRidingDTO.RankResponseDTO ranker = UserRidingDTO.RankResponseDTO.builder()
+                        .userNickname(user.getNickname())
+                        .profileImageId(user.getProfileImage().getId())
                         .distanceRank(i)
                         .totalDistance(Float.parseFloat(parts[1])).build();
-                rankerList.add(user);
+                rankerList.add(ranker);
             }
         }
         return rankerList;
     }
 
-    @Scheduled(cron = "0 35 14 * * *")
+    @Scheduled(cron = "0 00 19 * * *")
     private void rank(){
         List<Object[]> ranker = this.userRidingRepository.getRank();
         for(Object[] row : ranker){
