@@ -34,8 +34,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO.SignUpResponseDTO SignUp(UserDTO.SignUpRequestDTO req) {
-        Optional<User> appuser = this.userRepository.findByEmail(req.getEmail());
-        if (!appuser.isPresent()) {
+        if (!(this.userRepository.findByEmail(req.getEmail()).isPresent() || this.userRepository.findByNickname(req.getNickname()).isPresent())) {
             User newuser = User.builder()
                     .email(req.getEmail())
                     .password(passwordEncoder.encode(req.getPassword()))

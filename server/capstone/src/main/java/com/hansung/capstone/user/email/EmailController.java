@@ -1,9 +1,11 @@
 package com.hansung.capstone.user.email;
 
+import com.hansung.capstone.response.CommonResponse;
 import com.hansung.capstone.response.ResponseService;
 import com.hansung.capstone.user.AuthService;
 import com.hansung.capstone.user.TokenInfo;
 import lombok.RequiredArgsConstructor;
+import okhttp3.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,10 +26,10 @@ public class EmailController {
 
 
     @PostMapping("/send")
-    public String emailSend(@RequestParam String email) throws Exception {
+    public ResponseEntity<CommonResponse> emailSend(@RequestParam String email) throws Exception {
         String code = emailService.createKey();
         emailService.sendSimpleMessage(email,code);
-        return code;
+        return new ResponseEntity<>(this.responseService.getSuccessCommonResponse(), HttpStatus.OK);
     }
 
     @PostMapping("/confirm")

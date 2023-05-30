@@ -43,12 +43,12 @@ public class UserController {
     }
 
     @PostMapping("/signin")
-    private ResponseEntity<SingleResponse> SignIn(@RequestBody UserDTO.SignInRequestDTO req) {
+    private ResponseEntity<CommonResponse> SignIn(@RequestBody UserDTO.SignInRequestDTO req) {
         try {
             UserDTO.SignInResponseDTO res = authService.login(req);
             return new ResponseEntity<>(this.responseService.getSuccessSingleResponse(res), HttpStatus.OK);
         } catch (Exception e){
-            return new ResponseEntity<>(this.responseService.getFailureSingleResponse(e.getMessage()), HttpStatus.OK);
+            return new ResponseEntity<>(this.responseService.getFailureCommonResponse(), HttpStatus.UNAUTHORIZED);
         }
 
     }
