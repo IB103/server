@@ -46,7 +46,7 @@ build.gradle
     ```
     
 
-1. 기능
+3. 기능
     - Respone관련 기능
     
     서버에서 나가는 모든 Response 데이터는 서버에서 코드를 만들고 특정 코드에 대해 오류값을 전달한다.
@@ -624,7 +624,7 @@ build.gradle
                 List<Object[]> getRank();
             ```
             
-2. 테이블 구조
+4. 테이블 구조
 
     
     <img src="https://github.com/IB103/server/assets/75194525/b2d0b596-c025-4088-898d-297703bfa5b8" width="500"> 
