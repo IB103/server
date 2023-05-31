@@ -1,14 +1,16 @@
 # 자전GO
 
-<img src="https://github.com/IB103/server/assets/75194525/38622165-7efe-496e-9211-6c7f887c3de9" width="500"> 
+<img src="https://github.com/IB103/server/assets/75194525/38622165-7efe-496e-9211-6c7f887c3de9" width="1000"> 
 
 1. 개요
+
 자전GO 모바일 어플리케이션의 메인 서버이다.
 통신 대상은 클라이언트이고, 모든 기능은 Rest API를 기반으로 한다.
 데이터 형식은 JSON, FormData를 사용한다.
 SpringSecurity를 통해 JSON Web Token(JWT)를 검사하고 인가절차를 밟는다.
 
 2. 개발 환경
+
 - AWS Lightsail
 - Intellij IDEA
 - Spring Boot
@@ -46,7 +48,16 @@ build.gradle
     ```
     
 
-3. 기능
+2. 기능
+
+    - Rest API 한눈에 보기
+        
+        <img src="https://github.com/IB103/server/assets/75194525/be808317-ec28-451f-b2c3-2bdb31c35f36" width="1000"> 
+
+        
+        <img src="https://github.com/IB103/server/assets/75194525/3deeb161-c80f-49b1-9912-3e9168c497ae" width="1000"> 
+        
+    
     - Respone관련 기능
     
     서버에서 나가는 모든 Response 데이터는 서버에서 코드를 만들고 특정 코드에 대해 오류값을 전달한다.
@@ -623,8 +634,40 @@ build.gradle
                 )
                 List<Object[]> getRank();
             ```
-            
-4. 테이블 구조
+4. SpringSecurity
 
     
-    <img src="https://github.com/IB103/server/assets/75194525/b2d0b596-c025-4088-898d-297703bfa5b8" width="500"> 
+    ```java
+    @Bean
+        protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+            http
+                    .authorizeHttpRequests(
+                            authorize ->
+                                    authorize
+                                            .requestMatchers("/api/users/signup").permitAll()
+                                            .requestMatchers("/api/users/signin").permitAll()
+                                            .requestMatchers("/api/users/nickname/duplicate-check").permitAll()
+                                            .requestMatchers("/api/users/email/duplicate-check").permitAll()
+                                            .requestMatchers("/api/users/findID").permitAll()
+                                            .requestMatchers("/api/community/post/list/**").permitAll()
+                                            .requestMatchers("/api/community/post/list/scrap").authenticated()
+                                            .requestMatchers("/api/community/post/detail").permitAll()
+                                            .requestMatchers("/api/users/riding/rank").permitAll()
+                                            .requestMatchers("/api/user-course/list").permitAll()
+                                            .requestMatchers("/api/user-course/detail").permitAll()
+                                            .requestMatchers("/api/email/send").permitAll()
+                                            .requestMatchers("/api/email/confirm").permitAll()
+                                            .requestMatchers("/profile-image/**").permitAll()
+                                            .requestMatchers("/image/**").permitAll()
+                                            .requestMatchers("/swagger-ui/**").permitAll()
+                                            .requestMatchers("/v3/api-docs/**").permitAll()
+                                            .requestMatchers("/api/auth/reissue").permitAll()
+                                            .anyRequest().authenticated()
+                    )
+    ```
+
+
+5. 테이블 구조
+
+    
+    <img src="https://github.com/IB103/server/assets/75194525/b2d0b596-c025-4088-898d-297703bfa5b8" width="1000"> 

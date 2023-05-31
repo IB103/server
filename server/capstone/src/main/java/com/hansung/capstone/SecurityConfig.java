@@ -53,7 +53,6 @@ public class SecurityConfig {
                                         .requestMatchers("/swagger-ui/**").permitAll()
                                         .requestMatchers("/v3/api-docs/**").permitAll()
                                         .requestMatchers("/api/auth/reissue").permitAll()
-                                        .requestMatchers("/api/community/comment/delete").authenticated()
                                         .anyRequest().authenticated()
                 )
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)

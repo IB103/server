@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -39,7 +40,7 @@ public class UserRidingServiceImpl implements UserRidingService{
     @Override
     public List<UserRidingDTO.HistoryResponseDTO> getHistory(Long userId, Long period) {
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime nowMinusPeriod = now.minusDays(period);
+        LocalDateTime nowMinusPeriod = now.minusDays(period).with(LocalTime.of(0, 0, 0, 0));
         List<Object[]> db = this.userRidingRepository.findAllByPeriod(userId, now, nowMinusPeriod);
         List<UserRidingDTO.HistoryResponseDTO> res = new ArrayList<>();
         for(Object[] inDB : db){
@@ -60,6 +61,7 @@ public class UserRidingServiceImpl implements UserRidingService{
     @Override
     public List<UserRidingDTO.RankResponseDTO> getRank() {
         List<UserRidingDTO.RankResponseDTO> rankerList = new ArrayList<>();
+        Long profileImageId;
         for(int i = 1; i<=3 ; i++){
             if(this.redisService.getValues("Rank_No"+String.valueOf(i)) != null) {
                 String value = this.redisService.getValues("Rank_No" + String.valueOf(i));
@@ -67,9 +69,14 @@ public class UserRidingServiceImpl implements UserRidingService{
                 User user = this.userRepository.findById(Long.parseLong(parts[0])).orElseThrow(
                         () -> new RuntimeException("유저가 존재하지 않습니다.")
                 );
+                if (user.getProfileImage() == null){
+                    profileImageId = -1L;
+                } else{
+                    profileImageId = user.getProfileImage().getId();
+                }
                 UserRidingDTO.RankResponseDTO ranker = UserRidingDTO.RankResponseDTO.builder()
                         .userNickname(user.getNickname())
-                        .profileImageId(user.getProfileImage().getId())
+                        .profileImageId(profileImageId)
                         .distanceRank(i)
                         .totalDistance(Float.parseFloat(parts[1])).build();
                 rankerList.add(ranker);
@@ -78,7 +85,7 @@ public class UserRidingServiceImpl implements UserRidingService{
         return rankerList;
     }
 
-    @Scheduled(cron = "0 00 19 * * *")
+    @Scheduled(cron = "0 50 14 * * *")
     private void rank(){
         List<Object[]> ranker = this.userRidingRepository.getRank();
         for(Object[] row : ranker){
