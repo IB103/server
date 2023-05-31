@@ -364,42 +364,41 @@ build.gradle
     - 커뮤니티 관련 기능
         1. 게시글 작성
         
-        @RequestPart 로 FormData를 전달받아 작성
+            @RequestPart 로 FormData를 전달받아 작성
         
         2. 게시글 수정
         
-        새로운 title, content 그리고 imageId를 통해 기존에 있던 이미지 수정과 새로운 이미지 등록이 가능함.
+            새로운 title, content 그리고 imageId를 통해 기존에 있던 이미지 수정과 새로운 이미지 등록이 가능함.
         
-        PostServiceImpl.java
+            PostServiceImpl.java
         
-        ```java
-        Post modifyPost = this.postRepository.findById(req.getPostId()).orElseThrow(
-                        () -> new DataNotFoundException("게시글이 존재하지 않습니다.")
-                );
-                List<PostImage> dbPostImageList = this.postImageRepository.findAllByPostId(req.getPostId());
-                List<Long> dbPostImageId = new ArrayList<>();
-                for (PostImage postImage : dbPostImageList) {
-                    dbPostImageId.add(postImage.getId());
-                }
-        
-                dbPostImageId.removeAll(req.getImageId());
-                if (!dbPostImageId.isEmpty()) {
-                    for (Long id : dbPostImageId) {
-                        this.imageService.deleteImage(id);
+            ```java
+            Post modifyPost = this.postRepository.findById(req.getPostId()).orElseThrow(
+                            () -> new DataNotFoundException("게시글이 존재하지 않습니다.")
+                    );
+                    List<PostImage> dbPostImageList = this.postImageRepository.findAllByPostId(req.getPostId());
+                    List<Long> dbPostImageId = new ArrayList<>();
+                    for (PostImage postImage : dbPostImageList) {
+                        dbPostImageId.add(postImage.getId());
                     }
-                }
-        List<PostImage> postImageList = imageHandler.parsePostImageInfo(files);
-        
-                if (!postImageList.isEmpty()) {
-                    for (PostImage postImage : postImageList) {
-                        modifyPost.addImage(postImageRepository.save(postImage));
-                    }
-                }
-        
-                modifyPost.modify(req.getTitle(), req.getContent(), LocalDateTime.now());
-                return createFreeBoardResponse(this.postRepository.findById(req.getPostId()).get());
-            ```
             
+                    dbPostImageId.removeAll(req.getImageId());
+                    if (!dbPostImageId.isEmpty()) {
+                        for (Long id : dbPostImageId) {
+                            this.imageService.deleteImage(id);
+                        }
+                    }
+            List<PostImage> postImageList = imageHandler.parsePostImageInfo(files);
+            
+                    if (!postImageList.isEmpty()) {
+                        for (PostImage postImage : postImageList) {
+                            modifyPost.addImage(postImageRepository.save(postImage));
+                        }
+                    }
+            
+                    modifyPost.modify(req.getTitle(), req.getContent(), LocalDateTime.now());
+                    return createFreeBoardResponse(this.postRepository.findById(req.getPostId()).get());
+                ```
         3. 게시판 조회
         
         자유게시판과 코스게시판, 전체글, 유저가 스크랩한 글을 조회할 수 있음.
