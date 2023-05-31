@@ -144,33 +144,33 @@
                 
             JwtTokenProvider.java
 
-                ```java
-                @Transactional
-                public TokenInfo createToken(String email, String authorities){
-                    Long now = System.currentTimeMillis();
-            
-                    String accessToken = Jwts.builder()
-                            .setHeaderParam("typ", "JWT")
-                            .setHeaderParam("alg", "HS512")
-                            .setExpiration(new Date(now + accessTokenValidityInMilliseconds))
-                            .setSubject("access-token")
-                            .claim(url, true)
-                            .claim(EMAIL_KEY, email)
-                            .claim(AUTHORITIES_KEY, authorities)
-                            .signWith(signingKey, SignatureAlgorithm.HS512)
-                            .compact();
-            
-                    String refreshToken = Jwts.builder()
-                            .setHeaderParam("typ", "JWT")
-                            .setHeaderParam("alg", "HS512")
-                            .setExpiration(new Date(now + refreshTokenValidityInMilliseconds))
-                            .setSubject("refresh-token")
-                            .signWith(signingKey, SignatureAlgorithm.HS512)
-                            .compact();
-            
-                    return new TokenInfo(accessToken, refreshToken);
-                }
-                ```
+            ```java
+            @Transactional
+            public TokenInfo createToken(String email, String authorities){
+                Long now = System.currentTimeMillis();
+
+                String accessToken = Jwts.builder()
+                        .setHeaderParam("typ", "JWT")
+                        .setHeaderParam("alg", "HS512")
+                        .setExpiration(new Date(now + accessTokenValidityInMilliseconds))
+                        .setSubject("access-token")
+                        .claim(url, true)
+                        .claim(EMAIL_KEY, email)
+                        .claim(AUTHORITIES_KEY, authorities)
+                        .signWith(signingKey, SignatureAlgorithm.HS512)
+                        .compact();
+
+                String refreshToken = Jwts.builder()
+                        .setHeaderParam("typ", "JWT")
+                        .setHeaderParam("alg", "HS512")
+                        .setExpiration(new Date(now + refreshTokenValidityInMilliseconds))
+                        .setSubject("refresh-token")
+                        .signWith(signingKey, SignatureAlgorithm.HS512)
+                        .compact();
+
+                return new TokenInfo(accessToken, refreshToken);
+            }
+            ```
 
                 Refresh Token은 Access Token 재발급에 사용되므로 RedisDB에 따로 저장하여 관리한다.
                 
