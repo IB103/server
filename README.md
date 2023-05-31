@@ -19,16 +19,15 @@ SpringSecurity를 통해 JSON Web Token(JWT)를 검사하고 인가절차를 밟
 - Redis 7.0.10
 
 build.gradle
-    
+   
     ```java
     dependencies {
-        implementation 'org.springframework.boot:spring-boot-starter-web'
-        testImplementation 'org.projectlombok:lombok'
-        compileOnly 'org.projectlombok:lombok'
-        annotationProcessor 'org.projectlombok:lombok'
-        testImplementation 'org.springframework.boot:spring-boot-starter-test'
-        runtimeOnly 'com.h2database:h2'
-        implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+        implementation('org.springframework.boot:spring-boot-starter-web')
+        testImplementation('org.projectlombok:lombok')
+        compileOnly('org.projectlombok:lombok')
+        annotationProcessor('org.projectlombok:lombok')
+        testImplementation('org.springframework.boot:spring-boot-starter-test')
+        implementation('org.springframework.boot:spring-boot-starter-data-jpa')
         testImplementation('org.junit.jupiter:junit-jupiter-api:5.9.2')
         testRuntimeOnly('org.junit.jupiter:junit-jupiter-engine:5.9.2')
         compileOnly('org.springframework.boot:spring-boot-devtools')
@@ -42,7 +41,7 @@ build.gradle
         implementation('commons-io:commons-io:2.6')
         implementation("org.springframework.boot:spring-boot-starter-validation")
         implementation("com.google.maps:google-maps-services:2.1.2")
-        implementation group: 'mysql', name: 'mysql-connector-java', version: '8.0.32'
+        implementation(group: 'mysql', name: 'mysql-connector-java', version: '8.0.32')
         implementation('org.springframework.boot:spring-boot-starter-data-redis')
     }
     ```
@@ -63,9 +62,9 @@ build.gradle
     서버에서 나가는 모든 Response 데이터는 서버에서 코드를 만들고 특정 코드에 대해 오류값을 전달한다.
         
         ResponseService.java
-        
+    
         ```java
-        		public CommonResponse getSuccessCommonResponse(){
+        	public CommonResponse getSuccessCommonResponse(){
                 CommonResponse commonResponse = new CommonResponse();
                 setSuccessResponse(commonResponse);
                 return commonResponse;
@@ -130,23 +129,24 @@ build.gradle
         이메일, 비밀번호를 받아서 DB와 체크한다.
         
         AuthService.java
-            
+        
             ```java
-            		@Transactional
+            	@Transactional
                 public UserDTO.SignInResponseDTO login(UserDTO.SignInRequestDTO req) {
                     UsernamePasswordAuthenticationToken authenticationToken =
                             new UsernamePasswordAuthenticationToken(req.getEmail(), req.getPassword());
             
                     Authentication authentication = authenticationManagerBuilder.getObject()
                             .authenticate(authenticationToken);
+                }
             ```
             
             로그인에 성공하면 AccessToken 과 Refresh Token을 전달한다.
             
             JwtTokenProvider.java
-            
+        
             ```java
-            		@Transactional
+            	@Transactional
                 public TokenInfo createToken(String email, String authorities){
                     Long now = System.currentTimeMillis();
             
@@ -176,9 +176,9 @@ build.gradle
             Refresh Token은 Access Token 재발급에 사용되므로 RedisDB에 따로 저장하여 관리한다.
             
             AuthService.java
-            
+        
             ```java
-            @Transactional
+                @Transactional
                 public void saveRefreshToken(String email, String refreshToken) {
                     redisService.setValuesWithTimeout("RT:" + email, // key
                             refreshToken, // value
@@ -193,7 +193,7 @@ build.gradle
         이메일과 닉네임은 중복되선 안되기에 사전에 중복확인을 한 후에 회원가입을 진행한다.
         
         UserServiceImpl.java
-            
+        
             ```java
             if (!(this.userRepository.findByEmail(req.getEmail()).isPresent() || this.userRepository.findByNickname(req.getNickname()).isPresent())) {
                         User newuser = User.builder()
@@ -211,9 +211,9 @@ build.gradle
         클라이언트가 회원가입, 닉네임 변경에서 사용하는 기능
         
         UserServiceImpl.java
-            
+        
             ```java
-            		@Override
+            	@Override
                 public Boolean EmailDupCheck(String email) {
                     Optional<User> user = this.userRepository.findByEmail(email);
                     if (user.isPresent()) {
@@ -239,9 +239,9 @@ build.gradle
         userId 와 변경할 닉네임을 받아서 진행. 중복확인을 거쳐서 실행됨.
         
         UserServiceImpl.java
-            
+        
             ```java
-            		@Transactional
+            	@Transactional
                 @Override
                 public Optional<User> modifyNickname(UserDTO.ModifyNickRequestDTO req) {
                     Optional<User> user = this.userRepository.findByEmail(req.getEmail());
@@ -258,9 +258,9 @@ build.gradle
         생년월일과 이름을 받아서 아이디 리스트를 전달한다.
         
         UserServiceImpl.java
-            
+        
             ```java
-            		@Override
+            	@Override
                 public List<String> findEmail(String username, String birthday) {
                     List<UserEmailInterface> appuser = this.userRepository.findByUsernameAndBirthday(username, birthday);
                     List<String> res = new ArrayList<>();
@@ -282,9 +282,9 @@ build.gradle
         BcryptPasswordEncoder 를 통해 DB에 비밀번호 평문이 아닌 암호문을 저장하기 때문에 비밀번호 찾기는 사실상 불가능하기에 비밀번호를 찾으려면 이메일 인증 후 변경하는 방식으로 구현했다.
         
         UserServiceImpl.java
-            
+        
             ```java
-            		@Transactional
+            	@Transactional
                 @Override
                 public Optional<User> modifyPassword(UserDTO.ModifyPWRequestDTO req) {
                     Optional<User> user = this.userRepository.findByEmail(req.getEmail());
@@ -303,17 +303,16 @@ build.gradle
         5분 후에는 인증이 불가.
         
         EmailServiceImpl.java
-            
+        
             ```java
-            		@Override
+            	@Override
                 public String sendSimpleMessage(String to, String code) throws Exception {
                     MimeMessage message = createMessage(to,code);
                     this.redisService.setValuesWithTimeout("Email-Confirm:" + to, code, 300000); // 5분
                     try{
                         javaMailSender.send(message);
-                    }catch (MailException e){
-                        e.printStackTrace();
-                        throw new IllegalArgumentException();
+                    }catch (MailException e){                        e.printStackTrace();
+                            throw new IllegalArgumentException();
                     }
                     return code;
                 }
@@ -324,15 +323,15 @@ build.gradle
         클라이언트에서 전송받은 코드와 DB에 저장되어있는 코드 확인 후 일치하면 임시토큰을 발급하여 비밀번호 변경이 가능하도록 함.
         
         EmailServiceImpl.java
-            
+        
             ```java
-            		@Override
+            	@Override
                 public Boolean checkCode(String email, String code) throws Exception {
                     if (this.redisService.getValues("Email-Confirm:" + email).equals(code)){
-                        this.redisService.deleteValues("Email-Confirm:" + email);
-                        return true;
+                            this.redisService.deleteValues("Email-Confirm:" + email);
+                            return true;
                     } else{
-                        return false;
+                            return false;
                     }
                 }
             ```
@@ -342,7 +341,7 @@ build.gradle
         @RequestPart를 통해 FormData로 데이터를 받아서 이미지 설정
         
         UserController.java
-            
+        
             ```java
             @RequestPart(value = "requestDTO") UserDTO.ProfileImageRequestDTO req,
             @RequestPart(value = "imageList", required = false) MultipartFile imageList)
@@ -353,7 +352,7 @@ build.gradle
         Redis에 저장되어있는 RefreshToken 삭제
         
         AuthService.java
-            
+        
             ```java
             String refreshTokenInRedis = redisService.getValues("RT:" + email);
                     if (refreshTokenInRedis != null) {
@@ -372,7 +371,7 @@ build.gradle
         새로운 title, content 그리고 imageId를 통해 기존에 있던 이미지 수정과 새로운 이미지 등록이 가능함.
         
         PostServiceImpl.java
-            
+        
             ```java
             Post modifyPost = this.postRepository.findById(req.getPostId()).orElseThrow(
                             () -> new DataNotFoundException("게시글이 존재하지 않습니다.")
@@ -410,7 +409,7 @@ build.gradle
         페이징
         
         PostServiceImpl.java
-            
+        
             ```java
             public Pageable sortBy(int page, String sortBy) {
                     List<Sort.Order> sorts = new ArrayList<>();
@@ -423,7 +422,7 @@ build.gradle
             글 조회
             
             PostRepository.java
-            
+        
             ```java
             Page<Post> findAll(Pageable pageable);
             
@@ -441,9 +440,9 @@ build.gradle
         제목or내용 검색, 작성자 검색으로 구현
         
         PostRepository.java
-            
+        
             ```java
-            		Page<Post> findAllByAuthor(User user, Pageable pageable);
+            	Page<Post> findAllByAuthor(User user, Pageable pageable);
             
                 @Query(
                         value = "SELECT p FROM Post p Where p.title LIKE %:titleOrContent% OR p.content LIKE %:titleOrContent%"
@@ -456,7 +455,7 @@ build.gradle
         양방향 연결이 아닌 단방향 연결로 구현
         
         Post.java
-            
+        
             ```java
             @ManyToMany
             @OnDelete(action = OnDeleteAction.CASCADE)
@@ -468,9 +467,9 @@ build.gradle
             ```
             
             PostServiceImpl.java
-            
+        
             ```java
-            		@Transactional
+            	@Transactional
                 @Override
                 public PostDTO.FreePostResponseDTO setFavorite(Long userId, Long postId) {
                     Post post = this.postRepository.findById(postId).orElseThrow(() ->
@@ -510,7 +509,7 @@ build.gradle
         userId와 AccessToken을 받아 처리.
         
         AuthService.java
-            
+        
             ```java
             public boolean checkIdAndToken(Long userId){
                     UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -528,9 +527,9 @@ build.gradle
         다른 점은 댓글에 대댓글이 존재할때 삭제요청이 오면 삭제를 하는 것이 아닌 “삭제된 댓글입니다” 처리를 구현함. 삭제된 댓글에 달려있는 대댓글이 없을경우 DB에서 완전 삭제
         
         CommentServiceImpl.java
-            
+        
             ```java
-            		@Override
+            	@Override
                 @Transactional
                 public void deleteComment(Long userId, Long commentId) throws Exception {
                     Comment comment = this.commentRepository.findById(commentId).orElseThrow( () ->
@@ -556,9 +555,9 @@ build.gradle
         페이징처리를 위해 countQuery 사용
         
         UserCourseRepository.java
-            
+        
             ```java
-            @Query(
+                @Query(
                         value = "SELECT uc.*\n" +
                                 "FROM user_course uc\n" +
                                 "JOIN (\n" +
@@ -592,9 +591,9 @@ build.gradle
         같은 날에 기록이 저장될경우 합쳐서 전달
         
         UserRidingRepository.java
-            
+
             ```java
-            @Query(
+                @Query(
                         value = "SELECT DATE(created_date) AS date, SUM(calorie) AS total_calorie, SUM(riding_distance) AS total_distance, SUM(riding_time) AS total_time\n" +
                                 "FROM user_riding\n" +
                                 "WHERE user_id = :userId and created_date <= :now and created_date >= :period\n"+
@@ -608,10 +607,10 @@ build.gradle
         
         @Scheduled를 사용하여 특정 시간대에 자동으로 랭킹 갱신하고 Redis에 저장
         
-        UserServiceImpl.java
-            
+            UserServiceImpl.java
+        
             ```java
-            @Scheduled(cron = "0 10 08 * * *")
+                @Scheduled(cron = "0 10 08 * * *")
                 private void rank(){
                     List<Object[]> ranker = this.userRidingRepository.getRank();
                     for(Object[] row : ranker){
@@ -623,9 +622,9 @@ build.gradle
             ```
             
             UserRidingRepository.java
-            
+        
             ```java
-            @Query(
+                @Query(
                         value = "SELECT user_id, ROUND(SUM(riding_distance), 2) AS total_distance, RANK() OVER (ORDER BY SUM(riding_distance) DESC) AS distance_rank\n" +
                                 "FROM user_riding\n" +
                                 "GROUP BY user_id\n" +
@@ -638,7 +637,7 @@ build.gradle
 
     
     ```java
-    @Bean
+        @Bean
         protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
             http
                     .authorizeHttpRequests(
@@ -664,6 +663,7 @@ build.gradle
                                             .requestMatchers("/api/auth/reissue").permitAll()
                                             .anyRequest().authenticated()
                     )
+        }
     ```
 
 
