@@ -372,32 +372,32 @@ build.gradle
         
         PostServiceImpl.java
         
-            ```java
-            Post modifyPost = this.postRepository.findById(req.getPostId()).orElseThrow(
-                            () -> new DataNotFoundException("게시글이 존재하지 않습니다.")
-                    );
-                    List<PostImage> dbPostImageList = this.postImageRepository.findAllByPostId(req.getPostId());
-                    List<Long> dbPostImageId = new ArrayList<>();
-                    for (PostImage postImage : dbPostImageList) {
-                        dbPostImageId.add(postImage.getId());
+        ```java
+        Post modifyPost = this.postRepository.findById(req.getPostId()).orElseThrow(
+                        () -> new DataNotFoundException("게시글이 존재하지 않습니다.")
+                );
+                List<PostImage> dbPostImageList = this.postImageRepository.findAllByPostId(req.getPostId());
+                List<Long> dbPostImageId = new ArrayList<>();
+                for (PostImage postImage : dbPostImageList) {
+                    dbPostImageId.add(postImage.getId());
+                }
+        
+                dbPostImageId.removeAll(req.getImageId());
+                if (!dbPostImageId.isEmpty()) {
+                    for (Long id : dbPostImageId) {
+                        this.imageService.deleteImage(id);
                     }
-            
-                    dbPostImageId.removeAll(req.getImageId());
-                    if (!dbPostImageId.isEmpty()) {
-                        for (Long id : dbPostImageId) {
-                            this.imageService.deleteImage(id);
-                        }
+                }
+        List<PostImage> postImageList = imageHandler.parsePostImageInfo(files);
+        
+                if (!postImageList.isEmpty()) {
+                    for (PostImage postImage : postImageList) {
+                        modifyPost.addImage(postImageRepository.save(postImage));
                     }
-            List<PostImage> postImageList = imageHandler.parsePostImageInfo(files);
-            
-                    if (!postImageList.isEmpty()) {
-                        for (PostImage postImage : postImageList) {
-                            modifyPost.addImage(postImageRepository.save(postImage));
-                        }
-                    }
-            
-                    modifyPost.modify(req.getTitle(), req.getContent(), LocalDateTime.now());
-                    return createFreeBoardResponse(this.postRepository.findById(req.getPostId()).get());
+                }
+        
+                modifyPost.modify(req.getTitle(), req.getContent(), LocalDateTime.now());
+                return createFreeBoardResponse(this.postRepository.findById(req.getPostId()).get());
             ```
             
         3. 게시판 조회
