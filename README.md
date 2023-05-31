@@ -619,7 +619,8 @@
             )
             List<Object[]> getRank();
             ```
-3. SpringSecurity
+            
+4. SecurityConfig
 
     
     ```java
