@@ -1,6 +1,6 @@
 # 자전GO
 
-<img src="https://github.com/IB103/server/assets/75194525/38622165-7efe-496e-9211-6c7f887c3de9" width="1000" height="400"> 
+<img src="https://github.com/IB103/client/assets/92325898/39bde59c-2009-42e4-8b85-d9eea468ba82" width="70%"> 
 
 1. 개요
 
