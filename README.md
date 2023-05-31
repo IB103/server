@@ -611,7 +611,7 @@ build.gradle
         UserServiceImpl.java
             
             ```java
-            @Scheduled(cron = "0 00 19 * * *")
+            @Scheduled(cron = "0 10 08 * * *")
                 private void rank(){
                     List<Object[]> ranker = this.userRidingRepository.getRank();
                     for(Object[] row : ranker){
