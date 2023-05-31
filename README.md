@@ -20,31 +20,31 @@
 
     build.gradle
     
-        ```java
-        dependencies {
-            implementation('org.springframework.boot:spring-boot-starter-web')
-            testImplementation('org.projectlombok:lombok')
-            compileOnly('org.projectlombok:lombok')
-            annotationProcessor('org.projectlombok:lombok')
-            testImplementation('org.springframework.boot:spring-boot-starter-test')
-            implementation('org.springframework.boot:spring-boot-starter-data-jpa')
-            testImplementation('org.junit.jupiter:junit-jupiter-api:5.9.2')
-            testRuntimeOnly('org.junit.jupiter:junit-jupiter-engine:5.9.2')
-            compileOnly('org.springframework.boot:spring-boot-devtools')
-            implementation('org.springframework.boot:spring-boot-starter-security')
-            testImplementation('org.springframework.security:spring-security-test')
-            implementation('org.springframework.boot:spring-boot-starter-mail')
-            implementation('org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.0')
-            implementation('io.jsonwebtoken:jjwt-api:0.11.5')
-            implementation('io.jsonwebtoken:jjwt-impl:0.11.5')
-            implementation('io.jsonwebtoken:jjwt-jackson:0.11.5')
-            implementation('commons-io:commons-io:2.6')
-            implementation("org.springframework.boot:spring-boot-starter-validation")
-            implementation("com.google.maps:google-maps-services:2.1.2")
-            implementation(group: 'mysql', name: 'mysql-connector-java', version: '8.0.32')
-            implementation('org.springframework.boot:spring-boot-starter-data-redis')
-        }
-        ```
+    ```java
+    dependencies {
+        implementation('org.springframework.boot:spring-boot-starter-web')
+        testImplementation('org.projectlombok:lombok')
+        compileOnly('org.projectlombok:lombok')
+        annotationProcessor('org.projectlombok:lombok')
+        testImplementation('org.springframework.boot:spring-boot-starter-test')
+        implementation('org.springframework.boot:spring-boot-starter-data-jpa')
+        testImplementation('org.junit.jupiter:junit-jupiter-api:5.9.2')
+        testRuntimeOnly('org.junit.jupiter:junit-jupiter-engine:5.9.2')
+        compileOnly('org.springframework.boot:spring-boot-devtools')
+        implementation('org.springframework.boot:spring-boot-starter-security')
+        testImplementation('org.springframework.security:spring-security-test')
+        implementation('org.springframework.boot:spring-boot-starter-mail')
+        implementation('org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.0')
+        implementation('io.jsonwebtoken:jjwt-api:0.11.5')
+        implementation('io.jsonwebtoken:jjwt-impl:0.11.5')
+        implementation('io.jsonwebtoken:jjwt-jackson:0.11.5')
+        implementation('commons-io:commons-io:2.6')
+        implementation("org.springframework.boot:spring-boot-starter-validation")
+        implementation("com.google.maps:google-maps-services:2.1.2")
+        implementation(group: 'mysql', name: 'mysql-connector-java', version: '8.0.32')
+        implementation('org.springframework.boot:spring-boot-starter-data-redis')
+    }
+    ```
     
 
 2. 기능
@@ -172,18 +172,18 @@
             }
             ```
 
-                Refresh Token은 Access Token 재발급에 사용되므로 RedisDB에 따로 저장하여 관리한다.
-                
-                AuthService.java
+            Refresh Token은 Access Token 재발급에 사용되므로 RedisDB에 따로 저장하여 관리한다.
             
-                ```java
-                    @Transactional
-                    public void saveRefreshToken(String email, String refreshToken) {
-                        redisService.setValuesWithTimeout("RT:" + email, // key
-                                refreshToken, // value
-                                jwtTokenProvider.getTokenExpirationTime(refreshToken)); // timeout(milliseconds)
-                    }
-                ```
+            AuthService.java
+        
+            ```java
+            @Transactional
+            public void saveRefreshToken(String email, String refreshToken) {
+                redisService.setValuesWithTimeout("RT:" + email, // key
+                        refreshToken, // value
+                        jwtTokenProvider.getTokenExpirationTime(refreshToken)); // timeout(milliseconds)
+            }
+            ```
             
         2. 회원가입
         
@@ -525,25 +525,25 @@
             
             CommentServiceImpl.java
 
-                ```java
-                    @Override
-                    @Transactional
-                    public void deleteComment(Long userId, Long commentId) throws Exception {
-                        Comment comment = this.commentRepository.findById(commentId).orElseThrow( () ->
-                                new IllegalArgumentException("댓글이 존재하지 않습니다.")
-                        );
-                        if(authService.checkIdAndToken(userId) && userId.equals(comment.getAuthor().getId())){
-                            if(comment.getReCommentList().isEmpty()){
-                                this.commentRepository.deleteById(commentId);
-                            }
-                            else{
-                                comment.modify("<--!Has Been Deleted!-->", LocalDateTime.now(), Boolean.TRUE);
-                            }
-                        }else{
-                            throw new AuthenticationException("유저 정보와 토큰 값이 일치하지 않습니다.");
+            ```java
+                @Override
+                @Transactional
+                public void deleteComment(Long userId, Long commentId) throws Exception {
+                    Comment comment = this.commentRepository.findById(commentId).orElseThrow( () ->
+                            new IllegalArgumentException("댓글이 존재하지 않습니다.")
+                    );
+                    if(authService.checkIdAndToken(userId) && userId.equals(comment.getAuthor().getId())){
+                        if(comment.getReCommentList().isEmpty()){
+                            this.commentRepository.deleteById(commentId);
                         }
+                        else{
+                            comment.modify("<--!Has Been Deleted!-->", LocalDateTime.now(), Boolean.TRUE);
+                        }
+                    }else{
+                        throw new AuthenticationException("유저 정보와 토큰 값이 일치하지 않습니다.");
                     }
-                ```
+                }
+            ```
             
     
     - 코스 관련 기능
@@ -553,33 +553,33 @@
             
             UserCourseRepository.java
 
-                ```java
-                @Query(
-                        value = "SELECT uc.*\n" +
-                                "FROM user_course uc\n" +
-                                "JOIN (\n" +
-                                "    SELECT pv.post_post_id, COUNT(*) AS vote_count\n" +
-                                "    FROM post_voter pv\n" +
-                                "    GROUP BY pv.post_post_id\n" +
-                                "    HAVING COUNT(*) >= 1\n" +
-                                ") AS subquery\n" +
-                                "ON uc.post_id = subquery.post_post_id\n" +
-                                "WHERE uc.region = :region\n" +
-                                "ORDER BY subquery.vote_count DESC",
-                        countQuery = "SELECT COUNT(*)\n" +
-                                "FROM user_course uc\n" +
-                                "JOIN (\n" +
-                                "    SELECT pv.post_post_id, COUNT(*) AS vote_count\n" +
-                                "    FROM post_voter pv\n" +
-                                "    GROUP BY pv.post_post_id\n" +
-                                "    HAVING COUNT(*) >= 1\n" +
-                                ") AS subquery\n" +
-                                "ON uc.post_id = subquery.post_post_id\n" +
-                                "WHERE uc.region = :region",
-                        nativeQuery = true
-                )
-                Page<UserCourse> findAllByRegion(Pageable pageable, @Param("region") String region);
-                ```
+            ```java
+            @Query(
+                    value = "SELECT uc.*\n" +
+                            "FROM user_course uc\n" +
+                            "JOIN (\n" +
+                            "    SELECT pv.post_post_id, COUNT(*) AS vote_count\n" +
+                            "    FROM post_voter pv\n" +
+                            "    GROUP BY pv.post_post_id\n" +
+                            "    HAVING COUNT(*) >= 1\n" +
+                            ") AS subquery\n" +
+                            "ON uc.post_id = subquery.post_post_id\n" +
+                            "WHERE uc.region = :region\n" +
+                            "ORDER BY subquery.vote_count DESC",
+                    countQuery = "SELECT COUNT(*)\n" +
+                            "FROM user_course uc\n" +
+                            "JOIN (\n" +
+                            "    SELECT pv.post_post_id, COUNT(*) AS vote_count\n" +
+                            "    FROM post_voter pv\n" +
+                            "    GROUP BY pv.post_post_id\n" +
+                            "    HAVING COUNT(*) >= 1\n" +
+                            ") AS subquery\n" +
+                            "ON uc.post_id = subquery.post_post_id\n" +
+                            "WHERE uc.region = :region",
+                    nativeQuery = true
+            )
+            Page<UserCourse> findAllByRegion(Pageable pageable, @Param("region") String region);
+            ```
             
         
     - 유저 라이딩 기록 관련 기능
@@ -589,47 +589,47 @@
             
             UserRidingRepository.java
         
-                ```java
-                @Query(
-                        value = "SELECT DATE(created_date) AS date, SUM(calorie) AS total_calorie, SUM(riding_distance) AS total_distance, SUM(riding_time) AS total_time\n" +
-                                "FROM user_riding\n" +
-                                "WHERE user_id = :userId and created_date <= :now and created_date >= :period\n"+
-                                "GROUP BY user_id, DATE(created_date)",
-                        nativeQuery = true
-                )
-                List<Object[]> findAllByPeriod(@Param("userId") Long userId, @Param("now") LocalDateTime now, @Param("period") LocalDateTime period);
-                ```
+            ```java
+            @Query(
+                    value = "SELECT DATE(created_date) AS date, SUM(calorie) AS total_calorie, SUM(riding_distance) AS total_distance, SUM(riding_time) AS total_time\n" +
+                            "FROM user_riding\n" +
+                            "WHERE user_id = :userId and created_date <= :now and created_date >= :period\n"+
+                            "GROUP BY user_id, DATE(created_date)",
+                    nativeQuery = true
+            )
+            List<Object[]> findAllByPeriod(@Param("userId") Long userId, @Param("now") LocalDateTime now, @Param("period") LocalDateTime period);
+            ```
             
         2. 유저 랭킹
         
             @Scheduled를 사용하여 특정 시간대에 자동으로 랭킹 갱신하고 Redis에 저장
             
-                UserServiceImpl.java
+            UserServiceImpl.java
 
-                ```java
-                @Scheduled(cron = "0 10 08 * * *")
-                private void rank(){
-                    List<Object[]> ranker = this.userRidingRepository.getRank();
-                    for(Object[] row : ranker){
-                        String key = "Rank_No"+String.valueOf(row[2]);
-                        String value = row[0].toString() + ":" + row[1].toString();
-                        this.redisService.setValues(key, value);
-                    }
+            ```java
+            @Scheduled(cron = "0 10 08 * * *")
+            private void rank(){
+                List<Object[]> ranker = this.userRidingRepository.getRank();
+                for(Object[] row : ranker){
+                    String key = "Rank_No"+String.valueOf(row[2]);
+                    String value = row[0].toString() + ":" + row[1].toString();
+                    this.redisService.setValues(key, value);
                 }
-                ```
-                
-                UserRidingRepository.java
+            }
+            ```
+            
+            UserRidingRepository.java
 
-                ```java
-                @Query(
-                        value = "SELECT user_id, ROUND(SUM(riding_distance), 2) AS total_distance, RANK() OVER (ORDER BY SUM(riding_distance) DESC) AS distance_rank\n" +
-                                "FROM user_riding\n" +
-                                "GROUP BY user_id\n" +
-                                "LIMIT 3",
-                        nativeQuery = true
-                )
-                List<Object[]> getRank();
-                ```
+            ```java
+            @Query(
+                    value = "SELECT user_id, ROUND(SUM(riding_distance), 2) AS total_distance, RANK() OVER (ORDER BY SUM(riding_distance) DESC) AS distance_rank\n" +
+                            "FROM user_riding\n" +
+                            "GROUP BY user_id\n" +
+                            "LIMIT 3",
+                    nativeQuery = true
+            )
+            List<Object[]> getRank();
+            ```
 3. SpringSecurity
 
     
