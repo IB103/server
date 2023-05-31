@@ -4,47 +4,47 @@
 
 1. 개요
 
-자전GO 모바일 어플리케이션의 메인 서버이다.
-통신 대상은 클라이언트이고, 모든 기능은 Rest API를 기반으로 한다.
-데이터 형식은 JSON, FormData를 사용한다.
-SpringSecurity를 통해 JSON Web Token(JWT)를 검사하고 인가절차를 밟는다.
+    자전GO 모바일 어플리케이션의 메인 서버이다.
+    통신 대상은 클라이언트이고, 모든 기능은 Rest API를 기반으로 한다.
+    데이터 형식은 JSON, FormData를 사용한다.
+    SpringSecurity를 통해 JSON Web Token(JWT)를 검사하고 인가절차를 밟는다.
 
 2. 개발 환경
 
-- AWS Lightsail
-- Intellij IDEA
-- Spring Boot
-- Java 17
-- MySQL 8.0.32
-- Redis 7.0.10
+    - AWS Lightsail
+    - Intellij IDEA
+    - Spring Boot
+    - Java 17
+    - MySQL 8.0.32
+    - Redis 7.0.10
 
-build.gradle
-   
-    ```java
-    dependencies {
-        implementation('org.springframework.boot:spring-boot-starter-web')
-        testImplementation('org.projectlombok:lombok')
-        compileOnly('org.projectlombok:lombok')
-        annotationProcessor('org.projectlombok:lombok')
-        testImplementation('org.springframework.boot:spring-boot-starter-test')
-        implementation('org.springframework.boot:spring-boot-starter-data-jpa')
-        testImplementation('org.junit.jupiter:junit-jupiter-api:5.9.2')
-        testRuntimeOnly('org.junit.jupiter:junit-jupiter-engine:5.9.2')
-        compileOnly('org.springframework.boot:spring-boot-devtools')
-        implementation('org.springframework.boot:spring-boot-starter-security')
-        testImplementation('org.springframework.security:spring-security-test')
-        implementation('org.springframework.boot:spring-boot-starter-mail')
-        implementation('org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.0')
-        implementation('io.jsonwebtoken:jjwt-api:0.11.5')
-        implementation('io.jsonwebtoken:jjwt-impl:0.11.5')
-        implementation('io.jsonwebtoken:jjwt-jackson:0.11.5')
-        implementation('commons-io:commons-io:2.6')
-        implementation("org.springframework.boot:spring-boot-starter-validation")
-        implementation("com.google.maps:google-maps-services:2.1.2")
-        implementation(group: 'mysql', name: 'mysql-connector-java', version: '8.0.32')
-        implementation('org.springframework.boot:spring-boot-starter-data-redis')
-    }
-    ```
+    build.gradle
+    
+        ```java
+        dependencies {
+            implementation('org.springframework.boot:spring-boot-starter-web')
+            testImplementation('org.projectlombok:lombok')
+            compileOnly('org.projectlombok:lombok')
+            annotationProcessor('org.projectlombok:lombok')
+            testImplementation('org.springframework.boot:spring-boot-starter-test')
+            implementation('org.springframework.boot:spring-boot-starter-data-jpa')
+            testImplementation('org.junit.jupiter:junit-jupiter-api:5.9.2')
+            testRuntimeOnly('org.junit.jupiter:junit-jupiter-engine:5.9.2')
+            compileOnly('org.springframework.boot:spring-boot-devtools')
+            implementation('org.springframework.boot:spring-boot-starter-security')
+            testImplementation('org.springframework.security:spring-security-test')
+            implementation('org.springframework.boot:spring-boot-starter-mail')
+            implementation('org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.0')
+            implementation('io.jsonwebtoken:jjwt-api:0.11.5')
+            implementation('io.jsonwebtoken:jjwt-impl:0.11.5')
+            implementation('io.jsonwebtoken:jjwt-jackson:0.11.5')
+            implementation('commons-io:commons-io:2.6')
+            implementation("org.springframework.boot:spring-boot-starter-validation")
+            implementation("com.google.maps:google-maps-services:2.1.2")
+            implementation(group: 'mysql', name: 'mysql-connector-java', version: '8.0.32')
+            implementation('org.springframework.boot:spring-boot-starter-data-redis')
+        }
+        ```
     
 
 2. 기능
@@ -126,156 +126,155 @@ build.gradle
     - 유저 관련 기능
         1. 로그인
         
-        이메일, 비밀번호를 받아서 DB와 체크한다.
-        
-        AuthService.java
-        
+            이메일, 비밀번호를 받아서 DB와 체크한다.
+            
+            AuthService.java
+            
             ```java
-            	@Transactional
+                @Transactional
                 public UserDTO.SignInResponseDTO login(UserDTO.SignInRequestDTO req) {
                     UsernamePasswordAuthenticationToken authenticationToken =
-                            new UsernamePasswordAuthenticationToken(req.getEmail(), req.getPassword());
-            
+                            new UsernamePasswordAuthenticationToken(req.getEmail(), req.getPassword());                
                     Authentication authentication = authenticationManagerBuilder.getObject()
                             .authenticate(authenticationToken);
                 }
             ```
-            
+                
             로그인에 성공하면 AccessToken 과 Refresh Token을 전달한다.
-            
+                
             JwtTokenProvider.java
-        
-            ```java
-            	@Transactional
-                public TokenInfo createToken(String email, String authorities){
-                    Long now = System.currentTimeMillis();
             
-                    String accessToken = Jwts.builder()
-                            .setHeaderParam("typ", "JWT")
-                            .setHeaderParam("alg", "HS512")
-                            .setExpiration(new Date(now + accessTokenValidityInMilliseconds))
-                            .setSubject("access-token")
-                            .claim(url, true)
-                            .claim(EMAIL_KEY, email)
-                            .claim(AUTHORITIES_KEY, authorities)
-                            .signWith(signingKey, SignatureAlgorithm.HS512)
-                            .compact();
+                ```java
+                    @Transactional
+                    public TokenInfo createToken(String email, String authorities){
+                        Long now = System.currentTimeMillis();
+                
+                        String accessToken = Jwts.builder()
+                                .setHeaderParam("typ", "JWT")
+                                .setHeaderParam("alg", "HS512")
+                                .setExpiration(new Date(now + accessTokenValidityInMilliseconds))
+                                .setSubject("access-token")
+                                .claim(url, true)
+                                .claim(EMAIL_KEY, email)
+                                .claim(AUTHORITIES_KEY, authorities)
+                                .signWith(signingKey, SignatureAlgorithm.HS512)
+                                .compact();
+                
+                        String refreshToken = Jwts.builder()
+                                .setHeaderParam("typ", "JWT")
+                                .setHeaderParam("alg", "HS512")
+                                .setExpiration(new Date(now + refreshTokenValidityInMilliseconds))
+                                .setSubject("refresh-token")
+                                .signWith(signingKey, SignatureAlgorithm.HS512)
+                                .compact();
+                
+                        return new TokenInfo(accessToken, refreshToken);
+                    }
+                ```
+                
+                Refresh Token은 Access Token 재발급에 사용되므로 RedisDB에 따로 저장하여 관리한다.
+                
+                AuthService.java
             
-                    String refreshToken = Jwts.builder()
-                            .setHeaderParam("typ", "JWT")
-                            .setHeaderParam("alg", "HS512")
-                            .setExpiration(new Date(now + refreshTokenValidityInMilliseconds))
-                            .setSubject("refresh-token")
-                            .signWith(signingKey, SignatureAlgorithm.HS512)
-                            .compact();
-            
-                    return new TokenInfo(accessToken, refreshToken);
-                }
-            ```
-            
-            Refresh Token은 Access Token 재발급에 사용되므로 RedisDB에 따로 저장하여 관리한다.
-            
-            AuthService.java
-        
-            ```java
-                @Transactional
-                public void saveRefreshToken(String email, String refreshToken) {
-                    redisService.setValuesWithTimeout("RT:" + email, // key
-                            refreshToken, // value
-                            jwtTokenProvider.getTokenExpirationTime(refreshToken)); // timeout(milliseconds)
-                }
-            ```
+                ```java
+                    @Transactional
+                    public void saveRefreshToken(String email, String refreshToken) {
+                        redisService.setValuesWithTimeout("RT:" + email, // key
+                                refreshToken, // value
+                                jwtTokenProvider.getTokenExpirationTime(refreshToken)); // timeout(milliseconds)
+                    }
+                ```
             
         2. 회원가입
         
-        이메일, 비밀번호, 닉네임, 유저이름, 생일을 받아서 저장한다.
-        비밀번호는 encode해서 db에 저장한다.
-        이메일과 닉네임은 중복되선 안되기에 사전에 중복확인을 한 후에 회원가입을 진행한다.
-        
-        UserServiceImpl.java
-        
-            ```java
-            if (!(this.userRepository.findByEmail(req.getEmail()).isPresent() || this.userRepository.findByNickname(req.getNickname()).isPresent())) {
-                        User newuser = User.builder()
-                                .email(req.getEmail())
-                                .password(passwordEncoder.encode(req.getPassword()))
-                                .nickname(req.getNickname())
-                                .username(req.getUsername())
-                                .birthday(req.getBirthday())
-                                .build();
-                        this.userRepository.save(newuser);
-            ```
+            이메일, 비밀번호, 닉네임, 유저이름, 생일을 받아서 저장한다.
+            비밀번호는 encode해서 db에 저장한다.
+            이메일과 닉네임은 중복되선 안되기에 사전에 중복확인을 한 후에 회원가입을 진행한다.
+            
+            UserServiceImpl.java
+            
+                ```java
+                if (!(this.userRepository.findByEmail(req.getEmail()).isPresent() || this.userRepository.findByNickname(req.getNickname()).isPresent())) {
+                            User newuser = User.builder()
+                                    .email(req.getEmail())
+                                    .password(passwordEncoder.encode(req.getPassword()))
+                                    .nickname(req.getNickname())
+                                    .username(req.getUsername())
+                                    .birthday(req.getBirthday())
+                                    .build();
+                            this.userRepository.save(newuser);
+                ```
             
         3. 이메일 & 닉네임 중복확인
         
-        클라이언트가 회원가입, 닉네임 변경에서 사용하는 기능
-        
-        UserServiceImpl.java
-        
-            ```java
-            	@Override
-                public Boolean EmailDupCheck(String email) {
-                    Optional<User> user = this.userRepository.findByEmail(email);
-                    if (user.isPresent()) {
-                        return false;
-                    } else {
-                        return true;
-                    }
-                }
+            클라이언트가 회원가입, 닉네임 변경에서 사용하는 기능
             
-                @Override
-                public Boolean NicknameDupCheck(String nickname) {
-                    Optional<User> user = this.userRepository.findByNickname(nickname);
-                    if (user.isPresent()) {
-                        return false;
-                    } else {
-                        return true;
+            UserServiceImpl.java
+            
+                ```java
+                    @Override
+                    public Boolean EmailDupCheck(String email) {
+                        Optional<User> user = this.userRepository.findByEmail(email);
+                        if (user.isPresent()) {
+                            return false;
+                        } else {
+                            return true;
+                        }
                     }
-                }
+                
+                    @Override
+                    public Boolean NicknameDupCheck(String nickname) {
+                        Optional<User> user = this.userRepository.findByNickname(nickname);
+                        if (user.isPresent()) {
+                            return false;
+                        } else {
+                            return true;
+                        }
+                    }
             ```
             
         4. 닉네임 변경
-        
-        userId 와 변경할 닉네임을 받아서 진행. 중복확인을 거쳐서 실행됨.
-        
-        UserServiceImpl.java
-        
-            ```java
-            	@Transactional
-                @Override
-                public Optional<User> modifyNickname(UserDTO.ModifyNickRequestDTO req) {
-                    Optional<User> user = this.userRepository.findByEmail(req.getEmail());
-                    user.ifPresent(s -> {
-                        user.get().modifyNick(req.getNickname());
-                    });
-                    Optional<User> modifiedUser = this.userRepository.findByEmail(req.getEmail());
-                    return modifiedUser;
-                }
-            ```
+            
+            userId 와 변경할 닉네임을 받아서 진행. 중복확인을 거쳐서 실행됨.
+            
+            UserServiceImpl.java
+            
+                ```java
+                    @Transactional
+                    @Override
+                    public Optional<User> modifyNickname(UserDTO.ModifyNickRequestDTO req) {
+                        Optional<User> user = this.userRepository.findByEmail(req.getEmail());
+                        user.ifPresent(s -> {
+                            user.get().modifyNick(req.getNickname());
+                        });
+                        Optional<User> modifiedUser = this.userRepository.findByEmail(req.getEmail());
+                        return modifiedUser;
+                    }
+                ```
             
         5. 아이디 찾기
         
-        생년월일과 이름을 받아서 아이디 리스트를 전달한다.
-        
-        UserServiceImpl.java
-        
-            ```java
-            	@Override
-                public List<String> findEmail(String username, String birthday) {
-                    List<UserEmailInterface> appuser = this.userRepository.findByUsernameAndBirthday(username, birthday);
-                    List<String> res = new ArrayList<>();
-                    if (appuser.isEmpty()) {
-                        throw new DataNotFoundException("AppUser Not Found");
-                    } else {
-                        for (UserEmailInterface s : appuser) {
-                            String email = s.getEmail();
-                            int atIndex = email.indexOf("@");
-                            res.add(email.substring(0, 2) + "*".repeat(atIndex - 2) + email.substring(atIndex));
+            생년월일과 이름을 받아서 아이디 리스트를 전달한다.
+            
+            UserServiceImpl.java
+            
+                ```java
+                    @Override
+                    public List<String> findEmail(String username, String birthday) {
+                        List<UserEmailInterface> appuser = this.userRepository.findByUsernameAndBirthday(username, birthday);
+                        List<String> res = new ArrayList<>();
+                        if (appuser.isEmpty()) {
+                            throw new DataNotFoundException("AppUser Not Found");
+                        } else {
+                            for (UserEmailInterface s : appuser) {
+                                String email = s.getEmail();
+                                int atIndex = email.indexOf("@");
+                                res.add(email.substring(0, 2) + "*".repeat(atIndex - 2) + email.substring(atIndex));
+                            }
+                            return res;
                         }
-                        return res;
                     }
-                }
-            ```
+                ```
             
         6. 비밀번호 찾기(변경)
         
@@ -399,109 +398,110 @@ build.gradle
                     modifyPost.modify(req.getTitle(), req.getContent(), LocalDateTime.now());
                     return createFreeBoardResponse(this.postRepository.findById(req.getPostId()).get());
                 ```
+        
         3. 게시판 조회
         
-        자유게시판과 코스게시판, 전체글, 유저가 스크랩한 글을 조회할 수 있음.
-        Post Entity에 유저가 들어가있어 그냥 전달할 경우 유저의 민감한 정보가 전달 될 수 있기 때문에 전처리를 하고 클라이언트에 전달함.
-        페이징 처리를 통해 등록날짜순 정렬함.
-        
-        페이징
-        
-        PostServiceImpl.java
-        
-            ```java
-            public Pageable sortBy(int page, String sortBy) {
-                    List<Sort.Order> sorts = new ArrayList<>();
-                    sorts.add(Sort.Order.desc(sortBy));
-                    Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
-                    return pageable;
-                }
-            ```
+            자유게시판과 코스게시판, 전체글, 유저가 스크랩한 글을 조회할 수 있음.
+            Post Entity에 유저가 들어가있어 그냥 전달할 경우 유저의 민감한 정보가 전달 될 수 있기 때문에 전처리를 하고 클라이언트에 전달함.
+            페이징 처리를 통해 등록날짜순 정렬함.
             
-            글 조회
-            
-            PostRepository.java
+            페이징
         
-            ```java
-            Page<Post> findAll(Pageable pageable);
+            PostServiceImpl.java
             
-            Page<Post> findAllByPostCategory(Pageable pageable, PostCategory postCategory);
+                ```java
+                public Pageable sortBy(int page, String sortBy) {
+                        List<Sort.Order> sorts = new ArrayList<>();
+                        sorts.add(Sort.Order.desc(sortBy));
+                        Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
+                        return pageable;
+                    }
+                ```
+                
+                글 조회
+                
+                PostRepository.java
             
-            @Query(
-                        value = "SELECT * FROM post WHERE post_id IN (SELECT post_post_id FROM post_scraper WHERE scraper_user_id = :userId)",
-                        nativeQuery = true
-                )
-            Page<Post> findAllScrap(@Param("userId")Long userId, Pageable pageable);
+                ```java
+                Page<Post> findAll(Pageable pageable);
+                
+                Page<Post> findAllByPostCategory(Pageable pageable, PostCategory postCategory);
+                
+                @Query(
+                            value = "SELECT * FROM post WHERE post_id IN (SELECT post_post_id FROM post_scraper WHERE scraper_user_id = :userId)",
+                            nativeQuery = true
+                    )
+                Page<Post> findAllScrap(@Param("userId")Long userId, Pageable pageable);
             ```
             
         4. 게시판 검색
         
-        제목or내용 검색, 작성자 검색으로 구현
-        
-        PostRepository.java
-        
-            ```java
-            	Page<Post> findAllByAuthor(User user, Pageable pageable);
+            제목or내용 검색, 작성자 검색으로 구현
             
-                @Query(
-                        value = "SELECT p FROM Post p Where p.title LIKE %:titleOrContent% OR p.content LIKE %:titleOrContent%"
-                )
-                Page<Post> findAllSearch(@Param("titleOrContent")String titleOrContent, Pageable pageable);
-            ```
+            PostRepository.java
             
+                ```java
+                    Page<Post> findAllByAuthor(User user, Pageable pageable);
+                
+                    @Query(
+                            value = "SELECT p FROM Post p Where p.title LIKE %:titleOrContent% OR p.content LIKE %:titleOrContent%"
+                    )
+                    Page<Post> findAllSearch(@Param("titleOrContent")String titleOrContent, Pageable pageable);
+                ```
+                
         5. 스크랩과 좋아요 기능
         
-        양방향 연결이 아닌 단방향 연결로 구현
-        
-        Post.java
-        
-            ```java
-            @ManyToMany
-            @OnDelete(action = OnDeleteAction.CASCADE)
-            private Set<User> voter = new HashSet<>();
+            양방향 연결이 아닌 단방향 연결로 구현
             
-            @ManyToMany
-            @OnDelete(action = OnDeleteAction.CASCADE)
-            private Set<User> scraper = new HashSet<>();
-            ```
+            Post.java
             
-            PostServiceImpl.java
-        
-            ```java
-            	@Transactional
-                @Override
-                public PostDTO.FreePostResponseDTO setFavorite(Long userId, Long postId) {
-                    Post post = this.postRepository.findById(postId).orElseThrow(() ->
-                            new IllegalArgumentException("게시글이 존재하지 않습니다.")
-                    );
+                ```java
+                @ManyToMany
+                @OnDelete(action = OnDeleteAction.CASCADE)
+                private Set<User> voter = new HashSet<>();
+                
+                @ManyToMany
+                @OnDelete(action = OnDeleteAction.CASCADE)
+                private Set<User> scraper = new HashSet<>();
+                ```
+                
+                PostServiceImpl.java
             
-                    User user = this.userRepository.findById(userId).orElseThrow(() ->
-                            new IllegalArgumentException("유저가 존재하지 않습니다.")
-                    );
-                    if (post.getVoter().contains(user)) {
-                        post.getVoter().remove(user);
-                    } else {
-                        post.getVoter().add(user);
+                ```java
+                    @Transactional
+                    @Override
+                    public PostDTO.FreePostResponseDTO setFavorite(Long userId, Long postId) {
+                        Post post = this.postRepository.findById(postId).orElseThrow(() ->
+                                new IllegalArgumentException("게시글이 존재하지 않습니다.")
+                        );
+                
+                        User user = this.userRepository.findById(userId).orElseThrow(() ->
+                                new IllegalArgumentException("유저가 존재하지 않습니다.")
+                        );
+                        if (post.getVoter().contains(user)) {
+                            post.getVoter().remove(user);
+                        } else {
+                            post.getVoter().add(user);
+                        }
+                        return createFreeBoardResponse(this.postRepository.findById(postId).get());
                     }
-                    return createFreeBoardResponse(this.postRepository.findById(postId).get());
-                }
-            
-                @Transactional
-                @Override
-                public PostDTO.FreePostResponseDTO setScrap(Long userId, Long postId) {
-                    Post post = this.postRepository.findById(postId).orElseThrow(() ->
-                            new IllegalArgumentException("게시글이 존재하지 않습니다."));
-            
-                    User user = this.userRepository.findById(userId).orElseThrow(() ->
-                            new IllegalArgumentException("유저가 존재하지 않습니다."));
-                    if (post.getScraper().contains(user)) {
-                        post.getScraper().remove(user);
-                    } else {
-                        post.getScraper().add(user);
+                
+                    @Transactional
+                    @Override
+                    public PostDTO.FreePostResponseDTO setScrap(Long userId, Long postId) {
+                        Post post = this.postRepository.findById(postId).orElseThrow(() ->
+                                new IllegalArgumentException("게시글이 존재하지 않습니다."));
+                
+                        User user = this.userRepository.findById(userId).orElseThrow(() ->
+                                new IllegalArgumentException("유저가 존재하지 않습니다."));
+                        if (post.getScraper().contains(user)) {
+                            post.getScraper().remove(user);
+                        } else {
+                            post.getScraper().add(user);
+                        }
+                        return createFreeBoardResponse(this.postRepository.findById(postId).get());
                     }
-                    return createFreeBoardResponse(this.postRepository.findById(postId).get());
-                }
-            ```
+                ```
             
         6. 삭제 기능
         
